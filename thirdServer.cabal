@@ -1,0 +1,202 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: e3d72c27f62ecf3ddc80852b1895af2fe3280b592f8d919251bca0b5306b6fed
+
+name:           thirdServer
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/thirdServer#readme>
+homepage:       https://github.com/githubuser/thirdServer#readme
+bug-reports:    https://github.com/githubuser/thirdServer/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/thirdServer
+
+library
+  exposed-modules:
+      Adapter.HTTP.API.Auth
+      Adapter.HTTP.API.Create
+      Adapter.HTTP.API.Editing
+      Adapter.HTTP.API.FilterService
+      Adapter.HTTP.API.GetAll
+      Adapter.HTTP.API.GetOne
+      Adapter.HTTP.API.Publish
+      Adapter.HTTP.API.Remove
+      Adapter.HTTP.API.SortedOfService
+      Adapter.HTTP.Common
+      Adapter.HTTP.ImportLibrary
+      Adapter.HTTP.Main
+      Adapter.PostgreSQL.Common
+      Adapter.PostgreSQL.ImportLibrary
+      Adapter.PostgreSQL.ImportPostgres
+      Adapter.PostgreSQL.Services.Auth
+      Adapter.PostgreSQL.Services.CommonService.CheckAdminAccess
+      Adapter.PostgreSQL.Services.CommonService.CheckAuthorAccess
+      Adapter.PostgreSQL.Services.CommonService.Create
+      Adapter.PostgreSQL.Services.CommonService.Editing
+      Adapter.PostgreSQL.Services.CommonService.GetAll
+      Adapter.PostgreSQL.Services.CommonService.GetAllDraft
+      Adapter.PostgreSQL.Services.CommonService.GetOne
+      Adapter.PostgreSQL.Services.CommonService.GetOneDraft
+      Adapter.PostgreSQL.Services.CommonService.Publish
+      Adapter.PostgreSQL.Services.CommonService.Remove
+      Adapter.PostgreSQL.Services.CommonService.RemoveDraft
+      Adapter.PostgreSQL.Services.FilterService
+      Adapter.PostgreSQL.Services.SortedService
+      Domain.Config.Config
+      Domain.Config.ParseConfig
+      Domain.Services.Auth
+      Domain.Services.CommonService
+      Domain.Services.FilterService
+      Domain.Services.ImportServices
+      Domain.Services.LogMonad
+      Domain.Services.SortedOfService
+      Domain.Types.AuthEntity.Auth
+      Domain.Types.BusinessEntity.Author
+      Domain.Types.BusinessEntity.Category
+      Domain.Types.BusinessEntity.Comment
+      Domain.Types.BusinessEntity.Draft
+      Domain.Types.BusinessEntity.Entity
+      Domain.Types.BusinessEntity.ErrorServer
+      Domain.Types.BusinessEntity.News
+      Domain.Types.BusinessEntity.Tag
+      Domain.Types.BusinessEntity.User
+      Domain.Types.HelpForRequest.HelpForRequest
+      Domain.Types.ImportLibrary
+      Domain.Types.ImportTypes
+      Domain.Types.LogEntity.LogEntity
+      Domain.Types.ParseRowEntity
+      Lib
+  other-modules:
+      Paths_thirdServer
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  build-depends:
+      aeson
+    , attoparsec
+    , base >=4.7 && <5
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , cookie
+    , data-has
+    , exceptions
+    , hspec
+    , http-client
+    , http-client-tls
+    , http-types
+    , mtl
+    , parsec
+    , postgresql-libpq >=0.9.4.2
+    , postgresql-simple
+    , postgresql-simple-migration
+    , resource-pool
+    , scotty
+    , string-random
+    , text
+    , text-time
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+executable thirdServer-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_thirdServer
+  hs-source-dirs:
+      app
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , attoparsec
+    , base >=4.7 && <5
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , cookie
+    , data-has
+    , exceptions
+    , hspec
+    , http-client
+    , http-client-tls
+    , http-types
+    , mtl
+    , parsec
+    , postgresql-libpq >=0.9.4.2
+    , postgresql-simple
+    , postgresql-simple-migration
+    , resource-pool
+    , scotty
+    , string-random
+    , text
+    , text-time
+    , thirdServer
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+test-suite thirdServer-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Domain.Services.AuthSpec
+      Domain.Services.CommonServiceSpec
+      Domain.Services.FixtureDomainService
+      Fixture
+      Paths_thirdServer
+  hs-source-dirs:
+      test
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , attoparsec
+    , base >=4.7 && <5
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , cookie
+    , data-has
+    , exceptions
+    , hspec
+    , http-client
+    , http-client-tls
+    , http-types
+    , mtl
+    , parsec
+    , postgresql-libpq >=0.9.4.2
+    , postgresql-simple
+    , postgresql-simple-migration
+    , resource-pool
+    , scotty
+    , string-random
+    , text
+    , text-time
+    , thirdServer
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010

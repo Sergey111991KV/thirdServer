@@ -1,0 +1,97 @@
+name:                thirdServer
+version:             0.1.0.0
+github:              "githubuser/thirdServer"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2020 Author name here"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/thirdServer#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- classy-prelude
+- cookie
+- postgresql-simple
+- postgresql-libpq >= 0.9.4.2
+- postgresql-simple-migration
+- mtl
+- aeson
+- bytestring
+- time
+- hspec
+- text-time
+- exceptions
+- http-client
+- http-client-tls
+- http-types 
+- cookie
+- scotty
+- wai
+- wai-extra
+- warp
+- data-has
+- resource-pool
+- string-random
+- blaze-builder
+- time-lens
+- text
+- parsec
+- attoparsec
+- scotty
+
+
+
+library:
+  source-dirs: src
+
+executables:
+  thirdServer-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -Wall
+    - -Werror
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - thirdServer
+
+
+
+
+default-extensions:
+- NoImplicitPrelude
+- OverloadedStrings
+- DeriveGeneric
+- GeneralizedNewtypeDeriving
+- ConstraintKinds
+- FlexibleContexts
+- ScopedTypeVariables
+- StandaloneDeriving
+- FlexibleInstances
+- UndecidableInstances
+- DataKinds
+
+tests:
+  thirdServer-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - thirdServer
