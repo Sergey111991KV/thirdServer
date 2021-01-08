@@ -30,6 +30,7 @@ newtype App a =
     }
   deriving (Applicative, Functor, Monad, MonadReader State, MonadIO, MonadThrow)
 
+
 run :: State -> App a -> IO a
 run state = flip runReaderT state . unApp
 
