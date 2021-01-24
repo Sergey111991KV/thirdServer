@@ -3,7 +3,7 @@ module Adapter.HTTP.API.Publish where
 import Adapter.HTTP.ImportLibrary
 
 import qualified Prelude as P
-import Web.Scotty.Trans (ScottyError, ScottyT, get, json, param, status)
+import Web.Scotty.Trans 
 
 routes ::
      (ScottyError e, MonadIO m, Auth m, Log m, CommonService m)

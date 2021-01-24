@@ -2,18 +2,18 @@ module Adapter.HTTP.API.GetAll where
 
 import Adapter.HTTP.ImportLibrary
  
-import Web.Scotty.Trans (ScottyError, ScottyT, get, json, param, status)
+import Web.Scotty.Trans 
 
 routes ::
      (ScottyError e, MonadIO m, Auth m, Log m, CommonService m)
   => ScottyT e m ()
 routes = do
   get "/api/getAll/:entity" $ do
-    authResult <- getCookie "sId"
-    case authResult of
-      Nothing -> do
-        status status400
-        Web.Scotty.Trans.json ("not verification" :: Text)
+    _ <- getCookie "sId"
+    -- case authResult of
+    --   Nothing -> do
+    status status400
+        -- Web.Scotty.Trans.json ("not verification" :: Text)
       -- Just sess -> do
       --   entityText :: Text <- param "entity"
       --   case entityText of

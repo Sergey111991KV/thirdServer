@@ -9,7 +9,7 @@ import qualified Adapter.HTTP.API.GetOne as GetOne
 import qualified Adapter.HTTP.API.Publish as Publish
 import qualified Adapter.HTTP.API.Remove as Remove
 import qualified Adapter.HTTP.API.SortedOfService as SortServ
-import ClassyPrelude (IO, Int, LText, Monad((>>=)), MonadIO, Text, ($))
+import ClassyPrelude
 import Domain.Services.ImportServices as Service
   ( Auth
   , CommonService
@@ -21,7 +21,7 @@ import Network.Wai (Application, Response)
 import Network.Wai.Handler.Warp (run)
 import Web.Scotty.Trans (ScottyT, defaultHandler, json, scottyAppT, status)
 import Control.Monad.Except
-    ( MonadError(throwError) )
+
 import Domain.Types.ImportTypes
 
 

@@ -1,7 +1,7 @@
 module Adapter.HTTPWAI.Route where
 
 import ClassyPrelude
-import Control.Monad.IO.Class (MonadIO, liftIO)
+
 import qualified Data.Aeson as J
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
@@ -28,45 +28,46 @@ import qualified Network.Wai.Internal as HTTP
 
 import Adapter.HTTPWAI.Main
 
+type Router = [Text] 
 
 
-type Path = [T.Text]
 
 data API
-  = POST Path
-  | GET Path
-  | PATCH Path
-  | DELETE Path
+  = POST Router
+  | GET Router
+  | PUT Router
+  | DELETE Router
   | UNKNOWN
   deriving (Show, Eq)
 
-route :: MonadHTTP m
+route :: Monad m
   => HTTP.Request -> m HTTP.Response
-route req = undefined
---   case methodAndPath req of
---     POST (matches ["api", "user"] -> Just []) -> do
---       reqBody <- liftIO $ HTTP.getRequestBodyChunk req
---       createUserRequest <-
---         either fail pure (J.eitherDecode $ LBS.fromStrict reqBody)
---       res <- createUserEndpoint createUserRequest
---       pure $ HTTP.responseLBS HTTP.status200 [] "Success"
---     GET (matches ["api", "user", ":pk"] -> Just [userId]) ->
---       pure $ HTTP.responseLBS HTTP.status404 [] ""
---     PATCH (matches ["api", "user", ":pk"] -> Just [userId]) ->
---       pure $ HTTP.responseLBS HTTP.status404 [] ""
---     _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
+route req = do
+  case methodAndPath req of
+    POST  ["api"] -> do
+        return $  HTTP.responseLBS HTTP.status200 [] "Success"
+    --   reqBody <- liftIO $ HTTP.getRequestBodyChunk req
+    --   createUserRequest <-
+    --     either fail pure (J.eitherDecode $ LBS.fromStrict reqBody)
+    --   res <- createUserEndpoint createUserRequest
+    --   pure $ HTTP.responseLBS HTTP.status200 [] "Success"
+    GET  pass ->
+      pure $ HTTP.responseLBS HTTP.status404 [] ""
+    -- PUT (matches ["api", "user", ":pk"] -> Just [userId]) ->
+    --   pure $ HTTP.responseLBS HTTP.status404 [] ""
+    _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
 
--- methodAndPath :: HTTP.Request -> API
--- methodAndPath req =
---   case getMethod of
---     HTTP.POST -> POST $ HTTP.pathInfo req
---     HTTP.GET -> GET $ HTTP.pathInfo req
---     HTTP.PATCH -> PATCH $ HTTP.pathInfo req
---     HTTP.DELETE -> DELETE $ HTTP.pathInfo req
---     _ -> UNKNOWN
---   where
---     getMethod =
---       either (error . show) id $ HTTP.parseMethod (HTTP.requestMethod req)
+methodAndPath :: HTTP.Request -> API
+methodAndPath req =
+  case getMethod of
+    HTTP.POST -> POST $ HTTP.pathInfo req
+    HTTP.GET -> GET $ HTTP.pathInfo req
+    HTTP.PUT -> PUT $ HTTP.pathInfo req
+    HTTP.DELETE -> DELETE $ HTTP.pathInfo req
+    _ -> UNKNOWN
+  where
+    getMethod =
+      either (error . show) id $ HTTP.parseMethod (HTTP.requestMethod req)
 
 -- -- TODO refactor with fold
 -- matches :: Path -> Path -> Maybe [Int]

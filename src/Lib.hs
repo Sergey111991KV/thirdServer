@@ -2,7 +2,6 @@ module Lib
   ( mainServer
   ) where
 
-import qualified Adapter.HTTP.Main as HTTP
 import qualified Adapter.PostgreSQL.ImportPostgres as Pos
 import ClassyPrelude
 import Control.Monad.Except
@@ -20,7 +19,6 @@ import Domain.Services.ImportServices
 
 import Domain.Types.ImportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
-import qualified Network.Wai as W 
 import qualified Network.Wai.Handler.Warp as W 
 
 
@@ -77,7 +75,9 @@ instance FilterService App where
   filterName = Pos.filterName
   filterContent = Pos.filterContent
 
-instance MyHTTP.MonadHTTP App where
+-- instance MyHTTP.MonadHTTP App where
+
+
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()
 withState config action = do
@@ -87,17 +87,13 @@ withState config action = do
     action (Config.configPort config) state
 
 
-
-
-
 mainWithConfig :: Config.Config -> IO ()
 mainWithConfig config =
   withState config $ \port state -> do
     W.run port $ \request respond -> do
       eitherResponse <- runApp state $ MyHTTP.route request
       response <- either (\e -> do
-          print "problem, need log"
-          MyHTTP.serverErrorResponse) pure eitherResponse
+          MyHTTP.serverErrorResponse e) pure eitherResponse
       respond response
 
 startServer :: Text -> IO ()
@@ -105,17 +101,9 @@ startServer textFromFile = do
   caseOfConf <- Config.parseConf textFromFile
   case caseOfConf of
     Left err -> do
-      print (errorText err ++ "take option for servet")
+      print (errorText err ++ "take option for server")
     Right conf -> do
-      resultStart <- ClassyPrelude.try $ mainWithConfig conf
-      case (resultStart :: Either SomeException ()) of
-        Left exep -> print exep
-        Right _ -> return ()
-
-
-
-
-
+      mainWithConfig conf
 
 
 

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 870436858bd0fc2472d9849e4e58edf48872afc6b9738850caf1a02aef532bde
+-- hash: c0939fa324ce21346904abb41e8e5479d4b9e0bc0a84e65cfc4e6d97fd4d2f78
 
 name:           thirdServer
 version:        0.1.0.0
@@ -83,8 +83,6 @@ library
       Domain.Types.LogEntity.LogEntity
       Domain.Types.ParseRowEntity
       Lib
-  other-modules:
-      Paths_thirdServer
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
@@ -117,6 +115,9 @@ library
     , wai
     , wai-extra
     , warp
+  if false
+    other-modules:
+        Paths_thirdServer
   default-language: Haskell2010
 
 executable thirdServer-exe

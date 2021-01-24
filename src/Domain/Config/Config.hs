@@ -17,7 +17,7 @@ data Config =
     }
   deriving (Generic, Show)
 
-parseConf :: Text -> IO (Either ErrorServer Config)
+parseConf ::  Text -> IO (Either ErrorServer Config)
 parseConf = return . configVKwithPair . getPairFromFile
 
 charToWord8 :: Char -> Word8

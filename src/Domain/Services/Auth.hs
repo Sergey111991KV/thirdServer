@@ -1,6 +1,7 @@
 module Domain.Services.Auth where
 
 import ClassyPrelude (Either(..), Monad(return), ($))
+import Control.Monad.Except
 
 import Domain.Services.LogMonad (Log(..))
 import Domain.Types.ImportTypes
@@ -13,7 +14,7 @@ import Domain.Types.ImportTypes
   , errorText
   )
 
-class (Log m) =>
+class (Log m, MonadError ErrorServer m) =>
       Auth m
   where
   findUserId :: Login -> Password -> m (Either ErrorServer UserId)

@@ -2,18 +2,18 @@ module Adapter.HTTP.API.Remove where
 
 import Adapter.HTTP.ImportLibrary
  
-import qualified Prelude as P
-import Web.Scotty.Trans (ScottyError, ScottyT, delete, json, param, status)
+-- import qualified Prelude as P
+import Web.Scotty.Trans 
 
 routes ::
      (ScottyError e, MonadIO m, Auth m, Log m, CommonService m)
   => ScottyT e m ()
 routes = do
   Web.Scotty.Trans.delete "/api/delete/:entity/:ide" $ do
-    authResult <- getCookie "sId"
-    case authResult of
-      Nothing -> do
-        status status400
+    _ <- getCookie "sId"
+    -- case authResult of
+    --   Nothing -> do
+    status status400
       --   Web.Scotty.Trans.json ("not verification" :: Text)
       -- Just sess -> do
       --   entityText :: Text <- param "entity"
