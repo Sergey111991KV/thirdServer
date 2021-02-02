@@ -75,9 +75,6 @@ instance FilterService App where
   filterName = Pos.filterName
   filterContent = Pos.filterContent
 
--- instance MyHTTP.MonadHTTP App where
-
-
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()
 withState config action = do
@@ -96,20 +93,13 @@ mainWithConfig config =
           MyHTTP.serverErrorResponse e) pure eitherResponse
       respond response
 
-startServer :: Text -> IO ()
-startServer textFromFile = do
-  caseOfConf <- Config.parseConf textFromFile
-  case caseOfConf of
-    Left err -> do
-      print (errorText err ++ "take option for server")
-    Right conf -> do
-      mainWithConfig conf
-
-
-
 mainServer :: IO ()
 mainServer = do
-  configFromFile <- ClassyPrelude.try $ TIO.readFile "server.config"
-  case (configFromFile :: Either SomeException Text) of
-    Right config -> startServer config
-    Left exep -> print exep
+  configFromFile :: Either SomeException Text <- ClassyPrelude.try $ TIO.readFile "server.config" 
+  either print  (\conf -> do
+                caseOfConf <- Config.parseConf conf
+                either    (\err -> print (errorText err ++ "take option for server"))
+                          mainWithConfig 
+                          caseOfConf
+                                        ) configFromFile
+
