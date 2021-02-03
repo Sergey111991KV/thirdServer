@@ -37,40 +37,40 @@ instance Log App where
     logSt <- readTVarIO st2
     liftIO $ writeLogginHandler (Log.logStCong logSt) logAp txtLog
 
--- instance Auth App where
---   findUserId = Pos.findUserId
---   newSession = Pos.newSession
---   findUserIdBySession = Pos.findUserIdBySession
---   deleteOldSession = Pos.deleteOldSession
+instance Auth App where
+  findUserId = Pos.findUserId
+  newSession = Pos.newSession
+  findUserIdBySession = Pos.findUserIdBySession
+  deleteOldSession = Pos.deleteOldSession
 
--- -- instance Access App 
---   -- checkAuthorAccess = Pos.checkAuthorAccess
---   -- checkAdminAccess = Pos.checkAdminAccess
+instance Access App where
+  checkAuthorAccess = Pos.checkAuthorAccess
+  checkAdminAccess = Pos.checkAdminAccess
 
--- instance CommonService App where
---   create = Pos.create
---   editing = Pos.editing
---   getAll = Pos.getAll
---   getOne = Pos.getOne
---   remove = Pos.remove
---   getAllDraft = Pos.getAllDraft
---   removeDraft = Pos.removeDraft
---   -- getOneDraft = Pos.getOneDraft
---   publish = Pos.publish
+instance CommonService App where
+  create = Pos.create
+  editing = Pos.editing
+  getAll = Pos.getAll
+  getOne = Pos.getOne
+  remove = Pos.remove
+  getAllDraft = Pos.getAllDraft
+  removeDraft = Pos.removeDraft
+  getOneDraft = Pos.getOneDraft
+  publish = Pos.publish
   
 
--- instance SortedOfService App where
---   sortedNews = Pos.sortedNews
+instance SortedOfService App where
+  sortedNews = Pos.sortedNews
 
--- instance FilterService App where
---   filterOfData = Pos.filterOfData
---   filterAuthor = Pos.filterAuthor
---   filterCategory = Pos.filterCategory
---   filterTeg = Pos.filterTeg
---   filterOneOfTags = Pos.filterOneOfTags
---   filterAllOfTags = Pos.filterAllOfTags
---   filterName = Pos.filterName
---   filterContent = Pos.filterContent
+instance FilterService App where
+  filterOfData = Pos.filterOfData
+  filterAuthor = Pos.filterAuthor
+  filterCategory = Pos.filterCategory
+  filterTeg = Pos.filterTeg
+  filterOneOfTags = Pos.filterOneOfTags
+  filterAllOfTags = Pos.filterAllOfTags
+  filterName = Pos.filterName
+  filterContent = Pos.filterContent
 
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()

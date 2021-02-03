@@ -5,9 +5,9 @@ module Adapter.PostgreSQL.Services.Auth
   , deleteOldSession
   ) where
 
-import Adapter.PostgreSQL.Common
+import Adapter.PostgreSQL.Common ( withConn, PG )
 import ClassyPrelude
-
+    ( ($), Monad(return), IO, MonadIO(liftIO), (++) )
 import Database.PostgreSQL.Simple (execute, query)
 import Domain.Services.LogMonad (Log(writeLog))
 import Domain.Types.ImportTypes
@@ -32,7 +32,7 @@ findUserId login password = do
     [x] -> do
       writeLog Debug "findUserId success"
       return  x
-    [] -> do
+    _ -> do
       writeLog ErrorLog $ "Error findUserId " ++ errorText DataErrorPostgreSQL
       throwError DataErrorPostgreSQL
 

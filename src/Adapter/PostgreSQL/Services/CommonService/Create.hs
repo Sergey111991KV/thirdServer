@@ -1,11 +1,26 @@
 module Adapter.PostgreSQL.Services.CommonService.Create where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude (Either(..), Maybe(Just, Nothing), Monad(return), ($))
-
+import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) ) 
 import Domain.Types.ImportTypes
- 
-
+    ( LogLevel(ErrorLog, Debug),
+      errorText,
+      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
+      HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
+                     CommentEntReq, DraftEntReq, TagEntReq),
+      UserId(userIdRaw),
+      Category(parentCategory, nameCategory, idCategory),
+      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
+            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft),
+      Tag(nameTag),
+      Author(idLinkUser, description),
+      User(nameUser, lastName, userLogin, userPassword, avatar,
+           dataCreate, userIsAdmin, userIsAuthor),
+      Comment(textComments, dataCreateComments, newsIdComments,
+              usersIdComments),
+      AnEntity(..),
+      Entity(getData, getHelpRequest) )
+import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (execute)
 import Database.PostgreSQL.Simple.Types (Null(Null))
 import Domain.Services.LogMonad (Log(writeLog))
@@ -13,7 +28,7 @@ import Domain.Services.LogMonad (Log(writeLog))
 
 
 
-create :: PG r m => AnEntity -> m (Either ErrorServer ())
+create :: PG r m => AnEntity -> m  ()
 create (AnEntity ent) = do
   case getHelpRequest  ent of
     AuthorEntReq -> do
@@ -25,10 +40,10 @@ create (AnEntity ent) = do
       case result of
         1 -> do
           writeLog Debug "create author good!"
-          return $ Right ()
+          return ()
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     CategoryEntReq -> do
       let cat = (getData (AnEntity ent) :: Category)
       case parentCategory cat of
@@ -38,10 +53,10 @@ create (AnEntity ent) = do
           case result of
             1 -> do
               writeLog Debug "create category good!"
-              return $ Right ()
+              return ()
             _ -> do
               writeLog ErrorLog (errorText DataErrorPostgreSQL)
-              return $ Left DataErrorPostgreSQL
+              throwError DataErrorPostgreSQL
         Just pCat -> do
           let qNestedCat = "INSERT INTO category (name_category,parent_category) VALUES (?,?);"
           result <- withConn $ \conn -> execute conn qNestedCat (nameCategory cat , idCategory pCat)
@@ -51,7 +66,7 @@ create (AnEntity ent) = do
               create (AnEntity pCat)
             _ -> do
               writeLog ErrorLog (errorText DataErrorPostgreSQL)
-              return $ Left DataErrorPostgreSQL
+              throwError DataErrorPostgreSQL
     CommentEntReq -> do
       let comment = (getData (AnEntity ent) :: Comment)
       let q =
@@ -68,10 +83,10 @@ create (AnEntity ent) = do
       case result of
         1 -> do
           writeLog Debug "create comment good!"
-          return $ Right ()
+          return ()
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     DraftEntReq  -> do
       let draft = (getData (AnEntity ent) :: Draft)
       let q =
@@ -92,10 +107,10 @@ create (AnEntity ent) = do
       case result of
         1 -> do
           writeLog Debug "create draft good!"
-          return $ Right ()
+          return  ()
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     TagEntReq -> do
       let tag = (getData (AnEntity ent) :: Tag)
       let qTag = "INSERT INTO tag (name_tag) VALUES(?);"
@@ -103,10 +118,10 @@ create (AnEntity ent) = do
       case result of
         1 -> do
           writeLog Debug "create tag good!"
-          return $ Right ()
+          return  ()
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     UserEntReq -> do
       let user = (getData (AnEntity ent) :: User)
       let qUser =
@@ -127,10 +142,10 @@ create (AnEntity ent) = do
       case result of
         1 -> do
           writeLog Debug "create user good!"
-          return $ Right ()
+          return  ()
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     _ -> do
       writeLog ErrorLog (errorText DataErrorPostgreSQL)
-      return $ Left ErrorTakeEntityNotSupposed
+      throwError ErrorTakeEntityNotSupposed

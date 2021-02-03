@@ -2,23 +2,36 @@ module Adapter.PostgreSQL.Services.CommonService.GetOne where
 
 import Adapter.PostgreSQL.Common (PG, requestForPost, withConn)
 import ClassyPrelude
-  ( Either(..)
-  , IO
-  , Int
-  , Monad(return)
-  , ($)
-  , (++)
-  , head
-  , impureNonNull
-  , null
-  , print
-  )
+    ( ($),
+      Monad(return),
+      Int,
+      IO,
+      (++),
+      print,
+      null,
+      head,
+      impureNonNull )
 import Database.PostgreSQL.Simple (query)
 import Domain.Services.LogMonad (Log(writeLog))
 import Domain.Types.ImportTypes
- 
+    ( LogLevel(ErrorLog, Debug),
+      errorText,
+      ErrorServer(ErrorTakeEntityNotSupposed, ErrorConvert,
+                  DataErrorPostgreSQL),
+      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
+                     NewsEntReq, TagEntReq, CommentEntReq),
+      convertCategoryRawArray,
+      CategoryRaw,
+      Tag,
+      Author,
+      User,
+      Comment,
+      convertNewsRaw,
+      NewsRaw,
+      AnEntity(..) )
+import Control.Monad.Except ( MonadError(throwError) ) 
 
-getOne :: PG r m => HelpForRequest -> Int -> m (Either ErrorServer AnEntity)
+getOne :: PG r m => HelpForRequest -> Int -> m AnEntity
 getOne helpR idE = do
   case helpR of
     AuthorEntReq -> do
@@ -27,20 +40,20 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLog Debug "getOne Author success!"
-          return $ Right $ AnEntity x
+          return $ AnEntity x
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     UserEntReq -> do
       let qUser = "SELECT * from usernews where id_user=(?)"
       i <- withConn $ \conn -> query conn qUser [idE] :: IO [User]
       case i of
         [x] -> do
           writeLog Debug "getOne User success!"
-          return $ Right $ AnEntity x
+          return $ AnEntity x
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     NewsEntReq -> do
       let qNews = requestForPost ++ "where endNews.id_news = (?);"
       i <- withConn $ \conn -> query conn qNews [idE] :: IO [NewsRaw]
@@ -48,30 +61,30 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLog Debug "getOne News success!"
-          return $ Right $ AnEntity $ convertNewsRaw x
+          return $ AnEntity $ convertNewsRaw x
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     TagEntReq -> do
       let qTag = "SELECT * from tag where id_tag=(?)"
       i <- withConn $ \conn -> query conn qTag [idE] :: IO [Tag]
       case i of
         [x] -> do
           writeLog Debug "getOne Tag success!"
-          return $ Right $ AnEntity x
+          return $ AnEntity x
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     CommentEntReq -> do
       let qComment = "SELECT * from comment where id_comment=(?)"
       i <- withConn $ \conn -> query conn qComment [idE] :: IO [Comment]
       case i of
         [x] -> do
           writeLog Debug "getOne Comment success!"
-          return $ Right $ AnEntity x
+          return $ AnEntity x
         _ -> do
           writeLog ErrorLog (errorText DataErrorPostgreSQL)
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
     CategoryEntReq -> do
       let qCategory =
             "with recursive temp1 (id_category, parent_category, name_category) as ( \
@@ -85,10 +98,10 @@ getOne helpR idE = do
       if null i
         then do
           writeLog ErrorLog (errorText ErrorConvert ++ " finalCategoryConvert")
-          return $ Left DataErrorPostgreSQL
+          throwError DataErrorPostgreSQL
         else do
           let cat = head $ impureNonNull $ convertCategoryRawArray i
-          return $ Right $ AnEntity cat
+          return $ AnEntity cat
     _ -> do
       writeLog ErrorLog (errorText ErrorTakeEntityNotSupposed)
-      return $ Left ErrorTakeEntityNotSupposed
+      throwError ErrorTakeEntityNotSupposed

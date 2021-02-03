@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bb1abf6992aaa0c9cda7d8de7aa4e6b1c411457d145ad1ae7fefc7b374bd0880
+-- hash: 77c82e7bcf009d12f30818fbd1cffb776a832e5389a33f485c756ce52cf120e3
 
 name:           thirdServer
 version:        0.1.0.0
@@ -27,18 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      Adapter.HTTP.API.Auth
-      Adapter.HTTP.API.Create
-      Adapter.HTTP.API.Editing
-      Adapter.HTTP.API.FilterService
-      Adapter.HTTP.API.GetAll
-      Adapter.HTTP.API.GetOne
-      Adapter.HTTP.API.Publish
-      Adapter.HTTP.API.Remove
-      Adapter.HTTP.API.SortedOfService
-      Adapter.HTTP.Common
-      Adapter.HTTP.ImportLibrary
-      Adapter.HTTP.Main
       Adapter.HTTPWAI.ImportHTTP
       Adapter.HTTPWAI.Main
       Adapter.HTTPWAI.Route

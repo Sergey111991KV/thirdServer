@@ -1,10 +1,17 @@
 module Adapter.HTTPWAI.Route where
 
 import ClassyPrelude
-
-
+    ( ($),
+      Eq,
+      Monad(return),
+      Show(show),
+      Applicative(pure),
+      error,
+      Text,
+      id,
+      (.),
+      either )
 import qualified Network.HTTP.Types as HTTP
-
 import qualified Network.Wai as HTTP
 
 
@@ -22,7 +29,7 @@ data API
   | UNKNOWN
   deriving (Show, Eq)
 
-route :: Monad m
+route :: (Monad m)
   => HTTP.Request -> m HTTP.Response
 route req = do
   case methodAndPath req of

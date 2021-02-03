@@ -5,9 +5,9 @@ import ClassyPrelude
 import Database.PostgreSQL.Simple (query)
 import Domain.Services.LogMonad (Log(writeLog))
 import Domain.Types.ImportTypes
-  
+import Control.Monad.Except ( MonadError(throwError) ) 
 
-getAllDraft :: PG r m => UserId -> m (Either ErrorServer [AnEntity])
+getAllDraft :: PG r m => UserId -> m [AnEntity]
 getAllDraft uId = do
   let q =
         "SELECT  draft.id_draft, \
@@ -25,7 +25,7 @@ getAllDraft uId = do
   if null result
     then do
       writeLog ErrorLog $ errorText DataErrorPostgreSQL ++ " not draft "
-      return $ Left DataErrorPostgreSQL
+      throwError DataErrorPostgreSQL
     else do
       writeLog Debug "Get all draft for user"
-      return $ Right (fmap AnEntity result)
+      return (fmap AnEntity result)

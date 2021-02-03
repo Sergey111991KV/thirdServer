@@ -19,7 +19,7 @@ class (Access m) =>
   create :: AnEntity -> m  ()
   editing :: AnEntity -> m  ()
   remove :: HelpForRequest -> Int -> m  ()
-  removeDraft :: HelpForRequest -> Int  -> UserId ->  m  ()
+  removeDraft :: Int -> UserId ->  m  ()
   getAll :: HelpForRequest -> m  [AnEntity]
   getAllDraft :: UserId -> m [AnEntity]
   getOne :: HelpForRequest -> Int -> m  AnEntity
@@ -62,7 +62,7 @@ removeCommon sess helpReq idEnt = do
     TagEntReq -> checkAdminAccess sess >> remove  helpReq idEnt 
     CommentEntReq -> remove  helpReq idEnt 
     CategoryEntReq -> checkAdminAccess sess >> remove  helpReq idEnt 
-    DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  removeDraft  helpReq idEnt 
+    DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  removeDraft idEnt 
     _ ->  throwError NotTakeEntity
 
 getOneCommon :: CommonService m =>  SessionId -> HelpForRequest -> Int -> m  AnEntity
