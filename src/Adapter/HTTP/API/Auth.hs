@@ -20,20 +20,20 @@ import Adapter.HTTP.ImportLibrary
   )
 import Web.Scotty.Trans (ScottyError, ScottyT, get, param, status)
 
-routes :: (ScottyError e, MonadIO m, Auth m, Log m) => ScottyT e m ()
-routes = do
-  get "/api/auth/:loggin/:password" $ do
-    loggin :: Text <- param "loggin"
-    password :: Text <- param "password"
-    authResult <- lift $ sessionByAuth (Login loggin) (Password password)
-    case authResult of
-      Left err -> do
-        lift $ writeLog ErrorLog (errorText err)
-        status status400
-      Right sess -> do
-        setSessionIdInCookie sess
-        lift $ writeLog Debug "Good auth"
-        status status200
-  get "/api/auth/exit" $ do
-    setDefaultCookie
-    status status200
+-- routes :: (ScottyError e, MonadIO m, Auth m, Log m) => ScottyT e m ()
+-- routes = do
+--   get "/api/auth/:loggin/:password" $ do
+--     loggin :: Text <- param "loggin"
+--     password :: Text <- param "password"
+--     authResult <- lift $ sessionByAuth (Login loggin) (Password password)
+--     case authResult of
+--       Left err -> do
+--         lift $ writeLog ErrorLog (errorText err)
+--         status status400
+--       Right sess -> do
+--         setSessionIdInCookie sess
+--         lift $ writeLog Debug "Good auth"
+--         status status200
+--   get "/api/auth/exit" $ do
+--     setDefaultCookie
+--     status status200

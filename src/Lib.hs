@@ -9,13 +9,7 @@ import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config
 import Domain.Services.ImportServices
-  ( Auth(..)
-  , CommonService(..)
-  , FilterService(..)
-  , Log(..)
-  , SortedOfService(..)
-  , writeLogginHandler
-  )
+  
 
 import Domain.Types.ImportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
@@ -43,37 +37,40 @@ instance Log App where
     logSt <- readTVarIO st2
     liftIO $ writeLogginHandler (Log.logStCong logSt) logAp txtLog
 
-instance Auth App where
-  findUserId = Pos.findUserId
-  newSession = Pos.newSession
-  findUserIdBySession = Pos.findUserIdBySession
-  deleteOldSession = Pos.deleteOldSession
+-- instance Auth App where
+--   findUserId = Pos.findUserId
+--   newSession = Pos.newSession
+--   findUserIdBySession = Pos.findUserIdBySession
+--   deleteOldSession = Pos.deleteOldSession
 
-instance CommonService App where
-  create = Pos.create
-  editing = Pos.editing
-  getAll = Pos.getAll
-  getOne = Pos.getOne
-  remove = Pos.remove
-  getAllDraft = Pos.getAllDraft
-  removeDraft = Pos.removeDraft
-  getOneDraft = Pos.getOneDraft
-  publish = Pos.publish
-  checkAuthorAccess = Pos.checkAuthorAccess
-  checkAdminAccess = Pos.checkAdminAccess
+-- -- instance Access App 
+--   -- checkAuthorAccess = Pos.checkAuthorAccess
+--   -- checkAdminAccess = Pos.checkAdminAccess
 
-instance SortedOfService App where
-  sortedNews = Pos.sortedNews
+-- instance CommonService App where
+--   create = Pos.create
+--   editing = Pos.editing
+--   getAll = Pos.getAll
+--   getOne = Pos.getOne
+--   remove = Pos.remove
+--   getAllDraft = Pos.getAllDraft
+--   removeDraft = Pos.removeDraft
+--   -- getOneDraft = Pos.getOneDraft
+--   publish = Pos.publish
+  
 
-instance FilterService App where
-  filterOfData = Pos.filterOfData
-  filterAuthor = Pos.filterAuthor
-  filterCategory = Pos.filterCategory
-  filterTeg = Pos.filterTeg
-  filterOneOfTags = Pos.filterOneOfTags
-  filterAllOfTags = Pos.filterAllOfTags
-  filterName = Pos.filterName
-  filterContent = Pos.filterContent
+-- instance SortedOfService App where
+--   sortedNews = Pos.sortedNews
+
+-- instance FilterService App where
+--   filterOfData = Pos.filterOfData
+--   filterAuthor = Pos.filterAuthor
+--   filterCategory = Pos.filterCategory
+--   filterTeg = Pos.filterTeg
+--   filterOneOfTags = Pos.filterOneOfTags
+--   filterAllOfTags = Pos.filterAllOfTags
+--   filterName = Pos.filterName
+--   filterContent = Pos.filterContent
 
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()

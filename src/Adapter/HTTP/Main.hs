@@ -60,12 +60,12 @@ routes ::
      )
   => ScottyT LText m ()
 routes = do
-  AuthReppo.routes
+  -- AuthReppo.routes
   Create.routes
   Edit.routes
   GetAll.routes
   GetOne.routes
-  Publish.routes
+  -- Publish.routes
   Remove.routes
   FiltServ.routes
   SortServ.routes

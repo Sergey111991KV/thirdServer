@@ -1,17 +1,14 @@
 module Domain.Services.FilterService where
 
-import ClassyPrelude ( Int, Either, String ) 
-import Domain.Services.Auth (Auth)
-import Domain.Types.ImportTypes (ErrorServer, News)
+import ClassyPrelude ( Int, String ) 
+import Domain.Types.ImportTypes ( News ) 
 
-class (Auth m) =>
-      FilterService m
-  where
-  filterOfData :: String -> String -> m (Either ErrorServer [News])
-  filterAuthor :: Int -> m (Either ErrorServer [News])
-  filterCategory :: Int -> m (Either ErrorServer [News])
-  filterTeg :: Int -> m (Either ErrorServer [News])
-  filterOneOfTags :: String -> m (Either ErrorServer [News])
-  filterAllOfTags :: String -> m (Either ErrorServer [News])
-  filterName :: String -> m (Either ErrorServer [News])
-  filterContent :: String -> m (Either ErrorServer [News])
+class FilterService m where
+  filterOfData :: String -> String -> m  [News]
+  filterAuthor :: Int -> m  [News]
+  filterCategory :: Int -> m  [News]
+  filterTeg :: Int -> m  [News]
+  filterOneOfTags :: String -> m  [News]
+  filterAllOfTags :: String -> m  [News]
+  filterName :: String -> m  [News]
+  filterContent :: String -> m [News]

@@ -2,51 +2,11 @@ module Adapter.HTTPWAI.Route where
 
 import ClassyPrelude
 
-import qualified Data.Aeson as J
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Lazy as LBS
-import qualified Data.List as L
-import qualified Data.Text as T
-import Network.HTTP.Types (statusCode)
+
 import qualified Network.HTTP.Types as HTTP
-import Network.Wai
-  ( Middleware,
-    rawPathInfo,
-    rawQueryString,
-    remoteHost,
-    requestMethod,
-    responseStatus,
-  )
+
 import qualified Network.Wai as HTTP
-import Network.Wai.Handler.Warp (run)
-import qualified Network.Wai.Internal as HTTP
--- import News.AppHandle
--- import News.Config
--- import News.Endpoints.User
--- import News.Env
--- import Control.Monad.IO.Class (MonadIO, liftIO)
--- import qualified Data.Aeson as J
--- import qualified Data.ByteString.Char8 as BS
--- import qualified Data.ByteString.Lazy as LBS
--- import qualified Data.List as L
--- import qualified Data.Text as T
--- import Network.HTTP.Types (statusCode)
--- import qualified Network.HTTP.Types as HTTP
--- import Network.Wai
---   ( Middleware,
---     rawPathInfo,
---     rawQueryString,
---     remoteHost,
---     requestMethod,
---     responseStatus,
---   )
--- import qualified Network.Wai as HTTP
--- import Network.Wai.Handler.Warp (run)
--- import qualified Network.Wai.Internal as HTTP
--- import News.AppHandle
--- import News.Config
--- import News.Endpoints.User
--- import News.Env
+
 
 import Adapter.HTTPWAI.Main
 
@@ -66,8 +26,9 @@ route :: Monad m
   => HTTP.Request -> m HTTP.Response
 route req = do
   case methodAndPath req of
-    POST  ["api"] -> do
-        return $  HTTP.responseLBS HTTP.status200 [] "Success"
+    GET  [""] -> do
+        
+        return $  HTTP.responseLBS HTTP.status400  [] "Success"
     --   reqBody <- liftIO $ HTTP.getRequestBodyChunk req
     --   createUserRequest <-
     --     either fail pure (J.eitherDecode $ LBS.fromStrict reqBody)
