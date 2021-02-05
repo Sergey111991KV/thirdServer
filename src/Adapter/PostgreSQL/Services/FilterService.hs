@@ -19,7 +19,8 @@ import ClassyPrelude
       MonadIO(liftIO),
       (++),
       map,
-      pack )
+      pack,
+      unpack )
 import Adapter.PostgreSQL.ImportLibrary ( query, Query ) 
 import Domain.Services.LogMonad (Log(writeLog))
 import Domain.Types.ImportTypes
@@ -32,7 +33,7 @@ import Domain.Types.ImportTypes
 import Control.Monad.Except ( MonadError(throwError) )
 import qualified Prelude as   P
 
-filterOfData :: PG r m => String -> String -> m  [News]
+filterOfData :: PG r m => Text -> Text -> m  [News]
 filterOfData condition time = do
   let q = requestForPost ++ conversCond condition
   result <- withConn $ \conn -> query conn q [time] :: IO [NewsRaw]
@@ -44,7 +45,7 @@ filterOfData condition time = do
       writeLog Debug "filterOfData success "
       return $  map convertNewsRaw news
 
-conversCond :: String -> Query
+conversCond :: Text -> Query
 conversCond txtCond 
                 | txtCond ==  "less" =  " where data_creat_news <= (?);"
                 | txtCond == "more" = " where data_creat_news >= (?);"
@@ -88,7 +89,7 @@ filterTag idT = do
       writeLog Debug "filterTeg success "
       return $ map convertNewsRaw news
 
-filterOneOfTags :: PG r m => String -> m [News]
+filterOneOfTags :: PG r m => Text -> m [News]
 filterOneOfTags idTarray = do
   let reqArr = "{" ++ idTarray ++ "}"
   let q = requestForPostFilterTag ++ " where  tags_news.tags_id = any (?) limit 20;"
@@ -103,9 +104,9 @@ filterOneOfTags idTarray = do
       writeLog Debug "filterOneOfTags success "
       return $ map convertNewsRaw news
 
-filterAllOfTags :: PG r m => String -> m  [News]
+filterAllOfTags :: PG r m => Text -> m  [News]
 filterAllOfTags idTarray = do
-  let reqArr = createAllTagRequest idTarray
+  let reqArr = createAllTagRequest $ unpack idTarray
   let q = requestForPostAllFilterTag 
   result <-
     withConn $ \conn ->
@@ -125,7 +126,7 @@ createAllTagRequest  = createAllTagRequest' "%"
     createAllTagRequest' arr (',':xs) = createAllTagRequest' arr xs
     createAllTagRequest' arr (x:xs) = createAllTagRequest' (arr ++ [x] ++ "%") xs
  
-filterName :: PG r m => String -> m  [News]
+filterName :: PG r m => Text -> m  [News]
 filterName txtName = do
   let insertText = "%" ++ txtName ++ "%"
   let q = requestForPost ++ " where endNews.short_name_news LIKE (?) limit 20;"
@@ -138,7 +139,7 @@ filterName txtName = do
       writeLog Debug "filterName success "
       return $ map convertNewsRaw news
 
-filterContent :: PG r m => String -> m [News]
+filterContent :: PG r m => Text -> m [News]
 filterContent txtContent = do
   let insertText = "%" ++ txtContent ++ "%"
   let q = requestForPost ++ " where endNews.text_news LIKE (?) limit 20;"
