@@ -10,7 +10,7 @@ import Domain.Services.CommonService as Y
       editingCommon,
       removeCommon,
       getOneCommon,
-      geyArrayCommon )
+      getArrayCommon )
 import Domain.Services.FilterService as Y (FilterService(..))
 import Domain.Services.LogMonad as Y
   ( Log(..)

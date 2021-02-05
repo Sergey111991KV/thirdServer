@@ -1,14 +1,14 @@
 module Domain.Services.FilterService where
 
-import ClassyPrelude ( Int, String ) 
+import ClassyPrelude ( Int, Text ) 
 import Domain.Types.ImportTypes ( News ) 
 
 class FilterService m where
-  filterOfData :: String -> String -> m  [News]
+  filterOfData :: Text -> Text -> m  [News]
   filterAuthor :: Int -> m  [News]
   filterCategory :: Int -> m  [News]
-  filterTeg :: Int -> m  [News]
-  filterOneOfTags :: String -> m  [News]
-  filterAllOfTags :: String -> m  [News]
-  filterName :: String -> m  [News]
-  filterContent :: String -> m [News]
+  filterTag :: Int -> m  [News]
+  filterOneOfTags :: Text -> m  [News]
+  filterAllOfTags :: Text -> m  [News]
+  filterName :: Text -> m  [News]
+  filterContent :: Text -> m [News]

@@ -76,8 +76,8 @@ getOneCommon sess helpReq idE = do
     DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  getOneDraft idE 
     _ -> throwError NotTakeEntity
 
-geyArrayCommon :: CommonService m => SessionId -> HelpForRequest -> m [AnEntity]
-geyArrayCommon sess helpReq  = do
+getArrayCommon :: CommonService m => SessionId -> HelpForRequest -> m [AnEntity]
+getArrayCommon sess helpReq  = do
   case helpReq of
     AuthorEntReq -> checkAdminAccess sess >> getAll helpReq 
     UserEntReq ->  checkAdminAccess sess >> getAll  helpReq  

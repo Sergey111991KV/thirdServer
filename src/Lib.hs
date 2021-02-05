@@ -9,7 +9,6 @@ import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config
 import Domain.Services.ImportServices
-import  Adapter.HTTPWAI.Cookie
 
 import Domain.Types.ImportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
@@ -66,7 +65,7 @@ instance FilterService App where
   filterOfData = Pos.filterOfData
   filterAuthor = Pos.filterAuthor
   filterCategory = Pos.filterCategory
-  filterTeg = Pos.filterTeg
+  filterTag = Pos.filterTag
   filterOneOfTags = Pos.filterOneOfTags
   filterAllOfTags = Pos.filterAllOfTags
   filterName = Pos.filterName

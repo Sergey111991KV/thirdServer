@@ -75,8 +75,8 @@ filterCategory catId = do
       writeLog Debug "filterCategory success "
       return $ map convertNewsRaw news
 
-filterTeg :: PG r m => Int -> m [News]
-filterTeg idT = do
+filterTag :: PG r m => Int -> m [News]
+filterTag idT = do
   let q = requestForPostFilterTag ++ " where tags_news.tags_id = (?) limit 20;"
   liftIO $ P.print  idT
   result <- withConn $ \conn -> query conn q [idT ] :: IO [NewsRaw]
