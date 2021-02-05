@@ -32,6 +32,13 @@ packages:
       sha256: 1098f9aaf18a8ad0ee10019d929920c96be87cded84cbb90d78ab0e7a4264ea4
   original:
     hackage: attoparsec-0.13.2.4
+- completed:
+    hackage: basic-prelude-0.7.0@sha256:efe61aec70e6f523435d46fcd18587f28febbb1bc7d20d20e5aa249d93ed9e96,1251
+    pantry-tree:
+      size: 377
+      sha256: c32802b5ecbd49d0c73f3302ada16aeb33e55d9be49e38c84fb4bd700aae9fb8
+  original:
+    hackage: basic-prelude-0.7.0
 snapshots:
 - completed:
     size: 532380

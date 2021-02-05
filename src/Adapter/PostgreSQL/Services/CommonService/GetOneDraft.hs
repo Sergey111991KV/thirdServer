@@ -1,8 +1,13 @@
 module Adapter.PostgreSQL.Services.CommonService.GetOneDraft where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude (Either(..), IO, Int, Monad(return), ($))
+import ClassyPrelude ( ($), Monad(return), Int, IO ) 
 import Domain.Types.ImportTypes
+    ( LogLevel(ErrorLog, Debug),
+      ErrorServer(DataErrorPostgreSQL),
+      UserId,
+      Draft,
+      AnEntity(..) )
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad (Log(writeLog))
 import Database.PostgreSQL.Simple (query)

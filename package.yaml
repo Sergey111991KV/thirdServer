@@ -50,6 +50,7 @@ dependencies:
 - parsec
 - attoparsec
 - scotty
+- basic-prelude
 
 
 library:

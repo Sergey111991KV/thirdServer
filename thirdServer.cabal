@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 77c82e7bcf009d12f30818fbd1cffb776a832e5389a33f485c756ce52cf120e3
+-- hash: 7cb698df33c31f7ba6224835d31241d2225935492c165a039a1b1a019b30e6c5
 
 name:           thirdServer
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Adapter.HTTPWAI.Cookie
       Adapter.HTTPWAI.ImportHTTP
       Adapter.HTTPWAI.Main
       Adapter.HTTPWAI.Route
@@ -78,6 +79,7 @@ library
       aeson
     , attoparsec
     , base >=4.7 && <5
+    , basic-prelude
     , blaze-builder
     , bytestring
     , classy-prelude
@@ -120,6 +122,7 @@ executable thirdServer-exe
       aeson
     , attoparsec
     , base >=4.7 && <5
+    , basic-prelude
     , blaze-builder
     , bytestring
     , classy-prelude
@@ -165,6 +168,7 @@ test-suite thirdServer-test
       aeson
     , attoparsec
     , base >=4.7 && <5
+    , basic-prelude
     , blaze-builder
     , bytestring
     , classy-prelude

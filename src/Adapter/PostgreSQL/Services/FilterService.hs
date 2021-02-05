@@ -14,7 +14,6 @@ import ClassyPrelude
       Show(show),
       Int,
       IO,
-      Either(..),
       String,
       Text,
       MonadIO(liftIO),

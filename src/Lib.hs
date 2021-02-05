@@ -9,7 +9,7 @@ import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config
 import Domain.Services.ImportServices
-  
+import  Adapter.HTTPWAI.Cookie
 
 import Domain.Types.ImportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
@@ -84,7 +84,7 @@ withState config action = do
 mainWithConfig :: Config.Config -> IO ()
 mainWithConfig config =
   withState config $ \port state -> do
-    W.run port $ \request respond -> do
+    W.run port $  \request respond -> do
       eitherResponse <- runApp state $ MyHTTP.route request
       response <- either (\e -> do
           MyHTTP.serverErrorResponse e) pure eitherResponse

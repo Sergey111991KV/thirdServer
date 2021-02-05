@@ -20,6 +20,7 @@ import Domain.Types.ImportTypes
               usersIdComments),
       AnEntity(..),
       Entity(getData, getHelpRequest) )
+
 import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (execute)
 import Database.PostgreSQL.Simple.Types (Null(Null))

@@ -3,12 +3,10 @@ module Adapter.PostgreSQL.Services.CommonService.RemoveDraft where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, (++) ) 
 import Domain.Types.ImportTypes
-  ( ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed)
-  , HelpForRequest(CommentEntReq, DraftEntReq)
-  , LogLevel(Debug, ErrorLog)
-  , UserId
-  , errorText
-  )
+    ( LogLevel(ErrorLog, Debug),
+      errorText,
+      ErrorServer(DataErrorPostgreSQL),
+      UserId )
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad (Log(writeLog))
 

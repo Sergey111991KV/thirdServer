@@ -1,21 +1,21 @@
 module Adapter.HTTPWAI.Route where
 
+
 import ClassyPrelude
-    ( ($),
-      Eq,
-      Monad(return),
-      Show(show),
-      Applicative(pure),
-      error,
-      Text,
-      id,
-      (.),
-      either )
+-- import BasicPrelude
+ 
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
-
-
+import Domain.Types.ImportTypes
+import Adapter.HTTPWAI.Cookie
 import Adapter.HTTPWAI.Main
+import  Network.Wai
+import Domain.Services.ImportServices
+import Data.Aeson
+import Network.Wai
+import Network.Wai.Handler.Warp
+import Network.HTTP.Types
+import BasicPrelude
 
 type Router = [Text] 
 
@@ -29,44 +29,54 @@ data API
   | UNKNOWN
   deriving (Show, Eq)
 
-route :: (Monad m)
+
+newtype Body = Body Int
+
+instance ToJSON Body where
+  toJSON (Body i) = object ["hello" .= i]
+instance FromJSON Body where
+  parseJSON = withObject "Body" $ \o -> Body <$> o .: "hello"
+
+route :: (Monad m, CommonService m)
   => HTTP.Request -> m HTTP.Response
 route req = do
   case methodAndPath req of
-    GET  [""] -> do
+    Adapter.HTTPWAI.Route.GET  ["user"] -> do
         
-        return $  HTTP.responseLBS HTTP.status400  [] "Success"
-    --   reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-    --   createUserRequest <-
-    --     either fail pure (J.eitherDecode $ LBS.fromStrict reqBody)
-    --   res <- createUserEndpoint createUserRequest
-    --   pure $ HTTP.responseLBS HTTP.status200 [] "Success"
-    GET  pass ->
+        let sess = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
+        -- get cookie  
+
+        news <- getOneCommon sess UserEntReq 1
+        return $ responseBuilder status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  (getData  news :: User )
+       
+    Adapter.HTTPWAI.Route.GET  ["user", idE] -> do
+       
+        let sess = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
+        -- get cookie - 
+
+        let unpackIdEntity = read  idE :: Int 
+        news <- getOneCommon sess UserEntReq unpackIdEntity
+        return $ responseBuilder status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  (getData  news :: User )
+    Adapter.HTTPWAI.Route.GET  pass ->
       pure $ HTTP.responseLBS HTTP.status404 [] ""
     -- PUT (matches ["api", "user", ":pk"] -> Just [userId]) ->
     --   pure $ HTTP.responseLBS HTTP.status404 [] ""
     _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
 
+
+
+
+
+
+
 methodAndPath :: HTTP.Request -> API
 methodAndPath req =
   case getMethod of
-    HTTP.POST -> POST $ HTTP.pathInfo req
-    HTTP.GET -> GET $ HTTP.pathInfo req
-    HTTP.PUT -> PUT $ HTTP.pathInfo req
-    HTTP.DELETE -> DELETE $ HTTP.pathInfo req
+    HTTP.POST -> Adapter.HTTPWAI.Route.POST $ HTTP.pathInfo req
+    HTTP.GET -> Adapter.HTTPWAI.Route.GET $ HTTP.pathInfo req
+    HTTP.PUT -> Adapter.HTTPWAI.Route.PUT $ HTTP.pathInfo req
+    HTTP.DELETE -> Adapter.HTTPWAI.Route.DELETE $ HTTP.pathInfo req
     _ -> UNKNOWN
   where
     getMethod =
       either (error . show) id $ HTTP.parseMethod (HTTP.requestMethod req)
-
--- -- TODO refactor with fold
--- matches :: Path -> Path -> Maybe [Int]
--- matches path reqPath = checkRoute (T.unpack <$> path) (T.unpack <$> reqPath) []
---   where
---     checkRoute (x : xs) (y : ys) pks
---       | x == y = checkRoute xs ys pks
---       | x == ":pk" = checkRoute xs ys (read y : pks)
---       | otherwise = Nothing
---     checkRoute x y pks
---       | x == y = Just pks
---       | otherwise = Nothing

@@ -1,9 +1,25 @@
 module Adapter.PostgreSQL.Services.CommonService.Editing where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude (Either(..), Maybe(Just, Nothing), Monad(return), ($))
-
+import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
 import Domain.Types.ImportTypes
+    ( LogLevel(ErrorLog, Debug),
+      errorText,
+      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
+      HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
+                     CommentEntReq, DraftEntReq, TagEntReq),
+      UserId(userIdRaw),
+      Category(parentCategory, nameCategory, idCategory),
+      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
+            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft, idDraft),
+      Tag(nameTag, idTag),
+      Author(idLinkUser, description, idAuthor),
+      User(nameUser, lastName, userLogin, userPassword, avatar,
+           dataCreate, userIsAdmin, userIsAuthor, idUser),
+      Comment(textComments, dataCreateComments, newsIdComments,
+              usersIdComments),
+      AnEntity(..),
+      Entity(getData, getHelpRequest) )
 import Control.Monad.Except ( MonadError(throwError) )
 
 import Database.PostgreSQL.Simple (execute)
