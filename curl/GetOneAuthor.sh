@@ -2,4 +2,4 @@
 
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/api/getOne/author/1
+curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/author/1

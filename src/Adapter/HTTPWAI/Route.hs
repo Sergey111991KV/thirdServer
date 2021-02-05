@@ -14,7 +14,6 @@ import Domain.Services.ImportServices
 import Data.Aeson
 import Network.Wai
 import Network.Wai.Handler.Warp
-import Network.HTTP.Types
 import BasicPrelude
 
 type Router = [Text] 
@@ -37,33 +36,63 @@ instance ToJSON Body where
 instance FromJSON Body where
   parseJSON = withObject "Body" $ \o -> Body <$> o .: "hello"
 
-route :: (Monad m, CommonService m)
+
+
+successResponse :: forall a. ToJSON a  => a  -> Response
+successResponse  b = responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  b
+
+route :: (Monad m, CommonService m, MonadIO m)
   => HTTP.Request -> m HTTP.Response
 route req = do
-  case methodAndPath req of
-    Adapter.HTTPWAI.Route.GET  ["user"] -> do
-        
-        let sess = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
-        -- get cookie  
-
-        news <- getOneCommon sess UserEntReq 1
-        return $ responseBuilder status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  (getData  news :: User )
-       
-    Adapter.HTTPWAI.Route.GET  ["user", idE] -> do
+  case methodAndPath req of   
+    GET  ["user", idE] -> do
        
         let sess = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
-        -- get cookie - 
 
         let unpackIdEntity = read  idE :: Int 
         news <- getOneCommon sess UserEntReq unpackIdEntity
-        return $ responseBuilder status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  (getData  news :: User )
-    Adapter.HTTPWAI.Route.GET  pass ->
-      pure $ HTTP.responseLBS HTTP.status404 [] ""
-    -- PUT (matches ["api", "user", ":pk"] -> Just [userId]) ->
-    --   pure $ HTTP.responseLBS HTTP.status404 [] ""
+        return $ successResponse  (getData  news :: User )
+    GET  ["user", idE] -> do
+       
+        let sess = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
+
+        let unpackIdEntity = read  idE :: Int 
+        news <- getOneCommon sess UserEntReq unpackIdEntity
+        return $ successResponse  (getData  news :: User )
+        
+    PUT pass -> do
+      reqBody <- liftIO $ HTTP.getRequestBodyChunk req
+      
+      return $ responseBuilder HTTP.status200 [("Content-Type", "application/json")] ""
+
+
     _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
 
-
+-- news/filterAllOfTags/[int]
+-- /news/filterAuthor/2
+-- /news/filterCategory/1
+-- /news/filterContent/descrip
+-- /news/filterName/news
+-- /news/filterOfData/less/2011-08-01
+-- /news/filterOneOfTags/1,2
+-- /news/filterTeg/1
+-- authors
+-- author
+-- categorys
+-- category
+-- drafts
+-- draft
+-- news_s
+-- news
+-- tags
+-- tag
+-- users
+-- user
+-- publish -- GET
+-- news/sortedNews/author
+-- news/sortedNews/category
+-- news/sortedNews/date
+-- news/sortedNews/photo
 
 
 
