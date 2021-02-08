@@ -7,11 +7,8 @@ import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
 import Domain.Types.ImportTypes
 import Adapter.HTTPWAI.HelpFunction
-import  Network.Wai
 import Domain.Services.ImportServices
 import Data.Aeson
-import Network.Wai
-import Network.Wai.Handler.Warp
 import qualified BasicPrelude as BP
 
 type Router = [Text] 
@@ -28,12 +25,12 @@ data API
 route :: (Monad m, CommonService m, MonadIO m, SortedOfService m, FilterService m)
   => HTTP.Request -> m HTTP.Response
 route req = do
-  let sess = getCookie req
+  sess <- getCookie req
   case methodAndPath req of   
 
     GET  ["publish", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        user <- publishAction sess unpackIdEntity
+        publishAction sess unpackIdEntity
         return $ successResponse   ("publish news" :: Text)
 
     GET  ["news", "sortedNews", condition ] -> do
@@ -94,8 +91,8 @@ route req = do
         comment <- getOneCommon sess CommentEntReq unpackIdEntity
         return $ successResponse  (getData  comment :: Comment )
     GET  ["comments"] -> do
-        comments <- getArrayCommon sess CommentEntReq
-        return $ successResponse  (map getData  comments :: [Comment] )
+        comments' <- getArrayCommon sess CommentEntReq
+        return $ successResponse  (map getData  comments' :: [Comment] )
     GET  ["draft", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
         draft <- getOneCommon sess DraftEntReq unpackIdEntity
@@ -186,37 +183,30 @@ route req = do
         return $ successResponse  ("delete create user" :: Text)
     DELETE  ["author", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        author <- removeCommon sess AuthorEntReq unpackIdEntity
+        removeCommon sess AuthorEntReq unpackIdEntity
         return $ successResponse   ("delete create author" :: Text)
     DELETE  ["category", idE] -> do   
         let unpackIdEntity = BP.read  idE :: Int 
-        category <- removeCommon sess CategoryEntReq unpackIdEntity
+        removeCommon sess CategoryEntReq unpackIdEntity
         return $ successResponse  ("delete create category" :: Text)
     DELETE  ["comment", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        comment <- removeCommon sess CommentEntReq unpackIdEntity
+        removeCommon sess CommentEntReq unpackIdEntity
         return $ successResponse  ("delete create comment" :: Text)
     DELETE  ["draft", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        draft <- removeCommon sess DraftEntReq unpackIdEntity
+        removeCommon sess DraftEntReq unpackIdEntity
         return $ successResponse  ("delete create draft" :: Text)
     DELETE  ["tag", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        tag <- removeCommon sess TagEntReq unpackIdEntity
+        removeCommon sess TagEntReq unpackIdEntity
         return $ successResponse   ("delete create tag" :: Text)
     DELETE  ["news", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 
-        news <- removeCommon sess NewsEntReq unpackIdEntity
+        removeCommon sess NewsEntReq unpackIdEntity
         return $ successResponse   ("delete create news" :: Text)
 
     _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
-
-
-
-
-
-
-
 
 
 methodAndPath :: HTTP.Request -> API

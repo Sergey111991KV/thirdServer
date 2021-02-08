@@ -6,8 +6,8 @@ import Domain.Types.ImportTypes
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
 import Data.Aeson
-
-
+import Control.Monad.Except
+import Text.Parsec as Parsec
 
 
 serverErrorResponse :: Monad m => ErrorServer ->  m HTTP.Response
@@ -17,9 +17,17 @@ serverErrorResponse err = do
 successResponse :: forall a. ToJSON a  => a  -> HTTP.Response
 successResponse  b = HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  b
 
-getCookie :: HTTP.Request -> SessionId
-getCookie _ = SessionId "OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v"
+getCookie :: MonadError ErrorServer m => HTTP.Request -> m SessionId
+getCookie  req = convertRequestToCookie $ lookup "Cookie" $ HTTP.requestHeaders req
 
--- setCookie :: 
+convertRequestToCookie :: MonadError ErrorServer m =>  Maybe ByteString -> m SessionId
+convertRequestToCookie Nothing = throwError ErrorGetCookie
+convertRequestToCookie (Just byt) = 
+                either (\_ -> throwError ErrorConvert) return (Parsec.parse parserCookie "" byt)
 
--- setDefaultCookie :: 
+parserCookie :: Parsec.Parsec ByteString () SessionId
+parserCookie = do
+     _ <- Parsec.many1 (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':')
+     _ <- Parsec.char '='
+     value <- Parsec.many1 (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':') 
+     return $ SessionId $ pack value
