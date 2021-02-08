@@ -2,7 +2,8 @@ module Domain.Services.ImportServices
   ( module Y
   ) where
 
-import Domain.Services.Auth as Y (Auth(..), sessionByAuth)
+import Domain.Services.Auth as Y
+    ( sessionByAuth, Auth(..), exitSession ) 
 import Domain.Services.CommonService as Y
     ( publishAction,
       CommonService(..),

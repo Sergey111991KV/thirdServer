@@ -31,3 +31,6 @@ parserCookie = do
      _ <- Parsec.char '='
      value <- Parsec.many1 (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':') 
      return $ SessionId $ pack value
+
+setCookie :: MonadError ErrorServer m => SessionId -> m HTTP.Response
+setCookie  req = undefined

@@ -27,6 +27,14 @@ route :: (Monad m, CommonService m, MonadIO m, SortedOfService m, FilterService 
 route req = do
   sess <- getCookie req
   case methodAndPath req of   
+      
+    GET  ["auth", login, pass] -> do
+        newSess <- sessionByAuth (Login login) (Password pass)
+        setCookie  newSess
+        return $ successResponse   ("publish news" :: Text)
+    GET  ["auth", idE] -> do
+        exitSession sess
+        return $ successResponse   ("publish news" :: Text)
 
     GET  ["publish", idE] -> do
         let unpackIdEntity = BP.read  idE :: Int 

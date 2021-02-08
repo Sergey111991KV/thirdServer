@@ -1,5 +1,6 @@
 module Domain.Services.Auth where
 
+import ClassyPrelude
 import Control.Monad.Except ( MonadError )
 import Domain.Services.LogMonad (Log(..))
 import Domain.Types.ImportTypes
@@ -19,3 +20,5 @@ sessionByAuth loggin password = do
   uIdResult <- findUserId loggin password
   newSession uIdResult 
 
+exitSession ::  Auth m => SessionId -> m  ()
+exitSession sess = findUserIdBySession sess >>= deleteOldSession
