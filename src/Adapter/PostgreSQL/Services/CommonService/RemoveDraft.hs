@@ -3,12 +3,9 @@ module Adapter.PostgreSQL.Services.CommonService.RemoveDraft where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, (++) ) 
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      UserId )
+    ( errorText, ErrorServer(DataErrorPostgreSQL), UserId )
 import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 
 import Database.PostgreSQL.Simple (execute)
 
@@ -20,8 +17,8 @@ removeDraft idEnt idA  = do
       result <- withConn $ \conn -> execute conn q (idA, idEnt)
       case result of
         1 -> do
-          writeLog Debug "delete draft good!"
+          writeLogD "delete draft good!"
           return  ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " delete draft")
+          writeLogE (errorText DataErrorPostgreSQL ++ " delete draft")
           throwError DataErrorPostgreSQL

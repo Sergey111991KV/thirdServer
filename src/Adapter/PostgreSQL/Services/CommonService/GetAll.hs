@@ -12,10 +12,9 @@ import ClassyPrelude
       (++),
       map )
 import Database.PostgreSQL.Simple (query_)
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      errorText,
+    ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
       HelpForRequest(NewsEntReq, AuthorEntReq, UserEntReq, TagEntReq,
                      CategoryEntReq),
@@ -37,30 +36,30 @@ getAll helpEnt
     result <- withConn $ \conn -> query_ conn qAuthor :: IO [Author]
     case result of
       [] -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
       authorsArray -> do
-        writeLog Debug "gett all author success!"
+        writeLogD "gett all author success!"
         return  $ fmap AnEntity authorsArray
   | helpEnt == UserEntReq = do
     let qUser = "SELECT * from usernews limit 20;"
     result <- withConn $ \conn -> query_ conn qUser :: IO [User]
     case result of
       [] -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
       users -> do
-        writeLog Debug "gett all user success!"
+        writeLogD "gett all user success!"
         return $ fmap AnEntity users
   | helpEnt == TagEntReq = do
     let qTag = "SELECT * from tag limit 20;"
     result <- withConn $ \conn -> query_ conn qTag :: IO [Tag]
     case result of
       [] -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
       users -> do
-        writeLog Debug "gett all Tag success!"
+        writeLogD "gett all Tag success!"
         return $ fmap AnEntity users
   | helpEnt == CategoryEntReq = do
     let qCat =
@@ -74,21 +73,21 @@ getAll helpEnt
     result <- withConn $ \conn -> query_ conn qCat :: IO [CategoryRaw]
     case result of
       [] -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
       cat -> do
-        writeLog Debug "gett all Category success!"
+        writeLogD "gett all Category success!"
         return $ AnEntity <$> convertCategoryRawArray cat
   | helpEnt == NewsEntReq = do
     let qDraft = requestForPost ++ " limit 20;"
     result <- withConn $ \conn -> query_ conn qDraft :: IO [NewsRaw]
     case result of
       [] -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
       news -> do
-        writeLog Debug "gett all News success!"
+        writeLogD "gett all News success!"
         return $ AnEntity <$> map convertNewsRaw news
   | otherwise = do
-    writeLog ErrorLog (errorText ErrorTakeEntityNotSupposed)
+    writeLogE (errorText ErrorTakeEntityNotSupposed)
     throwError ErrorTakeEntityNotSupposed

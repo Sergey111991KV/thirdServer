@@ -3,8 +3,7 @@ module Adapter.PostgreSQL.Services.CommonService.Editing where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      errorText,
+    ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
       HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
                      CommentEntReq, DraftEntReq, TagEntReq),
@@ -19,11 +18,10 @@ import Domain.Types.ImportTypes
       Comment(textComments, dataCreateComments, newsIdComments,
               usersIdComments),
       AnEntity(..),
-      Entity(getData, getHelpRequest) )
+      Entity(getData, getHelpRequest) ) 
 import Control.Monad.Except ( MonadError(throwError) )
-
 import Database.PostgreSQL.Simple (execute)
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 
 
 editing :: PG r m => AnEntity -> m  ()
@@ -40,10 +38,10 @@ editing (AnEntity ent) = do
             (userIdRaw $ idLinkUser author, description author, idAuthor author)
       case result of
         1 -> do
-          writeLog Debug "update author good!"
+          writeLogD "update author good!"
           return ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     CategoryEntReq -> do
       let cat = (getData (AnEntity ent) :: Category)
@@ -53,20 +51,20 @@ editing (AnEntity ent) = do
           result <- withConn $ \conn -> execute conn qMainCat (nameCategory cat, idCategory cat)
           case result of
             1 -> do
-              writeLog Debug "update main category good!"
+              writeLogD "update main category good!"
               return ()
             _ -> do
-              writeLog ErrorLog (errorText DataErrorPostgreSQL)
+              writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
         Just pCat -> do
           let qNestedCat = "UPDATE category SET name_category=(?),parent_category =(?)  WHERE id_category=(?);"
           result <- withConn $ \conn -> execute conn qNestedCat  (nameCategory cat, idCategory pCat, cat)
           case result of
             1 -> do
-              writeLog Debug "update nested category good!"
+              writeLogD "update nested category good!"
               editing (AnEntity pCat)
             _ -> do
-              writeLog ErrorLog (errorText DataErrorPostgreSQL)
+              writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
     CommentEntReq -> do
       let comment = (getData (AnEntity ent) :: Comment)
@@ -83,10 +81,10 @@ editing (AnEntity ent) = do
             , usersIdComments comment)
       case result of
         1 -> do
-          writeLog Debug "update comment good!"
+          writeLogD "update comment good!"
           return ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     DraftEntReq  -> do
       let draft = (getData (AnEntity ent) :: Draft)
@@ -108,10 +106,10 @@ editing (AnEntity ent) = do
             , idDraft draft)
       case result of
         1 -> do
-          writeLog Debug "update draft good!"
+          writeLogD "update draft good!"
           return ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     TagEntReq -> do
       let tag = (getData (AnEntity ent) :: Tag)
@@ -119,10 +117,10 @@ editing (AnEntity ent) = do
       result <- withConn $ \conn -> execute conn qTag (nameTag tag, idTag tag)
       case result of
         1 -> do
-          writeLog Debug "update tag good!"
+          writeLogD "update tag good!"
           return  ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     UserEntReq -> do
       let user = (getData (AnEntity ent) :: User)
@@ -144,11 +142,11 @@ editing (AnEntity ent) = do
             , idUser user)
       case result of
         1 -> do
-          writeLog Debug "update user good!"
+          writeLogD "update user good!"
           return ()
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     _ -> do
-      writeLog ErrorLog (errorText ErrorTakeEntityNotSupposed)
+      writeLogE (errorText ErrorTakeEntityNotSupposed)
       throwError ErrorTakeEntityNotSupposed

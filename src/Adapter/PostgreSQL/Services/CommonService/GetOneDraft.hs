@@ -3,13 +3,9 @@ module Adapter.PostgreSQL.Services.CommonService.GetOneDraft where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, IO ) 
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      ErrorServer(DataErrorPostgreSQL),
-      UserId,
-      Draft,
-      AnEntity(..) )
+    ( ErrorServer(DataErrorPostgreSQL), UserId, Draft, AnEntity(..) )
 import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Database.PostgreSQL.Simple (query)
 
 
@@ -18,10 +14,10 @@ getOneDraft idE idA = do
   resultDraft <- withConn $ \conn -> query conn qry (idA, idE) :: IO [Draft]
   case resultDraft of
     [x] -> do
-          writeLog Debug "getOne Draft success!"
+          writeLogD "getOne Draft success!"
           return $ AnEntity x
     _ -> do
-          writeLog ErrorLog "getOneDraft DataErrorPostgreSQL "
+          writeLogE "getOneDraft DataErrorPostgreSQL "
           throwError DataErrorPostgreSQL
   where qry =
               "SELECT  draft.id_draft, \

@@ -22,14 +22,9 @@ import ClassyPrelude
       pack,
       unpack )
 import Adapter.PostgreSQL.ImportLibrary ( query, Query ) 
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad 
 import Domain.Types.ImportTypes
-    ( LogLevel(Debug, ErrorLog),
-      errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      convertNewsRaw,
-      News,
-      NewsRaw )
+    
 import Control.Monad.Except ( MonadError(throwError) )
 import qualified Prelude as   P
 
@@ -39,10 +34,10 @@ filterOfData condition time = do
   result <- withConn $ \conn -> query conn q [time] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterOfData")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterOfData")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterOfData success "
+      writeLogD "filterOfData success "
       return $  map convertNewsRaw news
 
 conversCond :: Text -> Query
@@ -58,10 +53,10 @@ filterAuthor idA = do
   result <- withConn $ \conn -> query conn q  [idA]   :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterAuthor")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterAuthor")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterAuthor success "
+      writeLogD "filterAuthor success "
       return $ map convertNewsRaw news
 
 filterCategory :: PG r m => Int -> m [News]
@@ -70,10 +65,10 @@ filterCategory catId = do
   result <- withConn $ \conn -> query conn q [ catId ] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterCategory")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterCategory")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterCategory success "
+      writeLogD "filterCategory success "
       return $ map convertNewsRaw news
 
 filterTag :: PG r m => Int -> m [News]
@@ -83,10 +78,10 @@ filterTag idT = do
   result <- withConn $ \conn -> query conn q [idT ] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterTeg")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterTeg")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterTeg success "
+      writeLogD "filterTeg success "
       return $ map convertNewsRaw news
 
 filterOneOfTags :: PG r m => Text -> m [News]
@@ -98,10 +93,10 @@ filterOneOfTags idTarray = do
       query conn q [reqArr] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterOneOfTags")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterOneOfTags")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterOneOfTags success "
+      writeLogD "filterOneOfTags success "
       return $ map convertNewsRaw news
 
 filterAllOfTags :: PG r m => Text -> m  [News]
@@ -113,10 +108,10 @@ filterAllOfTags idTarray = do
       query conn q [reqArr] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterAllOfTags")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterAllOfTags")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterAllOfTags success "
+      writeLogD "filterAllOfTags success "
       return $ map convertNewsRaw news
 
 createAllTagRequest :: String -> String
@@ -133,10 +128,10 @@ filterName txtName = do
   result <- withConn $ \conn -> query conn q [insertText] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterName")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterName")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterName success "
+      writeLogD "filterName success "
       return $ map convertNewsRaw news
 
 filterContent :: PG r m => Text -> m [News]
@@ -146,10 +141,10 @@ filterContent txtContent = do
   result <- withConn $ \conn -> query conn q [insertText] :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL ++ " filterContent")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterContent")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLog Debug "filterContent success "
+      writeLogD "filterContent success "
       return $  map convertNewsRaw news
 
 toStringFromArrayInt :: [Int] -> Text

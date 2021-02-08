@@ -5,13 +5,11 @@ import ClassyPrelude
     ( otherwise, ($), Eq((==)), Monad(return), Int ) 
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Types.ImportTypes
-  ( ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed)
-  , HelpForRequest(AuthorEntReq, CategoryEntReq, NewsEntReq, TagEntReq,
-               UserEntReq)
-  , LogLevel(Debug, ErrorLog)
-  , errorText
-  )
-import Domain.Services.LogMonad (Log(writeLog))
+    ( errorText,
+      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
+      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
+                     NewsEntReq, TagEntReq) )
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Database.PostgreSQL.Simple (execute)
 
 remove :: PG r m => HelpForRequest -> Int -> m ()
@@ -21,51 +19,51 @@ remove ent idE
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
-        writeLog Debug "delete author good!"
+        writeLogD "delete author good!"
         return ()
       _ -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == UserEntReq = do
     let q = "DELETE FROM usernews WHERE id_user = (?);"
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
-        writeLog Debug "delete user good!"
+        writeLogD "delete user good!"
         return ()
       _ -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == NewsEntReq = do
     let q = "DELETE FROM news WHERE id_news = (?);"
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
-        writeLog Debug "delete news good!"
+        writeLogD "delete news good!"
         return ()
       _ -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == TagEntReq = do
     let q = "DELETE FROM tag WHERE id_tag = (?);"
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
-        writeLog Debug "delete tag good!"
+        writeLogD "delete tag good!"
         return ()
       _ -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == CategoryEntReq = do
     let q = "DELETE FROM category WHERE id_category = (?);"
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
-        writeLog Debug "delete category1 good!"
+        writeLogD "delete category1 good!"
         return ()
       _ -> do
-        writeLog ErrorLog (errorText DataErrorPostgreSQL)
+        writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | otherwise = do
-    writeLog ErrorLog (errorText ErrorTakeEntityNotSupposed)
+    writeLogE (errorText ErrorTakeEntityNotSupposed)
     throwError ErrorTakeEntityNotSupposed

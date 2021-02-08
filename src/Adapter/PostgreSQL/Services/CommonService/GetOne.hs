@@ -12,10 +12,9 @@ import ClassyPrelude
       head,
       impureNonNull )
 import Database.PostgreSQL.Simple (query)
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      errorText,
+    ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, ErrorConvert,
                   DataErrorPostgreSQL),
       HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
@@ -39,20 +38,20 @@ getOne helpR idE = do
       i <- withConn $ \conn -> query conn qAuthor [idE] :: IO [Author]
       case i of
         [x] -> do
-          writeLog Debug "getOne Author success!"
+          writeLogD "getOne Author success!"
           return $ AnEntity x
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     UserEntReq -> do
       let qUser = "SELECT * from usernews where id_user=(?)"
       i <- withConn $ \conn -> query conn qUser [idE] :: IO [User]
       case i of
         [x] -> do
-          writeLog Debug "getOne User success!"
+          writeLogD "getOne User success!"
           return $ AnEntity x
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     NewsEntReq -> do
       let qNews = requestForPost ++ "where endNews.id_news = (?);"
@@ -60,30 +59,30 @@ getOne helpR idE = do
       print i
       case i of
         [x] -> do
-          writeLog Debug "getOne News success!"
+          writeLogD "getOne News success!"
           return $ AnEntity $ convertNewsRaw x
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     TagEntReq -> do
       let qTag = "SELECT * from tag where id_tag=(?)"
       i <- withConn $ \conn -> query conn qTag [idE] :: IO [Tag]
       case i of
         [x] -> do
-          writeLog Debug "getOne Tag success!"
+          writeLogD "getOne Tag success!"
           return $ AnEntity x
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     CommentEntReq -> do
       let qComment = "SELECT * from comment where id_comment=(?)"
       i <- withConn $ \conn -> query conn qComment [idE] :: IO [Comment]
       case i of
         [x] -> do
-          writeLog Debug "getOne Comment success!"
+          writeLogD "getOne Comment success!"
           return $ AnEntity x
         _ -> do
-          writeLog ErrorLog (errorText DataErrorPostgreSQL)
+          writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     CategoryEntReq -> do
       let qCategory =
@@ -97,11 +96,11 @@ getOne helpR idE = do
       i <- withConn $ \conn -> query conn qCategory [idE] :: IO [CategoryRaw]
       if null i
         then do
-          writeLog ErrorLog (errorText ErrorConvert ++ " finalCategoryConvert")
+          writeLogE (errorText ErrorConvert ++ " finalCategoryConvert")
           throwError DataErrorPostgreSQL
         else do
           let cat = head $ impureNonNull $ convertCategoryRawArray i
           return $ AnEntity cat
     _ -> do
-      writeLog ErrorLog (errorText ErrorTakeEntityNotSupposed)
+      writeLogE (errorText ErrorTakeEntityNotSupposed)
       throwError ErrorTakeEntityNotSupposed

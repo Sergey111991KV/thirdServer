@@ -34,7 +34,11 @@ instance Log App where
   writeLog logAp txtLog = do
     (_, st2) <- ask
     logSt <- readTVarIO st2
-    liftIO $ writeLogginHandler (Log.logStCong logSt) logAp txtLog
+    time <- liftIO getCurrentTime
+    liftIO $ writeLogHandler time (Log.logStCong logSt) logAp txtLog
+  writeLogE = writeLog Error
+  writeLogW = writeLog Warning
+  writeLogD = writeLog Debug
 
 instance Auth App where
   findUserId = Pos.findUserId
@@ -98,4 +102,3 @@ mainServer = do
                           mainWithConfig 
                           caseOfConf
                                         ) configFromFile
-

@@ -9,16 +9,14 @@ import Adapter.PostgreSQL.Common ( withConn, PG )
 import ClassyPrelude
     ( ($), Monad(return), IO, MonadIO(liftIO), (++) )
 import Database.PostgreSQL.Simple (execute, query)
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 import Domain.Types.ImportTypes
-  ( ErrorServer(DataErrorPostgreSQL)
-  , LogLevel(Debug, ErrorLog)
-  , Login
-  , Password
-  , SessionId
-  , UserId(userIdRaw)
-  , errorText
-  )
+    ( errorText,
+      ErrorServer(DataErrorPostgreSQL),
+      Login,
+      Password,
+      SessionId,
+      UserId(userIdRaw) )
 import Text.StringRandom (stringRandomIO)
 import Control.Monad.Except ( MonadError(throwError) )
   
@@ -30,10 +28,10 @@ findUserId login password = do
   i <- withConn $ \conn -> query conn q (login, password) :: IO [UserId]
   case i of
     [x] -> do
-      writeLog Debug "findUserId success"
+      writeLogD "findUserId success"
       return  x
     _ -> do
-      writeLog ErrorLog $ "Error findUserId " ++ errorText DataErrorPostgreSQL
+      writeLogE $ "Error findUserId " ++ errorText DataErrorPostgreSQL
       throwError DataErrorPostgreSQL
 
 newSession :: PG r m => UserId -> m  SessionId
@@ -44,10 +42,10 @@ newSession user = do
   result <- withConn $ \conn -> query conn qry [userIdRaw user]
   case result of
         [sId] -> do
-          writeLog Debug "Create New Session"
+          writeLogD "Create New Session"
           return  sId
         _ -> do
-          writeLog ErrorLog "Error newSession"
+          writeLogE "Error newSession"
           throwError DataErrorPostgreSQL
 
 deleteOldSession :: PG r m => UserId -> m  ()
@@ -55,10 +53,10 @@ deleteOldSession us = do
   result <- withConn $ \conn -> execute conn qry [userIdRaw us]
   case result of
     1 -> do
-      writeLog Debug "delete old session!"
+      writeLogD "delete old session!"
       return  ()
     _ -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL)
+      writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
   where
     qry = "delete from session where user_news_id = ?"
@@ -69,10 +67,10 @@ insertNewSession uId = do
   result <- withConn $ \conn -> execute conn qry (sess, userIdRaw uId)
   case result of
     1 -> do
-      writeLog Debug "delete old session!"
+      writeLogD "delete old session!"
       return  ()
     _ -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL)
+      writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
   where
     qry = "INSERT INTO session (key, user_news_id) values (?,?)"
@@ -82,10 +80,10 @@ findUserIdBySession sesId = do
   result <- withConn $ \conn -> query conn qry sesId
   case result of
     [uIdStr] -> do
-      writeLog Debug "findUserIdBySession good!"
+      writeLogD "findUserIdBySession good!"
       return  uIdStr
     _ -> do
-      writeLog ErrorLog (errorText DataErrorPostgreSQL)
+      writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
   where
     qry = "select user_news_id from session where key = ? "

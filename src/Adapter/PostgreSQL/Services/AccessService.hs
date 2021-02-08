@@ -5,11 +5,7 @@ import Adapter.PostgreSQL.Common ( withConn, PG )
 import Database.PostgreSQL.Simple (Only(Only), query)
 import Domain.Services.Auth (Auth(findUserIdBySession))
 import Domain.Types.ImportTypes
-    ( LogLevel(ErrorLog, Debug),
-      ErrorServer(DataErrorPostgreSQL, NotAccessNotAdmid,
-                  NotAccessNotAuthor),
-      SessionId )
-import Domain.Services.LogMonad (Log(writeLog))
+import Domain.Services.LogMonad 
 import Control.Monad.Except ( MonadError(throwError) )
   
 checkAdminAccess :: PG r m => SessionId -> m ()
@@ -18,13 +14,13 @@ checkAdminAccess sesId = do
     resultAdmin <- withConn $ \conn -> query conn qry idU :: IO [Only Bool]
     case resultAdmin of
         [Only True] -> do
-          writeLog Debug "checkAdminAccess True "
+          writeLogD "checkAdminAccess True "
           return ()
         [Only False] -> do
-          writeLog Debug "checkAdminAccess False "
+          writeLogD "checkAdminAccess False "
           throwError NotAccessNotAdmid
         _ -> do
-          writeLog ErrorLog "(errorText DataErrorPostgreSQL) "
+          writeLogE "(errorText DataErrorPostgreSQL) "
           throwError DataErrorPostgreSQL
       where qry = "select admin from usernews where id_user = ? "
 
@@ -34,12 +30,12 @@ checkAuthorAccess sesId = do
     resultAuthor <- withConn $ \conn -> query conn qry [idA] :: IO [Only Bool]
     case resultAuthor of
         [Only True] -> do
-          writeLog Debug "checkAuthorAccess True "
+          writeLogD "checkAuthorAccess True "
           return ()
         [Only False] -> do
-          writeLog Debug "checkAuthorAccess False "
+          writeLogD "checkAuthorAccess False "
           throwError NotAccessNotAuthor
         _ -> do
-          writeLog ErrorLog "checkAuthorAccess DataErrorPostgreSQL "
+          writeLogE "checkAuthorAccess DataErrorPostgreSQL "
           throwError DataErrorPostgreSQL
       where qry = "select authoris from usernews where id_user = ? "
