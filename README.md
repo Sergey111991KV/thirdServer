@@ -1,17 +1,19 @@
 # The News Server
-    This is my third attempt to write a server)
-    I used ReaderT design pattern.
+
+This is my third attempt to write a server)
+I used ReaderT design pattern.
 
 ## Configuration.
-  All configuration are in the src/Config.hs and you need to write in your customization or if need I can rewrite project with change "server.config"
-                log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error), logConsole  - is write to console?
+All configuration are in the src/Config.hs and you need to write in your customization or if need I can rewrite project with change "server.config":
+            log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error), logConsole  - is write to console?
 ## Start server 
-  All you need:
-     create file "server.config" like file from folder templates
-  Replaced:
-                "port" with your port
-                "postgres" - with your postgres option
-  Take command: stack ghci 
+All you need:
+            create file "server.config" like file from folder templates
+Replaced:
+            "port" with your port
+            "postgres" - with your postgres option
+Take command: 
+            stack ghci 
           
 
 ## Structure of project.
