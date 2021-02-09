@@ -34,3 +34,4 @@ parserCookie = do
 
 setCookie :: MonadError ErrorServer m => SessionId -> HTTP.Response -> m HTTP.Response
 setCookie  sess resp = undefined
+
