@@ -1,16 +1,16 @@
-module Adapter.PostgreSQL.Services.CommonService.GetOneDraft where
+module Adapter.PostgreSQL.Services.CommonService.GetOneAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, IO ) 
 import Domain.Types.ImportTypes
-    ( ErrorServer(DataErrorPostgreSQL), UserId, Draft, AnEntity(..) )
+   
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Database.PostgreSQL.Simple (query)
 
 
-getOneDraft :: PG r m => Int -> UserId -> m  AnEntity
-getOneDraft idE idA = do
+getOneAuthorAccess :: PG r m => Int -> UserId -> m  AnEntity
+getOneAuthorAccess idE idA = do
   resultDraft <- withConn $ \conn -> query conn qry (idA, idE) :: IO [Draft]
   case resultDraft of
     [x] -> do

@@ -1,4 +1,4 @@
-module Adapter.PostgreSQL.Services.CommonService.RemoveDraft where
+module Adapter.PostgreSQL.Services.CommonService.RemoveAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, (++) ) 
@@ -9,9 +9,9 @@ import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 
 import Database.PostgreSQL.Simple (execute)
 
-removeDraft ::
+removeAuthorAccess ::
      PG r m =>  Int ->  UserId -> m ()
-removeDraft idEnt idA  = do
+removeAuthorAccess idEnt idA  = do
       let q =
             "DELETE FROM draft WHERE id_author_draft = (select id_link_user from author where id_author = (?) ) and id_draft = (?);"
       result <- withConn $ \conn -> execute conn q (idA, idEnt)

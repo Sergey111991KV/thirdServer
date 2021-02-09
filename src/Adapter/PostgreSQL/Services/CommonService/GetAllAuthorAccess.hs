@@ -1,4 +1,4 @@
-module Adapter.PostgreSQL.Services.CommonService.GetAllDraft where
+module Adapter.PostgreSQL.Services.CommonService.GetAllAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude
@@ -13,8 +13,8 @@ import Domain.Types.ImportTypes
       AnEntity(..) )
 import Control.Monad.Except ( MonadError(throwError) ) 
 
-getAllDraft :: PG r m => UserId -> m [AnEntity]
-getAllDraft uId = do
+getAllAuthorAccess :: PG r m => UserId -> m [AnEntity]
+getAllAuthorAccess uId = do
   let q =
         "SELECT  draft.id_draft, \
                            \ draft.text_draft, \

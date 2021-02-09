@@ -30,8 +30,8 @@ route req = do
 
     GET  ["auth", login, pass] -> do
         newSess <- sessionByAuth (Login login) (Password pass)
-        _ <- setCookie  newSess
-        return $ successResponse   ("publish news" :: Text)
+        setCookie  newSess $ successResponse  ("publish news" :: Text)
+       
     GET  ["auth","exit"] -> do
         exitSession sess
         return $ successResponse   ("publish news" :: Text)

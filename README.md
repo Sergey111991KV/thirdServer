@@ -36,11 +36,11 @@ Take command:
             
            
 ## How to use.
-        All you need to start project - create file "server.config" , write your option and script to start project) 
-        Server can all method writen in rizoma. For check it you can run bash in folder /curl
+All you need to start project - create file "server.config" , write your option and script to start project) 
+Server can all method writen in rizoma. For check it you can run bash in folder /curl
 
 ## Test.
-    I used spec library for testing app and empty structure.
+I used spec library for testing app and empty structure.
 
 ## Api 
 ### Registration and Authentication

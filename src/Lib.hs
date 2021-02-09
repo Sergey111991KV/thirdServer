@@ -56,9 +56,10 @@ instance CommonService App where
   getAll = Pos.getAll
   getOne = Pos.getOne
   remove = Pos.remove
-  getAllDraft = Pos.getAllDraft
-  removeDraft = Pos.removeDraft
-  getOneDraft = Pos.getOneDraft
+  editingAuthorAccess = Pos.editingAuthorAccess
+  getAllAuthorAccess = Pos.getAllAuthorAccess
+  removeAuthorAccess = Pos.removeAuthorAccess
+  getOneAuthorAccess = Pos.getOneAuthorAccess
   publish = Pos.publish
   
 
