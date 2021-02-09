@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 16c21153982fb95e96452ee48cf869f17f63adee4f27f4fe62eac94ebf4c18de
+-- hash: 17c67ecdcf7dc489a46cf392dcbfe2429c8540d2cb307012fde7b93fd5c14003
 
 name:           thirdServer
 version:        0.1.0.0
@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Adapter.HTTPWAI.HelpFunction
+      Adapter.HTTPWAI.Common
       Adapter.HTTPWAI.ImportHTTP
       Adapter.HTTPWAI.Route
       Adapter.PostgreSQL.Common

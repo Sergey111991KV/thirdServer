@@ -55,9 +55,11 @@ deleteOldSession us = do
     1 -> do
       writeLogD "delete old session!"
       return  ()
+    0 -> return ()  
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
+ 
   where
     qry = "delete from session where user_news_id = ?"
 
@@ -67,7 +69,7 @@ insertNewSession uId = do
   result <- withConn $ \conn -> execute conn qry (sess, userIdRaw uId)
   case result of
     1 -> do
-      writeLogD "delete old session!"
+      writeLogD "insertNewSession!"
       return  ()
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)
