@@ -5,7 +5,7 @@ I used ReaderT design pattern.
 
 ## Configuration.
 All configuration are in the src/Config.hs and you need to write in your customization or if need I can rewrite project with change "server.config":
-            log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error), logConsole  - is write to console?
+                log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error), logConsole  - is write to console?
 ## Start server 
 All you need:
             create file "server.config" like file from folder templates
