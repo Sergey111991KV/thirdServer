@@ -5,13 +5,13 @@
 ## Configuration.
   All configuration are in the src/Config.hs and you need to write in your customization or if need I can rewrite project with change "server.config"
                 log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error), logConsole  - is write to console?
-### start bot 
-    All you need:
+## Start server 
+  All you need:
      create file "server.config" like file from folder templates
-     replaced:
+  Replaced:
                 "port" with your port
                 "postgres" - with your postgres option
-     take command: stack ghci 
+  Take command: stack ghci 
           
 
 ## Structure of project.
@@ -22,7 +22,7 @@
     *   Domain/Config - implementashion config
 *   Adapter (implementation): 
     *   Adapter/PostgresSQL - implementashion http postgres
-    *   Adapter/HTTP - implementashion http protocol
+    *   Adapter/HTTPWAI - implementashion http protocol
 ###    All module have 2 imports:
                 ImportLibrary - import common method and librarys inside in file 
                 Import*MODULE - import external all method of MODULE
