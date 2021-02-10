@@ -1,8 +1,15 @@
 module Adapter.PostgreSQL.Services.CommonService.EditingAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
+import ClassyPrelude ( ($), Monad(return) )
 import Domain.Types.ImportTypes
+    ( errorText,
+      ErrorServer(DataErrorPostgreSQL),
+      UserId(UserId),
+      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
+            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft, idDraft),
+      AnEntity(..),
+      Entity(getData) )
    
 import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (execute)

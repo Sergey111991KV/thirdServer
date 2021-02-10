@@ -9,12 +9,9 @@ import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config
 import Domain.Services.ImportServices
-
 import Domain.Types.ImportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
 import qualified Network.Wai.Handler.Warp as W 
-
-
 import qualified Adapter.HTTPWAI.ImportHTTP as MyHTTP
 
 
