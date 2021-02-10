@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Domain.Types.BusinessEntity.Draft (
   Draft(Draft,dataCreateDraft, idAuthorDraft, idDraft, mainPhotoUrl,
       newsIdDraft, otherPhotoUrl, shortNameDraft, tagsId, textDraft)
