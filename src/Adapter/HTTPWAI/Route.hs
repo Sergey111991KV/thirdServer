@@ -25,16 +25,18 @@ data API
 route :: (Monad m, CommonService m, MonadIO m, SortedOfService m, FilterService m)
   => HTTP.Request -> m HTTP.Response
 route req = do
-  either  ss  ff (getCookie req)
+  either  notAutorized  autorized (getCookie req)
   where
-    ss err = do
+    notAutorized ErrorGetCookie = do
         case methodAndPath req of   
             GET  ["auth", login, pass] -> do
                 newSess <- sessionByAuth (Login login) (Password pass)
                 setCookie  newSess
             _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
+            
+    notAutorized err = serverErrorResponse err
         
-    ff sess = do 
+    autorized sess = do 
         case methodAndPath req of   
             GET  ["auth","exit"] -> do
                 exitSession sess
