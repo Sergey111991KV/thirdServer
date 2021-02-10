@@ -105,6 +105,7 @@ convertCategoryRawArray rawA = convertToCategoryThirdStep catA rawA2
   
 
 convertToCategoryThirdStep :: [Category] -> [CategoryRaw] -> [Category]
+convertToCategoryThirdStep [] (_:_) = []
 convertToCategoryThirdStep catA [] = catA
 convertToCategoryThirdStep (x:xs) arrCatRaw = convertToCategoryThirdStep (xs ++ arrCat) arrCatRaw'
   where
@@ -114,11 +115,11 @@ convertToCategoryThirdStep (x:xs) arrCatRaw = convertToCategoryThirdStep (xs ++ 
 convertToCategorySecondStep :: Category -> [CategoryRaw] -> ([Category],[CategoryRaw])
 convertToCategorySecondStep  cat arr   =  convertToCategorySecondStep'  cat arr ([],[])
   where
-    convertToCategorySecondStep' cat [] ([],rawA) = ([cat],rawA)
+    convertToCategorySecondStep' cats [] ([],rawA) = ([cats],rawA)
     convertToCategorySecondStep' _ [] (catA ,rawA) = (catA,rawA)
-    convertToCategorySecondStep' cat (x:xs) (catA, rawA) = case convertCategory cat x of
-      Nothing -> convertToCategorySecondStep' cat xs (catA, rawA ++ [x])
-      Just cat2 -> convertToCategorySecondStep' cat xs (catA ++ [cat2], rawA)
+    convertToCategorySecondStep' cat' (x:xs) (catA, rawA) = case convertCategory cat' x of
+      Nothing -> convertToCategorySecondStep' cat' xs (catA, rawA ++ [x])
+      Just cat2 -> convertToCategorySecondStep' cat' xs (catA ++ [cat2], rawA)
 
 convertToCategoryFirstStep :: [CategoryRaw]  -> ([Category],[CategoryRaw])
 convertToCategoryFirstStep  = convertToCategoryFirstStep' ([],[]) 
@@ -135,6 +136,7 @@ convertMainCategory (CategoryRaw idC nameC (Just 0)) = Just (Category idC nameC 
 convertMainCategory (CategoryRaw _ _ (Just _)) =  Nothing
 
 convertCategory :: Category -> CategoryRaw -> Maybe Category
+convertCategory (Category _ _ _) (CategoryRaw _ _ Nothing) = Nothing
 convertCategory (Category idC nameC inCat) (CategoryRaw idC1 nameC1 (Just idP)) = if idC == idP 
   then Just $  Category idC1 nameC1 (Just $ Category idC nameC inCat) 
   else Nothing

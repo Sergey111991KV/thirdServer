@@ -1,6 +1,8 @@
 {-# LANGUAGE GADTs #-}
 
+
 module Domain.Types.BusinessEntity.Entity  where
+import ClassyPrelude
 import Domain.Types.BusinessEntity.Author (Author)
 import Domain.Types.BusinessEntity.Category (Category)
 import Domain.Types.BusinessEntity.Comment ( Comment ) 
@@ -30,11 +32,12 @@ class Entity a where
 fromAnEntity :: AnEntity  -> HelpForRequest
 fromAnEntity (AnEntity a) = getHelpRequest a
 
-
 instance Entity Comment where
   getHelpRequest _ = CommentEntReq
   getData (AnEntity a) =  fromDataComment a 
   fromDataComment a =  a
+  
+
 
 instance Entity Tag where
   getHelpRequest _ = TagEntReq
