@@ -1,4 +1,4 @@
-module Adapter.HTTPWAI.Common where
+module Adapter.HTTPWAI.HelpFunction where
 
 import ClassyPrelude
 

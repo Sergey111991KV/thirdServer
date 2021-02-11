@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 17c67ecdcf7dc489a46cf392dcbfe2429c8540d2cb307012fde7b93fd5c14003
+-- hash: 95b9e8c2363d4f29bf33386030bafc071013fc6ac5b65950c8ec8f59e2b57764
 
 name:           thirdServer
 version:        0.1.0.0
@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Adapter.HTTPWAI.Common
+      Adapter.HTTPWAI.HelpFunction
       Adapter.HTTPWAI.ImportHTTP
       Adapter.HTTPWAI.Route
       Adapter.PostgreSQL.Common
@@ -97,6 +97,7 @@ library
     , postgresql-simple-migration
     , resource-pool
     , scotty
+    , strict
     , string-random
     , text
     , text-time
@@ -140,6 +141,7 @@ executable thirdServer-exe
     , postgresql-simple-migration
     , resource-pool
     , scotty
+    , strict
     , string-random
     , text
     , text-time
@@ -187,6 +189,7 @@ test-suite thirdServer-test
     , postgresql-simple-migration
     , resource-pool
     , scotty
+    , strict
     , string-random
     , text
     , text-time

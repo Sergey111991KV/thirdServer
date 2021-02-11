@@ -51,6 +51,7 @@ dependencies:
 - attoparsec
 - scotty
 - basic-prelude
+- strict
 
 
 library:

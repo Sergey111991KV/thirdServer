@@ -6,7 +6,7 @@ import Control.Monad.Except
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
 import Domain.Types.ImportTypes
-import Adapter.HTTPWAI.Common
+import Adapter.HTTPWAI.HelpFunction
 import Domain.Services.ImportServices
 import Data.Aeson
 import qualified BasicPrelude as BP
@@ -33,7 +33,7 @@ route req = do
                 newSess <- sessionByAuth (Login login) (Password pass)
                 setCookie  newSess
             _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
-            
+
     notAutorized err = serverErrorResponse err
         
     autorized sess = do 
