@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 95b9e8c2363d4f29bf33386030bafc071013fc6ac5b65950c8ec8f59e2b57764
+-- hash: 5642a66169c6f63e13bbb676cb316ebb4a9808938375906e51b387638e33c3d8
 
 name:           thirdServer
 version:        0.1.0.0
@@ -83,7 +83,6 @@ library
     , blaze-builder
     , bytestring
     , classy-prelude
-    , cookie
     , data-has
     , exceptions
     , hspec
@@ -96,7 +95,6 @@ library
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
-    , scotty
     , strict
     , string-random
     , text
@@ -127,7 +125,6 @@ executable thirdServer-exe
     , blaze-builder
     , bytestring
     , classy-prelude
-    , cookie
     , data-has
     , exceptions
     , hspec
@@ -140,7 +137,6 @@ executable thirdServer-exe
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
-    , scotty
     , strict
     , string-random
     , text
@@ -175,7 +171,6 @@ test-suite thirdServer-test
     , blaze-builder
     , bytestring
     , classy-prelude
-    , cookie
     , data-has
     , exceptions
     , hspec
@@ -188,7 +183,6 @@ test-suite thirdServer-test
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
-    , scotty
     , strict
     , string-random
     , text

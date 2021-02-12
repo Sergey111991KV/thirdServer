@@ -22,7 +22,6 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - classy-prelude
-- cookie
 - postgresql-simple
 - postgresql-libpq >= 0.9.4.2
 - postgresql-simple-migration
@@ -36,8 +35,6 @@ dependencies:
 - http-client
 - http-client-tls
 - http-types 
-- cookie
-- scotty
 - wai
 - wai-extra
 - warp
@@ -49,7 +46,6 @@ dependencies:
 - text
 - parsec
 - attoparsec
-- scotty
 - basic-prelude
 - strict
 
