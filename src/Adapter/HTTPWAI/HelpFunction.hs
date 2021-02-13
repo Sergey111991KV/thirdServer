@@ -1,6 +1,17 @@
 module Adapter.HTTPWAI.HelpFunction where
 
 import ClassyPrelude
+    ( ($),
+      Monad(return),
+      Applicative(pure),
+      Maybe(..),
+      ByteString,
+      either,
+      (++),
+      pack,
+      IsMap(lookup),
+      LazySequence(fromStrict),
+      Utf8(encodeUtf8) )
 
 import Domain.Types.ImportTypes
 import qualified Network.HTTP.Types as HTTP

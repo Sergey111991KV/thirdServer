@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5642a66169c6f63e13bbb676cb316ebb4a9808938375906e51b387638e33c3d8
+-- hash: 0ace694b03e0a9594abaa3ca8831b7941b49369ab415006faaa2dc8847a48ae2
 
 name:           thirdServer
 version:        0.1.0.0
@@ -155,7 +155,6 @@ test-suite thirdServer-test
   other-modules:
       Domain.Services.AuthSpec
       Domain.Services.CommonServiceSpec
-      Domain.Services.FixtureDomainService
       Domain.Types.BusinessEntity.CategorySpec
       Fixture
       Paths_thirdServer

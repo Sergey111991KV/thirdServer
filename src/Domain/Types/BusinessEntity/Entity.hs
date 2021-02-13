@@ -18,6 +18,7 @@ data AnEntity   = forall a.
     Entity a => AnEntity a
 
 
+
 class  Entity a where
   getHelpRequest :: a -> HelpForRequest
   getData :: AnEntity -> a
@@ -31,7 +32,6 @@ class  Entity a where
 
 fromAnEntity :: AnEntity  -> HelpForRequest
 fromAnEntity (AnEntity a) = getHelpRequest a
-
 
 instance Entity Comment where
   getHelpRequest _ = CommentEntReq
