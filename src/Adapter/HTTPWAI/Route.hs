@@ -40,7 +40,7 @@ route req = do
         case methodAndPath req of   
             GET  ["auth","exit"] -> do
                 exitSession sess
-                return $ successResponse   ("publish news" :: Text)
+                return $ successResponse   ("auth exit" :: Text)
 
             GET  ["publish", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
