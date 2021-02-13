@@ -11,7 +11,7 @@ import Domain.Types.AuthEntity.Auth
 
 spec :: Spec
 spec = do
-    describe "sessionByAuth" $ do
-        it "should return session if right login and password" $ do 
+    describe "test" $ do
+        it "test" $ do 
              1 + 1 `shouldBe` 2 
        
