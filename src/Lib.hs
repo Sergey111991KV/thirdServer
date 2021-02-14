@@ -4,6 +4,26 @@ module Lib
 
 import qualified Adapter.PostgreSQL.ImportPostgres as Pos
 import ClassyPrelude
+    ( ($),
+      Monad,
+      Functor,
+      Applicative(pure),
+      Int,
+      IO,
+      Either,
+      Text,
+      MonadIO(..),
+      either,
+      SomeException,
+      TVar,
+      (++),
+      print,
+      getCurrentTime,
+      try,
+      newTVarIO,
+      readTVarIO,
+      MonadReader(..),
+      ReaderT(..) )
 import Control.Monad.Except
 import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO

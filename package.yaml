@@ -23,7 +23,6 @@ dependencies:
 - base >= 4.7 && < 5
 - classy-prelude
 - postgresql-simple
-- postgresql-libpq >= 0.9.4.2
 - postgresql-simple-migration
 - mtl
 - aeson
@@ -33,10 +32,8 @@ dependencies:
 - text-time
 - exceptions
 - http-client
-- http-client-tls
 - http-types 
 - wai
-- wai-extra
 - warp
 - data-has
 - resource-pool
