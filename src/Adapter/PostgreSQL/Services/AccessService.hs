@@ -4,7 +4,7 @@ import ClassyPrelude ( ($), Monad(return), Bool(..), IO )
 import Adapter.PostgreSQL.Common ( withConn, PG )
 import Database.PostgreSQL.Simple (Only(Only), query)
 import Domain.Services.Auth (Auth(findUserIdBySession))
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
 import Domain.Services.LogMonad 
 import Control.Monad.Except ( MonadError(throwError) )
   

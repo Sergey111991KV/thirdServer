@@ -4,7 +4,7 @@ import qualified Adapter.PostgreSQL.Common as Pos
 import ClassyPrelude
   
 import Domain.Config.ParseConfig (ConfigPair, myParser)
-import Domain.Types.ImportTypes (ErrorServer(ErrorGetConfig))
+import Domain.Types.ExportTypes (ErrorServer(ErrorGetConfig))
 import qualified Domain.Types.LogEntity.LogEntity as Log
 import qualified Prelude as P
 import qualified Text.Parsec as Pars

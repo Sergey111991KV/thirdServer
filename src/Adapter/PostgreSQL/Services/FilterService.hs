@@ -23,7 +23,7 @@ import ClassyPrelude
       unpack )
 import Adapter.PostgreSQL.ImportLibrary ( query, Query ) 
 import Domain.Services.LogMonad 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     
 import Control.Monad.Except ( MonadError(throwError) )
 import qualified Prelude as   P

@@ -1,4 +1,4 @@
-module Domain.Types.ImportTypes
+module Domain.Types.ExportTypes
   ( module Y
   ) where
 

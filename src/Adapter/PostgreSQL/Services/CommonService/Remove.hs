@@ -4,7 +4,7 @@ import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude
     ( otherwise, ($), Eq((==)), Monad(return), Int ) 
 import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
       HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,

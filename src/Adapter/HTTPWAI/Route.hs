@@ -5,9 +5,9 @@ import ClassyPrelude
 import Control.Monad.Except
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
 import Adapter.HTTPWAI.HelpFunction
-import Domain.Services.ImportServices
+import Domain.Services.ExportServices
 import Data.Aeson
 import qualified BasicPrelude as BP
 

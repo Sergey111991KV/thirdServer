@@ -2,7 +2,7 @@ module Adapter.PostgreSQL.Services.CommonService.RemoveAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, (++) ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText, ErrorServer(DataErrorPostgreSQL), UserId )
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 

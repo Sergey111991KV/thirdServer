@@ -2,7 +2,7 @@ module Adapter.PostgreSQL.Services.CommonService.Editing where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
       HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,

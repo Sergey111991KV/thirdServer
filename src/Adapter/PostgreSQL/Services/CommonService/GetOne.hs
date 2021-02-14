@@ -13,7 +13,7 @@ import ClassyPrelude
       impureNonNull )
 import Database.PostgreSQL.Simple (query)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, ErrorConvert,
                   DataErrorPostgreSQL),

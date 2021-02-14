@@ -1,7 +1,7 @@
 module Domain.Services.CommonService where
 
 import ClassyPrelude ( Monad((>>=), (>>)), Int ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( ErrorServer(NotTakeEntity),
       HelpForRequest(DraftEntReq, AuthorEntReq, UserEntReq, TagEntReq,
                      CommentEntReq, CategoryEntReq),

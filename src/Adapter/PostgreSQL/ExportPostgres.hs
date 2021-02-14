@@ -1,4 +1,4 @@
-module Adapter.PostgreSQL.ImportPostgres
+module Adapter.PostgreSQL.ExportPostgres
   ( module Y
   ) where
 

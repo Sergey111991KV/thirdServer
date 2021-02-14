@@ -3,7 +3,7 @@ module Domain.Services.Auth where
 import ClassyPrelude
 import Control.Monad.Except ( MonadError )
 import Domain.Services.LogMonad (Log(..))
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( ErrorServer, Login, Password, SessionId, UserId )
 
 

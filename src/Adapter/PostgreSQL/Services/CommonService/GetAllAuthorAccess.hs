@@ -5,7 +5,7 @@ import ClassyPrelude
     ( ($), Monad(return), Functor(fmap), IO, (++), null )
 import Database.PostgreSQL.Simple (query)
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(DataErrorPostgreSQL),
       UserId,

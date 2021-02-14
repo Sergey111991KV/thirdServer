@@ -1,6 +1,6 @@
 module Domain.Services.AccessService where
 
-import Domain.Types.ImportTypes ( SessionId )
+import Domain.Types.ExportTypes ( SessionId )
 import Domain.Services.Auth ( Auth )
 
 

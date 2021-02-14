@@ -6,7 +6,7 @@ import ClassyPrelude
 import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (query_)
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed),
       convertNewsRaw,

@@ -2,7 +2,7 @@ module Domain.Services.LogMonad where
 
 import ClassyPrelude
 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
  
 
 

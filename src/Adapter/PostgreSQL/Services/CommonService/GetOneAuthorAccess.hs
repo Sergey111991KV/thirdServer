@@ -2,7 +2,7 @@ module Adapter.PostgreSQL.Services.CommonService.GetOneAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, IO ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
    
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 

@@ -13,7 +13,7 @@ import ClassyPrelude
       map )
 import Database.PostgreSQL.Simple (query_)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
       HelpForRequest(NewsEntReq, AuthorEntReq, UserEntReq, TagEntReq,

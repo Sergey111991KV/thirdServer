@@ -4,7 +4,7 @@ import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, IO, (++) ) 
 import Database.PostgreSQL.Simple (Only(Only), query)
 import Domain.Services.LogMonad 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
     ( errorText,
       ErrorServer(DataErrorPostgreSQL),
       UserId,

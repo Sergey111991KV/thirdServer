@@ -13,7 +13,7 @@ import ClassyPrelude
       LazySequence(fromStrict),
       Utf8(encodeUtf8) )
 
-import Domain.Types.ImportTypes
+import Domain.Types.ExportTypes
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
 import Data.Aeson

@@ -32,7 +32,7 @@ library
       Adapter.HTTPWAI.Route
       Adapter.PostgreSQL.Common
       Adapter.PostgreSQL.ImportLibrary
-      Adapter.PostgreSQL.ImportPostgres
+      Adapter.PostgreSQL.ExportPostgres
       Adapter.PostgreSQL.Services.AccessService
       Adapter.PostgreSQL.Services.Auth
       Adapter.PostgreSQL.Services.CommonService.Create
@@ -53,7 +53,7 @@ library
       Domain.Services.Auth
       Domain.Services.CommonService
       Domain.Services.FilterService
-      Domain.Services.ImportServices
+      Domain.Services.ExportServices
       Domain.Services.LogMonad
       Domain.Services.SortedOfService
       Domain.Types.AuthEntity.Auth
@@ -68,7 +68,7 @@ library
       Domain.Types.BusinessEntity.User
       Domain.Types.HelpForRequest.HelpForRequest
       Domain.Types.ImportLibrary
-      Domain.Types.ImportTypes
+      Domain.Types.ExportTypes
       Domain.Types.LogEntity.LogEntity
       Domain.Types.ParseRowEntity
       Lib

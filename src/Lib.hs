@@ -2,7 +2,7 @@ module Lib
   ( mainServer
   ) where
 
-import qualified Adapter.PostgreSQL.ImportPostgres as Pos
+import qualified Adapter.PostgreSQL.ExportPostgres as Pos
 import ClassyPrelude
     ( ($),
       Monad,
@@ -28,8 +28,8 @@ import Control.Monad.Except
 import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config
-import Domain.Services.ImportServices
-import Domain.Types.ImportTypes 
+import Domain.Services.ExportServices
+import Domain.Types.ExportTypes 
 import qualified Domain.Types.LogEntity.LogEntity as Log
 import qualified Network.Wai.Handler.Warp as W 
 import qualified Adapter.HTTPWAI.ImportHTTP as MyHTTP
