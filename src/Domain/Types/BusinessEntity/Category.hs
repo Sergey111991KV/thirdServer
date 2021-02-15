@@ -5,6 +5,19 @@ import ClassyPrelude
 import qualified Data.Attoparsec.ByteString.Char8 as A
 import Database.PostgreSQL.Simple.FromField (FromField(..), fromJSONField)
 import Domain.Types.ImportLibrary
+    ( FromJSON,
+      Value(Null),
+      ToJSON,
+      char8,
+      FromRow(..),
+      ToRow(..),
+      Action(Plain, Many),
+      field,
+      ToField(..),
+      toJSONField,
+      fromPGRow',
+      parseMaybeInt,
+      textContent )
 
 
 import Database.PostgreSQL.Simple.Types (PGArray(PGArray))

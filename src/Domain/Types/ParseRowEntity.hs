@@ -1,27 +1,7 @@
 module Domain.Types.ParseRowEntity where
 
 import ClassyPrelude
-  ( Alternative((<|>), many)
-  , Applicative((*>), (<*), pure)
-  , Bool(True)
-  , ByteString
-  , Either(Left, Right)
-  , Int
-  , Maybe(..)
-  , Monoid(mconcat)
-  , Text
-  , Typeable
-  , UTCTime
-  , Utf8(decodeUtf8)
-  , ($)
-  , (.)
-  , (<$>)
-  , defaultTimeLocale
-  , formatTime
-  , maybe
-  , parseTimeM
-  , unpack
-  )
+
 import qualified Data.Attoparsec.ByteString.Char8 as A
 import qualified Data.ByteString.Char8 as B
 import Data.Time (ZonedTime, zonedTimeToUTC)

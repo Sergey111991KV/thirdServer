@@ -86,31 +86,6 @@ editing (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    DraftEntReq  -> do
-      let draft = (getData (AnEntity ent) :: Draft)
-      let q =
-            "UPDATE draft SET text_draft=(?), data_create_draft=(?), news_id_draft=(?), main_photo_draft=(?), other_photo_draft=(?), short_name_draft=(?), tags_id=(?), id_author_draft=(?) where id_draft =(?);"
-      result <-
-        withConn $ \conn ->
-          execute
-            conn
-            q
-            ( textDraft draft
-            , dataCreateDraft draft
-            , newsIdDraft draft
-            , mainPhotoUrl draft
-            , otherPhotoUrl draft
-            , shortNameDraft draft
-            , tagsId draft
-            , idAuthorDraft draft
-            , idDraft draft)
-      case result of
-        1 -> do
-          writeLogD "update draft good!"
-          return ()
-        _ -> do
-          writeLogE (errorText DataErrorPostgreSQL)
-          throwError DataErrorPostgreSQL
     TagEntReq -> do
       let tag = (getData (AnEntity ent) :: Tag)
       let qTag = "UPDATE tag SET name_tag=(?) where id_tag= (?);"
