@@ -12,13 +12,18 @@ import ClassyPrelude
       IsMap(lookup),
       LazySequence(fromStrict),
       Utf8(encodeUtf8) )
-
+ 
 import Domain.Types.ExportTypes
+    ( errorText,
+      ErrorServer(ErrorConvert, ErrorGetCookie),
+      SessionId(SessionId) )
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
-import Data.Aeson
+import Data.Aeson ( fromEncoding, ToJSON(toEncoding) )
 import Control.Monad.Except
+    ( MonadError(throwError) )
 import Text.Parsec as Parsec
+    ( Parsec, char, digit, letter, many1, (<|>), parse )
 
 serverErrorResponse :: Monad m => ErrorServer ->  m HTTP.Response
 serverErrorResponse err = do

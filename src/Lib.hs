@@ -12,19 +12,21 @@ import ClassyPrelude
       IO,
       Either,
       Text,
-      MonadIO(..),
+      getCurrentTime,
       either,
-      SomeException,
-      TVar,
       (++),
       print,
-      getCurrentTime,
       try,
       newTVarIO,
       readTVarIO,
+      MonadIO(..),
+      TVar,
+      SomeException,
       MonadReader(..),
       ReaderT(..) )
+   
 import Control.Monad.Except
+    ( MonadError, ExceptT, runExceptT )
 import Control.Monad.Catch (MonadThrow)
 import qualified Data.Text.IO as TIO
 import qualified Domain.Config.Config as Config

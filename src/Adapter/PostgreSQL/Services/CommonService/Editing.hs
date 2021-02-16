@@ -3,22 +3,21 @@ module Adapter.PostgreSQL.Services.CommonService.Editing where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
 import Domain.Types.ExportTypes
-    ( errorText,
+    ( HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
+                     CommentEntReq, TagEntReq),
+      errorText,
       ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
-                     CommentEntReq, DraftEntReq, TagEntReq),
       UserId(userIdRaw),
       Category(parentCategory, nameCategory, idCategory),
-      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
-            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft, idDraft),
-      Tag(nameTag, idTag),
       Author(idLinkUser, description, idAuthor),
-      User(nameUser, lastName, userLogin, userPassword, avatar,
-           dataCreate, userIsAdmin, userIsAuthor, idUser),
+      Tag(nameTag, idTag),
       Comment(textComments, dataCreateComments, newsIdComments,
               usersIdComments),
+      User(nameUser, lastName, userLogin, userPassword, avatar,
+           dataCreate, userIsAdmin, userIsAuthor, idUser),
       AnEntity(..),
-      Entity(getData, getHelpRequest) ) 
+      Entity(getData, getHelpRequest) )
+   
 import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (execute)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
