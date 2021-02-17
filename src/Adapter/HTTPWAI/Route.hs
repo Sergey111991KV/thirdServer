@@ -109,50 +109,57 @@ route req = do
                 let unpackIdEntity = BP.read  idE :: Int 
                 user <- getOneCommon sess UserEntReq unpackIdEntity
                 return $ successResponse  (getData  user :: User )
-            GET  ["users"] -> do
-                users <- getArrayCommon sess UserEntReq
+            GET  ["users",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                users <- getArrayCommon sess UserEntReq unpackPage
                 return $ successResponse  (map getData  users :: [User] )
             GET  ["author", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 author <- getOneCommon sess AuthorEntReq unpackIdEntity
                 return $ successResponse  (getData  author :: Author )
-            GET  ["authors"] -> do
-                authors <- getArrayCommon sess AuthorEntReq
+            GET  ["authors",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                authors <- getArrayCommon sess AuthorEntReq unpackPage
                 return $ successResponse  (map getData  authors :: [Author] )
             GET  ["category", idE] -> do   
                 let unpackIdEntity = BP.read  idE :: Int 
                 category <- getOneCommon sess CategoryEntReq unpackIdEntity
                 return $ successResponse  (getData  category :: Category )
-            GET  ["categorys"] -> do
-                categorys <- getArrayCommon sess CategoryEntReq
+            GET  ["categorys",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                categorys <- getArrayCommon sess CategoryEntReq unpackPage
                 return $ successResponse  (map getData  categorys :: [Category] )
             GET  ["comment", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 comment <- getOneCommon sess CommentEntReq unpackIdEntity
                 return $ successResponse  (getData  comment :: Comment )
-            GET  ["comments"] -> do
-                comments' <- getArrayCommon sess CommentEntReq
+            GET  ["comments",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                comments' <- getArrayCommon sess CommentEntReq unpackPage
                 return $ successResponse  (map getData  comments' :: [Comment] )
             GET  ["draft", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 draft <- getOneCommon sess DraftEntReq unpackIdEntity
                 return $ successResponse  (getData  draft :: Draft )
-            GET  ["drafts"] -> do
-                drafts <- getArrayCommon sess DraftEntReq
+            GET  ["drafts", page] -> do
+                let unpackPage = BP.read  page :: Int 
+                drafts <- getArrayCommon sess DraftEntReq unpackPage
                 return $ successResponse  (map getData  drafts :: [Draft] )
             GET  ["tag", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 tag <- getOneCommon sess TagEntReq unpackIdEntity
                 return $ successResponse  (getData  tag :: Tag )
-            GET  ["tags"] -> do
-                tags <- getArrayCommon sess TagEntReq
+            GET  ["tags",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                tags <- getArrayCommon sess TagEntReq unpackPage
                 return $ successResponse  (map getData  tags :: [Tag] )
             GET  ["news", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 news <- getOneCommon sess NewsEntReq unpackIdEntity
                 return $ successResponse  (getData  news :: News )
-            GET  ["news_s"] -> do
-                news <- getArrayCommon sess NewsEntReq
+            GET  ["news_s",page] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- getArrayCommon sess NewsEntReq unpackPage
                 return $ successResponse  (map getData  news :: [News] )
 
             POST  ["user"] -> do

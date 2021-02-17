@@ -2,13 +2,7 @@ module Domain.Services.CommonService where
 
 import ClassyPrelude ( Monad((>>=), (>>)), Int ) 
 import Domain.Types.ExportTypes
-    ( ErrorServer(NotTakeEntity),
-      HelpForRequest(DraftEntReq, AuthorEntReq, UserEntReq, TagEntReq,
-                     CommentEntReq, CategoryEntReq),
-      SessionId,
-      UserId,
-      AnEntity,
-      fromAnEntity )
+   
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.Auth (Auth(findUserIdBySession))
 import Domain.Services.AccessService ( Access(..) ) 
@@ -21,8 +15,8 @@ class (Access m) =>
   editingAuthorAccess :: AnEntity -> UserId -> m  ()
   remove :: HelpForRequest -> Int -> m  ()
   removeAuthorAccess :: Int -> UserId ->  m  ()
-  getAll :: HelpForRequest -> m  [AnEntity]
-  getAllAuthorAccess :: UserId -> m [AnEntity]
+  getAll :: HelpForRequest -> Int -> m  [AnEntity]
+  getAllAuthorAccess :: UserId -> Int -> m [AnEntity]
   getOne :: HelpForRequest -> Int -> m  AnEntity
   getOneAuthorAccess :: Int -> UserId -> m  AnEntity
   publish :: UserId -> Int -> m  ()
@@ -64,6 +58,7 @@ removeCommon sess helpReq idEnt = do
     CommentEntReq -> remove  helpReq idEnt 
     CategoryEntReq -> checkAdminAccess sess >> remove  helpReq idEnt 
     DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  removeAuthorAccess idEnt 
+    NewsEntReq -> remove  helpReq idEnt 
     _ ->  throwError NotTakeEntity
 
 getOneCommon :: CommonService m =>  SessionId -> HelpForRequest -> Int -> m  AnEntity
@@ -75,15 +70,20 @@ getOneCommon sess helpReq idE = do
     CommentEntReq -> getOne  helpReq idE 
     CategoryEntReq ->  getOne  helpReq idE 
     DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  getOneAuthorAccess idE 
+    NewsEntReq ->  getOne  helpReq idE 
     _ -> throwError NotTakeEntity
 
-getArrayCommon :: CommonService m => SessionId -> HelpForRequest -> m [AnEntity]
-getArrayCommon sess helpReq  = do
+getArrayCommon :: CommonService m => SessionId -> HelpForRequest -> Int -> m [AnEntity]
+getArrayCommon sess helpReq page = do
   case helpReq of
-    AuthorEntReq -> checkAdminAccess sess >> getAll helpReq 
-    UserEntReq ->  checkAdminAccess sess >> getAll  helpReq  
-    TagEntReq ->  getAll  helpReq  
-    CommentEntReq -> getAll  helpReq  
-    CategoryEntReq ->  getAll  helpReq  
-    DraftEntReq -> checkAuthorAccess sess >> findUserIdBySession sess >>=  getAllAuthorAccess  
+    AuthorEntReq -> checkAdminAccess sess >> getAll helpReq page
+    UserEntReq ->  checkAdminAccess sess >> getAll  helpReq  page
+    TagEntReq ->  getAll  helpReq  page
+    CommentEntReq -> getAll  helpReq  page
+    CategoryEntReq ->  getAll  helpReq  page
+    DraftEntReq -> do
+      checkAuthorAccess sess 
+      uId <- findUserIdBySession sess
+      getAllAuthorAccess uId page
+    NewsEntReq -> getAll helpReq page
     _ -> throwError NotTakeEntity

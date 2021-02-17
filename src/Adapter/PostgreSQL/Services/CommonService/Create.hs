@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Create where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
@@ -23,6 +24,7 @@ import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple (execute)
 import Database.PostgreSQL.Simple.Types (Null(Null))
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
+import Database.PostgreSQL.Simple.SqlQQ
 
 
 
@@ -122,13 +124,16 @@ create (AnEntity ent) = do
           throwError DataErrorPostgreSQL
     UserEntReq -> do
       let user = (getData (AnEntity ent) :: User)
-      let qUser =
-            "INSERT INTO usernews (name_user, lastname , login_user , password_user , avatar_user , datacreate_user , admin , authoris)  VALUES (?,?,?,?,?,?,?,?);"
       result <-
         withConn $ \conn ->
           execute
             conn
-            qUser
+            [sql| INSERT INTO usernews 
+                (name_user, lastname , 
+                login_user , password_user , 
+                avatar_user , datacreate_user , 
+                admin , authoris)  VALUES 
+                (?,?,?,?,?,?,?,?);   |]
             ( nameUser user
             , lastName user
             , userLogin user

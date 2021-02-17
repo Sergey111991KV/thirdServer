@@ -2,8 +2,8 @@ module Adapter.PostgreSQL.Services.CommonService.GetAllAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude
-    ( ($), Monad(return), Functor(fmap), IO, (++), null )
-import Database.PostgreSQL.Simple (query)
+ 
+import Database.PostgreSQL.Simple
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
 import Domain.Types.ExportTypes
     ( errorText,
@@ -13,8 +13,8 @@ import Domain.Types.ExportTypes
       AnEntity(..) )
 import Control.Monad.Except ( MonadError(throwError) ) 
 
-getAllAuthorAccess :: PG r m => UserId -> m [AnEntity]
-getAllAuthorAccess uId = do
+getAllAuthorAccess :: PG r m => UserId -> Int -> m [AnEntity]
+getAllAuthorAccess uId page = do
   let q =
         "SELECT  draft.id_draft, \
                            \ draft.text_draft, \
@@ -26,8 +26,8 @@ getAllAuthorAccess uId = do
                            \ draft.tags_id, \
                            \ draft.id_author_draft \
                                  \   from draft, author where draft.id_author_draft= author.id_author  \
-                                                            \    and author.id_link_user = (?) limit 20;"
-  result <- withConn $ \conn -> query conn q [uId] :: IO [Draft]
+                                                            \    and author.id_link_user = (?) limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q (uId, page) :: IO [Draft]
   if null result
     then do
       writeLogE $ errorText DataErrorPostgreSQL ++ " not draft "
