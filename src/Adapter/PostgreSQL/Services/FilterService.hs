@@ -4,7 +4,7 @@ import Adapter.PostgreSQL.Common
     ( requestForPost,
       withConn,
       PG,
-      requestForPostFilterTag,
+      requestForPostFilter,
       requestForPostAllFilterTag )
 import ClassyPrelude
     ( otherwise,
@@ -28,10 +28,10 @@ import Domain.Types.ExportTypes
 import Control.Monad.Except ( MonadError(throwError) )
 import qualified Prelude as   P
 
-filterOfData :: PG r m => Text -> Text -> m  [News]
-filterOfData condition time = do
-  let q = requestForPost ++ conversCond condition
-  result <- withConn $ \conn -> query conn q [time] :: IO [NewsRaw]
+filterOfData :: PG r m => Text -> Text -> Int -> m [News]
+filterOfData condition time page = do
+  let q = requestForPost ++ conversCond condition ++ " limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q (time,page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterOfData")
@@ -47,10 +47,10 @@ conversCond txtCond
                 | txtCond == "equel" = " where data_creat_news == (?);"
                 | otherwise = "Error"
 
-filterAuthor :: PG r m => Int -> m  [News]
-filterAuthor idA = do
-  let q = requestForPostFilterTag ++ " where endNews.id_author = (?) limit 20;"
-  result <- withConn $ \conn -> query conn q  [idA]   :: IO [NewsRaw]
+filterAuthor :: PG r m => Int -> Int -> m [News]
+filterAuthor idA page = do
+  let q = requestForPostFilter ++ " where endNews.id_author = (?) limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q  (idA, page)   :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterAuthor")
@@ -59,10 +59,10 @@ filterAuthor idA = do
       writeLogD "filterAuthor success "
       return $ map convertNewsRaw news
 
-filterCategory :: PG r m => Int -> m [News]
-filterCategory catId = do
-  let q = requestForPostFilterTag ++ " where endNews.category_id_news = (?) limit 20;"
-  result <- withConn $ \conn -> query conn q [ catId ] :: IO [NewsRaw]
+filterCategory :: PG r m => Int -> Int -> m [News]
+filterCategory catId page = do
+  let q = requestForPostFilter ++ " where endNews.category_id_news = (?) limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q (catId, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterCategory")
@@ -71,11 +71,11 @@ filterCategory catId = do
       writeLogD "filterCategory success "
       return $ map convertNewsRaw news
 
-filterTag :: PG r m => Int -> m [News]
-filterTag idT = do
-  let q = requestForPostFilterTag ++ " where tags_news.tags_id = (?) limit 20;"
+filterTag :: PG r m => Int -> Int -> m [News]
+filterTag idT page = do
+  let q = requestForPostFilter ++ " where tags_news.tags_id = (?) limit 20 offset (?);"
   liftIO $ P.print  idT
-  result <- withConn $ \conn -> query conn q [idT ] :: IO [NewsRaw]
+  result <- withConn $ \conn -> query conn q (idT, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterTeg")
@@ -84,13 +84,13 @@ filterTag idT = do
       writeLogD "filterTeg success "
       return $ map convertNewsRaw news
 
-filterOneOfTags :: PG r m => Text -> m [News]
-filterOneOfTags idTarray = do
+filterOneOfTags :: PG r m => Text -> Int -> m [News]
+filterOneOfTags idTarray page = do
   let reqArr = "{" ++ idTarray ++ "}"
-  let q = requestForPostFilterTag ++ " where  tags_news.tags_id = any (?) limit 20;"
+  let q = requestForPostFilter ++ " where  tags_news.tags_id = any (?) limit 20 offset (?);"
   result <-
     withConn $ \conn ->
-      query conn q [reqArr] :: IO [NewsRaw]
+      query conn q (reqArr, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterOneOfTags")
@@ -99,13 +99,13 @@ filterOneOfTags idTarray = do
       writeLogD "filterOneOfTags success "
       return $ map convertNewsRaw news
 
-filterAllOfTags :: PG r m => Text -> m  [News]
-filterAllOfTags idTarray = do
+filterAllOfTags :: PG r m => Text -> Int -> m  [News]
+filterAllOfTags idTarray page = do
   let reqArr = createAllTagRequest $ unpack idTarray
   let q = requestForPostAllFilterTag 
   result <-
     withConn $ \conn ->
-      query conn q [reqArr] :: IO [NewsRaw]
+      query conn q (reqArr, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterAllOfTags")
@@ -121,11 +121,11 @@ createAllTagRequest  = createAllTagRequest' "%"
     createAllTagRequest' arr (',':xs) = createAllTagRequest' arr xs
     createAllTagRequest' arr (x:xs) = createAllTagRequest' (arr ++ [x] ++ "%") xs
  
-filterName :: PG r m => Text -> m  [News]
-filterName txtName = do
+filterName :: PG r m => Text -> Int -> m [News]
+filterName txtName page = do
   let insertText = "%" ++ txtName ++ "%"
-  let q = requestForPost ++ " where endNews.short_name_news LIKE (?) limit 20;"
-  result <- withConn $ \conn -> query conn q [insertText] :: IO [NewsRaw]
+  let q = requestForPost ++ " where endNews.short_name_news LIKE (?) limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q (insertText, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterName")
@@ -134,11 +134,11 @@ filterName txtName = do
       writeLogD "filterName success "
       return $ map convertNewsRaw news
 
-filterContent :: PG r m => Text -> m [News]
-filterContent txtContent = do
+filterContent :: PG r m => Text -> Int -> m [News]
+filterContent txtContent page = do
   let insertText = "%" ++ txtContent ++ "%"
-  let q = requestForPost ++ " where endNews.text_news LIKE (?) limit 20;"
-  result <- withConn $ \conn -> query conn q [insertText] :: IO [NewsRaw]
+  let q = requestForPost ++ " where endNews.text_news LIKE (?) limit 20 offset (?);"
+  result <- withConn $ \conn -> query conn q (insertText, page) :: IO [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterContent")

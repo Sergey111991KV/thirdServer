@@ -109,8 +109,8 @@ requestForPost =
 				                        \ from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews "
 
 
-requestForPostFilterTag :: Query
-requestForPostFilterTag =
+requestForPostFilter :: Query
+requestForPostFilter =
   " select  distinct  endNews.id_news \
 				                        \ , endNews.data_creat_news \
 				                        \ , endNews.id_author \
@@ -154,4 +154,5 @@ requestForPostAllFilterTag =
 				                        \ , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) \
 				                        \ from  (select * from (select news_id,  row(array_agg(distinct tags_id)) as d from \
  				                        \ tags_news  GROUP BY news_id  ) as e  right join (select * from news left join author on author.id_author = news.authors_id_news ) as n ON e.news_id = n.id_news) as endNews \
-                                \ where (endNews.d :: text) LIKE ((?) :: text) limit 20;"
+                                \ where (endNews.d :: text) LIKE ((?) :: text) limit 20  offset (?);"
+                 

@@ -73,36 +73,45 @@ route req = do
                 publishAction sess unpackIdEntity
                 return $ successResponse   ("publish news" :: Text)
 
-            GET  ["news", "sortedNews", condition ] -> do
-                news <- sortedNews condition
+            GET  ["news", "sortedNews", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- sortedNews condition unpackPage
                 return $ successResponse news 
 
-            GET  ["news", "filterAuthor", condition ] -> do
+            GET  ["news", "filterAuthor", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
                 let unpackIdAuthor = BP.read  condition :: Int 
-                news <- filterAuthor unpackIdAuthor
+                news <- filterAuthor unpackIdAuthor unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterCategory", condition ] -> do
+            GET  ["news", "filterCategory", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
                 let unpackIdCategory = BP.read  condition :: Int 
-                news <- filterCategory unpackIdCategory
+                news <- filterCategory unpackIdCategory unpackPage
                 return $ successResponse news
-            GET  ["news", "filterOfData", condition , date] -> do
-                news <- filterOfData condition date
+            GET  ["news", "filterOfData", condition , date, page] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- filterOfData condition date unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterOneOfTags", condition ] -> do
-                news <- filterOneOfTags condition
+            GET  ["news", "filterOneOfTags", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- filterOneOfTags condition unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterAllOfTags", condition ] -> do
-                news <- filterAllOfTags condition
+            GET  ["news", "filterAllOfTags", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- filterAllOfTags condition unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterName", condition ] -> do
-                news <- filterName condition
+            GET  ["news", "filterName", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- filterName condition unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterTag", condition ] -> do
+            GET  ["news", "filterTag", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
                 let unpackIdTag = BP.read  condition :: Int 
-                news <- filterTag unpackIdTag
+                news <- filterTag unpackIdTag unpackPage
                 return $ successResponse news 
-            GET  ["news", "filterContent", condition ] -> do
-                news <- filterContent condition
+            GET  ["news", "filterContent", condition, page ] -> do
+                let unpackPage = BP.read  page :: Int 
+                news <- filterContent condition unpackPage
                 return $ successResponse news 
 
             GET  ["user", idE] -> do

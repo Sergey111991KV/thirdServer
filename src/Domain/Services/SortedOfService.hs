@@ -1,7 +1,7 @@
 module Domain.Services.SortedOfService where
 
-import ClassyPrelude ( Text ) 
+import ClassyPrelude ( Int, Text ) 
 import Domain.Types.ExportTypes ( News ) 
 
 class SortedOfService m where
-  sortedNews :: Text -> m [News]
+  sortedNews :: Text -> Int -> m [News]
