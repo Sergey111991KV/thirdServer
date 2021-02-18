@@ -6,16 +6,16 @@ import Domain.Types.ExportTypes
    
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Database.PostgreSQL.Simple (query)
+import Adapter.PostgreSQL.ImportLibrary
+import qualified Data.ByteString.Lazy.Internal as LB
 
-
-getOneAuthorAccess :: PG r m => Int -> UserId -> m  AnEntity
+getOneAuthorAccess :: PG r m => Int -> UserId -> m  LB.ByteString 
 getOneAuthorAccess idE idA = do
   resultDraft <- withConn $ \conn -> query conn qry (idA, idE) :: IO [Draft]
   case resultDraft of
     [x] -> do
           writeLogD "getOne Draft success!"
-          return $ AnEntity x
+          return $ encode  x
     _ -> do
           writeLogE "getOneDraft DataErrorPostgreSQL "
           throwError DataErrorPostgreSQL

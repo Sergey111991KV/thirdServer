@@ -5,12 +5,9 @@ import ClassyPrelude
     ( otherwise, ($), Eq((==)), Monad(return), Int ) 
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
-                     NewsEntReq, TagEntReq) )
+import Adapter.PostgreSQL.ImportLibrary
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Database.PostgreSQL.Simple (execute)
+
 
 remove :: PG r m => HelpForRequest -> Int -> m ()
 remove ent idE

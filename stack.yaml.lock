@@ -39,6 +39,13 @@ packages:
       sha256: c32802b5ecbd49d0c73f3302ada16aeb33e55d9be49e38c84fb4bd700aae9fb8
   original:
     hackage: basic-prelude-0.7.0
+- completed:
+    hackage: template-haskell-2.15.0.0@sha256:6e803fbff5069effa18a921c76b3fed4535542e0721b464f38012b2f9eb66562,1894
+    pantry-tree:
+      size: 850
+      sha256: f791cf4dc36c6205e259019389bff7c4a146ef06117f36d63a571521d147779b
+  original:
+    hackage: template-haskell-2.15.0.0
 snapshots:
 - completed:
     size: 532380

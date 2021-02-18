@@ -45,6 +45,7 @@ dependencies:
 - attoparsec
 - basic-prelude
 - strict
+- template-haskell
 
 
 library:
@@ -83,6 +84,8 @@ default-extensions:
 - UndecidableInstances
 - DataKinds
 - QuasiQuotes 
+- MultiParamTypeClasses
+
 
 tests:
   thirdServer-test:

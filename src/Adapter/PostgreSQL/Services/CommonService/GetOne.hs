@@ -11,26 +11,16 @@ import ClassyPrelude
       null,
       head,
       impureNonNull )
-import Database.PostgreSQL.Simple (query)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, ErrorConvert,
-                  DataErrorPostgreSQL),
-      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
-                     NewsEntReq, TagEntReq, CommentEntReq),
-      convertCategoryRawArray,
-      CategoryRaw,
-      Tag,
-      Author,
-      User,
-      Comment,
-      convertNewsRaw,
-      NewsRaw,
-      AnEntity(..) )
+   
 import Control.Monad.Except ( MonadError(throwError) ) 
+import Adapter.PostgreSQL.ImportLibrary
+import qualified Data.ByteString.Lazy.Internal as LB
 
-getOne :: PG r m => HelpForRequest -> Int -> m AnEntity
+
+
+getOne :: PG r m => HelpForRequest -> Int -> m LB.ByteString 
 getOne helpR idE = do
   case helpR of
     AuthorEntReq -> do
@@ -39,7 +29,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne Author success!"
-          return $ AnEntity x
+          return $ encode  x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -49,7 +39,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne User success!"
-          return $ AnEntity x
+          return $ encode x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -60,7 +50,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne News success!"
-          return $ AnEntity $ convertNewsRaw x
+          return $ encode $ convertNewsRaw x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -70,7 +60,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne Tag success!"
-          return $ AnEntity x
+          return $ encode x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -80,7 +70,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne Comment success!"
-          return $ AnEntity x
+          return $ encode x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -100,7 +90,7 @@ getOne helpR idE = do
           throwError DataErrorPostgreSQL
         else do
           let cat = head $ impureNonNull $ convertCategoryRawArray i
-          return $ AnEntity cat
+          return $ encode cat
     _ -> do
       writeLogE (errorText ErrorTakeEntityNotSupposed)
       throwError ErrorTakeEntityNotSupposed

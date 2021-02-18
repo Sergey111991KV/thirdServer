@@ -2,13 +2,9 @@ module Adapter.PostgreSQL.Services.CommonService.Publish where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Int, IO, (++) ) 
-import Database.PostgreSQL.Simple (Only(Only), query)
 import Domain.Services.LogMonad 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      UserId,
-      LogWrite(Debug) )
+import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) )
 
 publish :: PG r m => UserId -> Int -> m ()

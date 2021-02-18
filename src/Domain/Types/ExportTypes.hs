@@ -12,5 +12,4 @@ import Domain.Types.BusinessEntity.ErrorServer as Y
 import Domain.Types.BusinessEntity.News as Y
 import Domain.Types.BusinessEntity.Tag as Y
 import Domain.Types.BusinessEntity.User as Y
-import Domain.Types.HelpForRequest.HelpForRequest as Y
 import Domain.Types.LogEntity.LogEntity as Y

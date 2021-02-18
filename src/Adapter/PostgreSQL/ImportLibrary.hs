@@ -12,3 +12,4 @@ import Database.PostgreSQL.Simple.FromRow as X
 import Database.PostgreSQL.Simple.ToField as X
 import Database.PostgreSQL.Simple.ToRow as X
 import GHC.Generics as X
+import Database.PostgreSQL.Simple.SqlQQ as X

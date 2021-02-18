@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Lib
   ( mainServer
   ) where
@@ -36,7 +37,9 @@ import qualified Domain.Types.LogEntity.LogEntity as Log
 import qualified Network.Wai.Handler.Warp as W 
 import qualified Adapter.HTTPWAI.ImportHTTP as MyHTTP
 
-
+import Database.PostgreSQL.Simple.Types
+import Database.PostgreSQL.Simple.SqlQQ 
+import qualified Domain.DomainEntityLogic.DomainEntityLogic as DomLog
 
 type State = (Pos.State, TVar Log.StateLog)
 
@@ -68,6 +71,11 @@ instance Auth App where
 instance Access App where
   checkAuthorAccess = Pos.checkAuthorAccess
   checkAdminAccess = Pos.checkAdminAccess
+
+instance Entity App where
+  fromAnEntity = DomLog.fromAnEntity
+  toAnEntity = DomLog.toAnEntity
+  toHelpForRequest = DomLog.toHelpForRequest
 
 instance CommonService App where
   create = Pos.create
@@ -115,6 +123,8 @@ mainWithConfig config =
 
 mainServer :: IO ()
 mainServer = do
+  -- --  [sql| INSERT INTO author (id_link_user, description) VALUES (?,?);|] 
+  -- print $ fromQuery $ Pos.requestForPost ++ [sql| where data_creat_news <= (?);|]
   configFromFile :: Either SomeException Text <- ClassyPrelude.try $ TIO.readFile "server.config" 
   either print  (\conf -> do
                 caseOfConf <- Config.parseConf conf

@@ -11,3 +11,4 @@ import Domain.Services.LogMonad as Y
   
 import Domain.Services.SortedOfService as Y (SortedOfService(..))
 import Domain.Services.AccessService as Y ( Access(..) )
+import Domain.Services.EntityService as Y 

@@ -2,12 +2,13 @@ module Adapter.PostgreSQL.Services.AccessService where
 
 import ClassyPrelude ( ($), Monad(return), Bool(..), IO )
 import Adapter.PostgreSQL.Common ( withConn, PG )
-import Database.PostgreSQL.Simple (Only(Only), query)
 import Domain.Services.Auth (Auth(findUserIdBySession))
 import Domain.Types.ExportTypes
 import Domain.Services.LogMonad 
 import Control.Monad.Except ( MonadError(throwError) )
-  
+import Adapter.PostgreSQL.ImportLibrary
+
+
 checkAdminAccess :: PG r m => SessionId -> m ()
 checkAdminAccess sesId = do
     idU <- findUserIdBySession sesId

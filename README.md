@@ -55,12 +55,12 @@ exit  | Get /api/auth/exit
 
 Entity       | Api
 ------------ | -------------
-users        | GET /api/getAll/user
-authors      | GET /api/getAll/author
-tags         | GET /api/getAll/tag
-categories   | GET api/getAll/category
-drafts       | GET /api/getAll/draft
-news         | GET /api/getAll/news
+users        | GET /api/getAll/user/:page
+authors      | GET /api/getAll/author/:page
+tags         | GET /api/getAll/tag/:page
+categories   | GET api/getAll/category/:page
+drafts       | GET /api/getAll/draft/:page
+news         | GET /api/getAll/news/:page
 
 ### Get methods one entity
 
@@ -113,20 +113,20 @@ comment | DELETE /api/delete/comment/:id
 
 Sort         | Api
 ------------ | -------------
-author | /api/news/sortedNews/author
-category | /api/news/sortedNews/category
-date | /api/news/sortedNews/date
-photo | /api/news/sortedNews/photo
+author | /api/news/sortedNews/author/:page
+category | /api/news/sortedNews/category/:page
+date | /api/news/sortedNews/date/:page
+photo | /api/news/sortedNews/photo/:page
 
 ### Filter news
 
 Filter       | Api
 ------------ | -------------
-all of Tag | /api/news/filterAllOfTags/:id,id
-one of Tag | /api/news/filterOneOfTags/:id,id
-tag | /api/news/filterTeg/:id
-author | /api/news/filterAuthor/:id
-category | /api/news/filterCategory/:id
-content | /api/news/filterContent/:descrip
-name | /api/news/filterName/:news
-date | /api/news/filterOfData/less/:yyyy-mm-dd
+all of Tag | /api/news/filterAllOfTags/:id,id/:page
+one of Tag | /api/news/filterOneOfTags/:id,id/:page
+tag | /api/news/filterTeg/:id/:page
+author | /api/news/filterAuthor/:id/:page
+category | /api/news/filterCategory/:id/:page
+content | /api/news/filterContent/:descrip/:page
+name | /api/news/filterName/:news/:page
+date | /api/news/filterOfData/less/:yyyy-mm-dd/:page

@@ -1,36 +1,24 @@
 module Adapter.HTTPWAI.HelpFunction where
 
 import ClassyPrelude
-    ( ($),
-      Monad(return),
-      Applicative(pure),
-      Maybe(..),
-      ByteString,
-      either,
-      (++),
-      pack,
-      IsMap(lookup),
-      LazySequence(fromStrict),
-      Utf8(encodeUtf8) )
- 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorConvert, ErrorGetCookie),
-      SessionId(SessionId) )
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
-import Data.Aeson ( fromEncoding, ToJSON(toEncoding) )
+import Data.Aeson 
 import Control.Monad.Except
-    ( MonadError(throwError) )
 import Text.Parsec as Parsec
-    ( Parsec, char, digit, letter, many1, (<|>), parse )
+import Data.ByteString.Builder
+import qualified Data.ByteString.Lazy.Internal as LB
 
 serverErrorResponse :: Monad m => ErrorServer ->  m HTTP.Response
 serverErrorResponse err = do
         pure $ HTTP.responseLBS HTTP.status404 [] (encodeUtf8 $ fromStrict $ errorText err)
 
-successResponse :: forall a. ToJSON a  => a  -> HTTP.Response
+successResponse ::  forall a. ToJSON a  => a  ->  HTTP.Response
 successResponse  b = HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  b
+
+successResponse' ::  LB.ByteString   ->  HTTP.Response
+successResponse' b  = HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ lazyByteString b
 
 getCookie :: MonadError ErrorServer m => HTTP.Request -> m SessionId
 getCookie  req =

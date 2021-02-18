@@ -8,7 +8,6 @@ module Adapter.PostgreSQL.Services.Auth
 import Adapter.PostgreSQL.Common ( withConn, PG )
 import ClassyPrelude
     ( ($), Monad(return), IO, MonadIO(liftIO), (++) )
-import Database.PostgreSQL.Simple (execute, query)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 import Domain.Types.ExportTypes
     ( errorText,
@@ -19,6 +18,7 @@ import Domain.Types.ExportTypes
       UserId(userIdRaw) )
 import Text.StringRandom (stringRandomIO)
 import Control.Monad.Except ( MonadError(throwError) )
+import Adapter.PostgreSQL.ImportLibrary
   
 
 findUserId :: PG r m => Login -> Password -> m UserId

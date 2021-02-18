@@ -21,6 +21,7 @@ data ErrorServer
   | ErrorConvert
   | ErrorNonUserId
   | ErrorConvertNewsRaw
+  | ErrorSupposedHelpRequest
 
   deriving (Eq, Ord, Read, Show, Generic)
 

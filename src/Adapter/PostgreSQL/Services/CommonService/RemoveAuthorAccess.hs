@@ -6,8 +6,7 @@ import Domain.Types.ExportTypes
     ( errorText, ErrorServer(DataErrorPostgreSQL), UserId )
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-
-import Database.PostgreSQL.Simple (execute)
+import Adapter.PostgreSQL.ImportLibrary
 
 removeAuthorAccess ::
      PG r m =>  Int ->  UserId -> m ()

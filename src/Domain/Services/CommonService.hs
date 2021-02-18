@@ -1,13 +1,15 @@
 module Domain.Services.CommonService where
 
-import ClassyPrelude ( Monad((>>=), (>>)), Int ) 
+import ClassyPrelude 
 import Domain.Types.ExportTypes
    
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.Auth (Auth(findUserIdBySession))
 import Domain.Services.AccessService ( Access(..) ) 
+import qualified Data.ByteString.Lazy.Internal as LB
+import Domain.Services.EntityService
 
-class (Access m) =>
+class (Access m, Entity m) =>
       CommonService m
   where
   create :: AnEntity -> m  ()
@@ -15,11 +17,12 @@ class (Access m) =>
   editingAuthorAccess :: AnEntity -> UserId -> m  ()
   remove :: HelpForRequest -> Int -> m  ()
   removeAuthorAccess :: Int -> UserId ->  m  ()
-  getAll :: HelpForRequest -> Int -> m  [AnEntity]
-  getAllAuthorAccess :: UserId -> Int -> m [AnEntity]
-  getOne :: HelpForRequest -> Int -> m  AnEntity
-  getOneAuthorAccess :: Int -> UserId -> m  AnEntity
+  getAll :: HelpForRequest -> Int -> m  LB.ByteString 
+  getAllAuthorAccess :: UserId -> Int -> m LB.ByteString
+  getOne :: HelpForRequest -> Int -> m  LB.ByteString
+  getOneAuthorAccess :: Int -> UserId -> m  LB.ByteString
   publish :: UserId -> Int -> m  ()
+
 
 
 publishAction :: CommonService m => SessionId -> Int -> m ()
@@ -29,7 +32,8 @@ publishAction sess idD = do
 
 createCommon :: CommonService m => SessionId -> AnEntity -> m  ()
 createCommon sess ent = do
-  case fromAnEntity ent of
+  helpR <- fromAnEntity ent
+  case helpR of
     AuthorEntReq -> checkAdminAccess sess >> create ent
     UserEntReq -> create  ent 
     TagEntReq -> checkAdminAccess sess >> create  ent 
@@ -40,7 +44,8 @@ createCommon sess ent = do
 
 editingCommon :: CommonService m => SessionId -> AnEntity -> m  ()
 editingCommon sess ent = do
-  case fromAnEntity ent of
+  helpR <- fromAnEntity ent
+  case helpR  of
     AuthorEntReq -> checkAdminAccess sess >> editing ent
     UserEntReq ->  checkAdminAccess sess >> editing  ent -- this logic is not good, because need user check, but it is option - I can remove it
     TagEntReq -> checkAdminAccess sess >> editing  ent 
@@ -61,7 +66,7 @@ removeCommon sess helpReq idEnt = do
     NewsEntReq -> remove  helpReq idEnt 
     _ ->  throwError NotTakeEntity
 
-getOneCommon :: CommonService m =>  SessionId -> HelpForRequest -> Int -> m  AnEntity
+getOneCommon :: CommonService m =>  SessionId -> HelpForRequest -> Int -> m  LB.ByteString
 getOneCommon sess helpReq idE = do
   case helpReq of
     AuthorEntReq -> checkAdminAccess sess >> getOne helpReq idE
@@ -73,7 +78,7 @@ getOneCommon sess helpReq idE = do
     NewsEntReq ->  getOne  helpReq idE 
     _ -> throwError NotTakeEntity
 
-getArrayCommon :: CommonService m => SessionId -> HelpForRequest -> Int -> m [AnEntity]
+getArrayCommon :: CommonService m => SessionId -> HelpForRequest -> Int -> m LB.ByteString
 getArrayCommon sess helpReq page = do
   case helpReq of
     AuthorEntReq -> checkAdminAccess sess >> getAll helpReq page
@@ -87,3 +92,5 @@ getArrayCommon sess helpReq page = do
       getAllAuthorAccess uId page
     NewsEntReq -> getAll helpReq page
     _ -> throwError NotTakeEntity
+
+

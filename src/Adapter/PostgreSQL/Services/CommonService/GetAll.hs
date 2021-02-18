@@ -6,22 +6,11 @@ import ClassyPrelude
 import Database.PostgreSQL.Simple 
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      HelpForRequest(NewsEntReq, AuthorEntReq, UserEntReq, TagEntReq,
-                     CategoryEntReq),
-      convertCategoryRawArray,
-      CategoryRaw,
-      Tag,
-      Author,
-      User,
-      convertNewsRaw,
-      NewsRaw,
-      AnEntity(..) )
+import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) )
+import qualified Data.ByteString.Lazy.Internal as LB
 
-
-getAll :: PG r m => HelpForRequest -> Int -> m  [AnEntity]
+getAll :: PG r m => HelpForRequest -> Int -> m  LB.ByteString
 getAll helpEnt p = do
   let page = p * 20
   case helpEnt of
@@ -34,7 +23,7 @@ getAll helpEnt p = do
           throwError DataErrorPostgreSQL
         authorsArray -> do
           writeLogD "gett all author success!"
-          return  $ fmap AnEntity authorsArray
+          return  $ encode authorsArray
     UserEntReq -> do
       let qUser = "SELECT * from usernews limit 20 offset (?);"
       result <- withConn $ \conn -> query conn qUser [page] :: IO [User]
@@ -44,7 +33,7 @@ getAll helpEnt p = do
           throwError DataErrorPostgreSQL
         users -> do
           writeLogD "gett all user success!"
-          return $ fmap AnEntity users
+          return  $ encode  users
     TagEntReq -> do
       let qTag = "SELECT * from tag limit 20 offset (?);"
       result <- withConn $ \conn -> query conn qTag [page] :: IO [Tag]
@@ -54,7 +43,7 @@ getAll helpEnt p = do
           throwError DataErrorPostgreSQL
         users -> do
           writeLogD "gett all Tag success!"
-          return $ fmap AnEntity users
+          return  $ encode  users
     CategoryEntReq -> do
       let qCat = "with recursive temp1 (id_category, parent_category, name_category) as ( \
                                     \ select t1.id_category, t1.parent_category, t1.name_category \
@@ -70,7 +59,7 @@ getAll helpEnt p = do
           throwError DataErrorPostgreSQL
         cat -> do
           writeLogD "gett all Category success!"
-          return $ AnEntity <$> convertCategoryRawArray cat
+          return  . encode $ convertCategoryRawArray cat
     NewsEntReq -> do
       let qDraft = requestForPost ++ " limit 20 offset (?);"
       result <- withConn $ \conn -> query conn qDraft [page] :: IO [NewsRaw]
@@ -80,7 +69,7 @@ getAll helpEnt p = do
           throwError DataErrorPostgreSQL
         news -> do
           writeLogD "gett all News success!"
-          return $ AnEntity <$> map convertNewsRaw news
+          return  . encode $ map convertNewsRaw news
     _ -> do
       writeLogE (errorText ErrorTakeEntityNotSupposed)
       throwError ErrorTakeEntityNotSupposed

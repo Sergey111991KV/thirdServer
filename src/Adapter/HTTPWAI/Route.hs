@@ -2,39 +2,12 @@ module Adapter.HTTPWAI.Route where
 
 
 import ClassyPrelude
-import Control.Monad.Except
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
+import qualified Prelude 
 import Domain.Types.ExportTypes
-    ( ErrorServer(ErrorConvert, ErrorGetCookie),
-      HelpForRequest(NewsEntReq, UserEntReq, AuthorEntReq,
-                     CategoryEntReq, CommentEntReq, DraftEntReq, TagEntReq),
-      Login(Login),
-      Password(Password),
-      Category,
-      Draft,
-      Tag,
-      Author,
-      User,
-      Comment,
-      News,
-      AnEntity(AnEntity),
-      Entity(getData) )
 import Adapter.HTTPWAI.HelpFunction
-    ( serverErrorResponse, successResponse, getCookie, setCookie )
 import Domain.Services.ExportServices
-    ( SortedOfService(..),
-      sessionByAuth,
-      FilterService(..),
-      publishAction,
-      CommonService,
-      createCommon,
-      editingCommon,
-      removeCommon,
-      getOneCommon,
-      getArrayCommon,
-      exitSession )
-import Data.Aeson
 import qualified BasicPrelude as BP
 
 type Router = [Text] 
@@ -66,7 +39,7 @@ route req = do
         case methodAndPath req of   
             GET  ["auth","exit"] -> do
                 exitSession sess
-                return $ successResponse   ("auth exit" :: Text)
+                return $ successResponse   ("auth exit" :: Text)    
 
             GET  ["publish", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
@@ -117,151 +90,79 @@ route req = do
             GET  ["user", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 user <- getOneCommon sess UserEntReq unpackIdEntity
-                return $ successResponse  (getData  user :: User )
+                return $ successResponse'  user 
             GET  ["users",page] -> do
                 let unpackPage = BP.read  page :: Int 
                 users <- getArrayCommon sess UserEntReq unpackPage
-                return $ successResponse  (map getData  users :: [User] )
+                return $ successResponse'    users 
             GET  ["author", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 author <- getOneCommon sess AuthorEntReq unpackIdEntity
-                return $ successResponse  (getData  author :: Author )
+                return $ successResponse'   author 
             GET  ["authors",page] -> do
                 let unpackPage = BP.read  page :: Int 
-                authors <- getArrayCommon sess AuthorEntReq unpackPage
-                return $ successResponse  (map getData  authors :: [Author] )
+                authors <- getArrayCommon sess AuthorEntReq unpackPage 
+                return $ successResponse'   authors 
             GET  ["category", idE] -> do   
                 let unpackIdEntity = BP.read  idE :: Int 
                 category <- getOneCommon sess CategoryEntReq unpackIdEntity
-                return $ successResponse  (getData  category :: Category )
+                return $ successResponse'   category 
             GET  ["categorys",page] -> do
                 let unpackPage = BP.read  page :: Int 
                 categorys <- getArrayCommon sess CategoryEntReq unpackPage
-                return $ successResponse  (map getData  categorys :: [Category] )
+                return $ successResponse'   categorys 
             GET  ["comment", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 comment <- getOneCommon sess CommentEntReq unpackIdEntity
-                return $ successResponse  (getData  comment :: Comment )
+                return $ successResponse'  comment 
             GET  ["comments",page] -> do
                 let unpackPage = BP.read  page :: Int 
                 comments' <- getArrayCommon sess CommentEntReq unpackPage
-                return $ successResponse  (map getData  comments' :: [Comment] )
+                return $ successResponse'   comments' 
             GET  ["draft", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 draft <- getOneCommon sess DraftEntReq unpackIdEntity
-                return $ successResponse  (getData  draft :: Draft )
+                return $ successResponse'    draft 
             GET  ["drafts", page] -> do
                 let unpackPage = BP.read  page :: Int 
                 drafts <- getArrayCommon sess DraftEntReq unpackPage
-                return $ successResponse  (map getData  drafts :: [Draft] )
+                return $ successResponse'   drafts 
             GET  ["tag", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 tag <- getOneCommon sess TagEntReq unpackIdEntity
-                return $ successResponse  (getData  tag :: Tag )
+                return $ successResponse'    tag 
             GET  ["tags",page] -> do
                 let unpackPage = BP.read  page :: Int 
                 tags <- getArrayCommon sess TagEntReq unpackPage
-                return $ successResponse  (map getData  tags :: [Tag] )
+                return $ successResponse'   tags 
             GET  ["news", idE] -> do
                 let unpackIdEntity = BP.read  idE :: Int 
                 news <- getOneCommon sess NewsEntReq unpackIdEntity
-                return $ successResponse  (getData  news :: News )
+                return $ successResponse'   news 
             GET  ["news_s",page] -> do
                 let unpackPage = BP.read  page :: Int 
                 news <- getArrayCommon sess NewsEntReq unpackPage
-                return $ successResponse  (map getData  news :: [News] )
+                return $ successResponse'   news 
+             
+            POST  arr -> do
+                help <- toHelpForRequest $ Prelude.head arr
+                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
+                ent <- toAnEntity  reqBody help
+                createCommon sess ent
+                return . successResponse $ "success request " ++ Prelude.head arr 
 
-            POST  ["user"] -> do
+            PUT  arr -> do
+                help <- toHelpForRequest $ Prelude.head arr
                 reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (user :: User) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity user)
-                return $ successResponse  ("success create user" :: Text)
-            POST  ["author"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (author :: Author) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity author)
-                return $ successResponse  ("success create author" :: Text)
-            POST  ["category"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (category :: Category) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity category)
-                return $ successResponse  ("success create category" :: Text)
-            POST  ["comment"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (comment :: Comment) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity comment)
-                return $ successResponse  ("success create comment" :: Text)
-            POST  ["draft"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (category :: Draft) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity category)
-                return $ successResponse  ("success create draft" :: Text)
-            POST  ["tag"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (comment :: Tag) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                createCommon sess (AnEntity comment)
-                return $ successResponse  ("success create tag" :: Text)
+                ent <- toAnEntity  reqBody help
+                editingCommon sess ent
+                return . successResponse  $ "editing request " ++ Prelude.head arr 
 
-            PUT  ["user"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (user :: User) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity user)
-                return $ successResponse  ("success create user" :: Text)
-            PUT  ["author"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (author :: Author) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity author)
-                return $ successResponse  ("success create author" :: Text)
-            PUT  ["category"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (category :: Category) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity category)
-                return $ successResponse  ("success create category" :: Text)
-            PUT  ["comment"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (comment :: Comment) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity comment)
-                return $ successResponse  ("success create comment" :: Text)
-            PUT  ["draft"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (category :: Draft) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity category)
-                return $ successResponse  ("success create draft" :: Text)
-            PUT  ["tag"] -> do
-                reqBody <- liftIO $ HTTP.getRequestBodyChunk req
-                (comment :: Tag) <- either (\_ -> throwError ErrorConvert) pure (eitherDecode $ fromStrict reqBody)
-                editingCommon sess (AnEntity comment)
-                return $ successResponse  ("success create tag" :: Text)
-
-            DELETE  ["user", idE] -> do
+            DELETE  [helpReq, idE] -> do
+                help <- toHelpForRequest helpReq
                 let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess UserEntReq unpackIdEntity
-                return $ successResponse  ("delete create user" :: Text)
-            DELETE  ["author", idE] -> do
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess AuthorEntReq unpackIdEntity
-                return $ successResponse   ("delete create author" :: Text)
-            DELETE  ["category", idE] -> do   
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess CategoryEntReq unpackIdEntity
-                return $ successResponse  ("delete create category" :: Text)
-            DELETE  ["comment", idE] -> do
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess CommentEntReq unpackIdEntity
-                return $ successResponse  ("delete create comment" :: Text)
-            DELETE  ["draft", idE] -> do
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess DraftEntReq unpackIdEntity
-                return $ successResponse  ("delete create draft" :: Text)
-            DELETE  ["tag", idE] -> do
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess TagEntReq unpackIdEntity
-                return $ successResponse   ("delete create tag" :: Text)
-            DELETE  ["news", idE] -> do
-                let unpackIdEntity = BP.read  idE :: Int 
-                removeCommon sess NewsEntReq unpackIdEntity
-                return $ successResponse   ("delete create news" :: Text)
-
+                removeCommon sess help unpackIdEntity
+                return . successResponse  $ "delete request" ++ helpReq  
             _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
 
 

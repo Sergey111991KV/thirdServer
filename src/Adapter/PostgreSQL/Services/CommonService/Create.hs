@@ -1,42 +1,22 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Create where
 
-import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) ) 
+import Adapter.PostgreSQL.Common
+import ClassyPrelude 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
-                     CommentEntReq, DraftEntReq, TagEntReq),
-      UserId(userIdRaw),
-      Category(parentCategory, nameCategory, idCategory),
-      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
-            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft),
-      Tag(nameTag),
-      Author(idLinkUser, description),
-      User(nameUser, lastName, userLogin, userPassword, avatar,
-           dataCreate, userIsAdmin, userIsAuthor),
-      Comment(textComments, dataCreateComments, newsIdComments,
-              usersIdComments),
-      AnEntity(..),
-      Entity(getData, getHelpRequest) )
 import Control.Monad.Except ( MonadError(throwError) )
-import Database.PostgreSQL.Simple (execute)
 import Database.PostgreSQL.Simple.Types (Null(Null))
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Database.PostgreSQL.Simple.SqlQQ
-
+import Adapter.PostgreSQL.ImportLibrary
 
 
 create :: PG r m => AnEntity -> m  ()
-create (AnEntity ent) = do
-  case getHelpRequest  ent of
-    AuthorEntReq -> do
-      let author = (getData (AnEntity ent) :: Author)
-      let q = "INSERT INTO author (id_link_user, description) VALUES (?,?);"
+create (AnAuthor author) = do
       result <-
         withConn $ \conn ->
-          execute conn q (userIdRaw $ idLinkUser author, description author)
+          execute conn  
+                  [sql| INSERT INTO author (id_link_user, description) VALUES (?,?);|] 
+                  (userIdRaw $ idLinkUser author, description author)
       case result of
         1 -> do
           writeLogD "create author good!"
@@ -44,12 +24,12 @@ create (AnEntity ent) = do
         _ -> do
           writeLogE  (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    CategoryEntReq -> do
-      let cat = (getData (AnEntity ent) :: Category)
+create (AnCategory cat) = do
       case parentCategory cat of
         Nothing  -> do
-          let qMainCat = "INSERT INTO category (name_category,parent_category) VALUES (?,?);"
-          result <- withConn $ \conn -> execute conn qMainCat (nameCategory cat, Database.PostgreSQL.Simple.Types.Null)
+          result <- withConn $ \conn -> execute conn 
+                                      [sql| INSERT INTO category (name_category,parent_category) VALUES (?,?);|] 
+                                      (nameCategory cat, Database.PostgreSQL.Simple.Types.Null)
           case result of
             1 -> do
               writeLogD "create category good!"
@@ -58,24 +38,25 @@ create (AnEntity ent) = do
               writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
         Just pCat -> do
-          let qNestedCat = "INSERT INTO category (name_category,parent_category) VALUES (?,?);"
-          result <- withConn $ \conn -> execute conn qNestedCat (nameCategory cat , idCategory pCat)
+          result <- withConn $ \conn -> execute conn  
+                    [sql| INSERT INTO category (name_category,parent_category) VALUES (?,?);|] 
+                    (nameCategory cat , idCategory pCat)
           case result of
             1 -> do
               writeLogD "create category good!"
-              create (AnEntity pCat)
+              create (AnCategory pCat)
             _ -> do
               writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
-    CommentEntReq -> do
-      let comment = (getData (AnEntity ent) :: Comment)
-      let q =
-            "INSERT INTO comment (text_comment,data_create_comment,news_id_comment,user_id_comment) VALUES(?,?,?,?);"
+create (AnComment comment) = do
       result <-
         withConn $ \conn ->
           execute
             conn
-            q
+            [sql| INSERT INTO comment (text_comment,data_create_comment,
+                                      news_id_comment,user_id_comment) 
+                                      VALUES(?,?,?,?);
+                |]
             ( textComments comment
             , dataCreateComments comment
             , newsIdComments comment
@@ -87,15 +68,16 @@ create (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    DraftEntReq  -> do
-      let draft = (getData (AnEntity ent) :: Draft)
-      let q =
-            "INSERT INTO draft (text_draft, data_create_draft, news_id_draft, main_photo_draft,other_photo_draft, short_name_draft,tags_id, id_author_draft) VALUES (?,?,?,?,?,?,?,?);"
+create (AnDraft draft) = do         
       result <-
         withConn $ \conn ->
           execute
             conn
-            q
+            [sql| INSERT INTO draft (text_draft, data_create_draft, 
+                                    news_id_draft, main_photo_draft,other_photo_draft, 
+                                    short_name_draft,tags_id, id_author_draft) 
+                                    VALUES (?,?,?,?,?,?,?,?);
+                |]
             ( textDraft draft
             , dataCreateDraft draft
             , newsIdDraft draft
@@ -111,10 +93,8 @@ create (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    TagEntReq -> do
-      let tag = (getData (AnEntity ent) :: Tag)
-      let qTag = "INSERT INTO tag (name_tag) VALUES(?);"
-      result <- withConn $ \conn -> execute conn qTag [nameTag tag]
+create (AnTag tag) = do
+      result <- withConn $ \conn -> execute conn [sql| INSERT INTO tag (name_tag) VALUES(?); |] [nameTag tag]
       case result of
         1 -> do
           writeLogD "create tag good!"
@@ -122,8 +102,7 @@ create (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    UserEntReq -> do
-      let user = (getData (AnEntity ent) :: User)
+create (AnUser user) = do
       result <-
         withConn $ \conn ->
           execute
@@ -149,6 +128,6 @@ create (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    _ -> do
+create   _ = do
       writeLogE (errorText DataErrorPostgreSQL)
       throwError ErrorTakeEntityNotSupposed

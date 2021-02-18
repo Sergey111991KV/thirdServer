@@ -6,14 +6,11 @@ import ClassyPrelude
 import Database.PostgreSQL.Simple
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      UserId,
-      Draft,
-      AnEntity(..) )
+import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) ) 
+import qualified Data.ByteString.Lazy.Internal as LB
 
-getAllAuthorAccess :: PG r m => UserId -> Int -> m [AnEntity]
+getAllAuthorAccess :: PG r m => UserId -> Int -> m LB.ByteString
 getAllAuthorAccess uId page = do
   let q =
         "SELECT  draft.id_draft, \
@@ -34,4 +31,4 @@ getAllAuthorAccess uId page = do
       throwError DataErrorPostgreSQL
     else do
       writeLogD "Get all draft for user"
-      return (fmap AnEntity result)
+      return $ encode result

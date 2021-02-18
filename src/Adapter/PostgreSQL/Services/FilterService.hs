@@ -7,24 +7,9 @@ import Adapter.PostgreSQL.Common
       requestForPostFilter,
       requestForPostAllFilterTag )
 import ClassyPrelude
-    ( otherwise,
-      ($),
-      Eq((==)),
-      Monad(return),
-      Show(show),
-      Int,
-      IO,
-      String,
-      Text,
-      MonadIO(liftIO),
-      (++),
-      map,
-      pack,
-      unpack )
-import Adapter.PostgreSQL.ImportLibrary ( query, Query ) 
 import Domain.Services.LogMonad 
 import Domain.Types.ExportTypes
-    
+import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) )
 import qualified Prelude as   P
 
@@ -42,9 +27,9 @@ filterOfData condition time page = do
 
 conversCond :: Text -> Query
 conversCond txtCond 
-                | txtCond ==  "less" =  " where data_creat_news <= (?);"
-                | txtCond == "more" = " where data_creat_news >= (?);"
-                | txtCond == "equel" = " where data_creat_news == (?);"
+                | txtCond ==  "less" =  " where data_creat_news <= (?)"
+                | txtCond == "more" = " where data_creat_news >= (?)"
+                | txtCond == "equel" = " where data_creat_news == (?)"
                 | otherwise = "Error"
 
 filterAuthor :: PG r m => Int -> Int -> m [News]

@@ -3,31 +3,13 @@ module Adapter.PostgreSQL.Services.CommonService.Editing where
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
 import Domain.Types.ExportTypes
-    ( HelpForRequest(UserEntReq, AuthorEntReq, CategoryEntReq,
-                     CommentEntReq, TagEntReq),
-      errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      UserId(userIdRaw),
-      Category(parentCategory, nameCategory, idCategory),
-      Author(idLinkUser, description, idAuthor),
-      Tag(nameTag, idTag),
-      Comment(textComments, dataCreateComments, newsIdComments,
-              usersIdComments),
-      User(nameUser, lastName, userLogin, userPassword, avatar,
-           dataCreate, userIsAdmin, userIsAuthor, idUser),
-      AnEntity(..),
-      Entity(getData, getHelpRequest) )
-   
+import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) )
-import Database.PostgreSQL.Simple (execute)
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 
 
 editing :: PG r m => AnEntity -> m  ()
-editing (AnEntity ent) = do
-  case getHelpRequest  ent of
-    AuthorEntReq -> do
-      let author = (getData (AnEntity ent) :: Author)
+editing (AnAuthor author) = do
       let q = "UPDATE author SET id_link_user=(?), description=(?) WHERE id_author = (?) ;"
       result <-
         withConn $ \conn ->
@@ -42,8 +24,7 @@ editing (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    CategoryEntReq -> do
-      let cat = (getData (AnEntity ent) :: Category)
+editing (AnCategory cat) = do
       case parentCategory cat of
         Nothing  -> do
           let qMainCat = "UPDATE category SET name_category=(?) WHERE id_category=(?);"
@@ -61,12 +42,11 @@ editing (AnEntity ent) = do
           case result of
             1 -> do
               writeLogD "update nested category good!"
-              editing (AnEntity pCat)
+              editing (AnCategory pCat)
             _ -> do
               writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
-    CommentEntReq -> do
-      let comment = (getData (AnEntity ent) :: Comment)
+editing (AnComment comment) = do
       let q =
             "UPDATE comment SET (text_comment,data_create_comment,news_id_comment,user_id_comment) VALUES(?,?,?,?);"
       result <-
@@ -85,8 +65,7 @@ editing (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    TagEntReq -> do
-      let tag = (getData (AnEntity ent) :: Tag)
+editing (AnTag tag) = do
       let qTag = "UPDATE tag SET name_tag=(?) where id_tag= (?);"
       result <- withConn $ \conn -> execute conn qTag (nameTag tag, idTag tag)
       case result of
@@ -96,8 +75,7 @@ editing (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    UserEntReq -> do
-      let user = (getData (AnEntity ent) :: User)
+editing (AnUser user) = do
       let qUser =
             "UPDATE usernews SET name_user=(?), lastname=(?) , login_user=(?) , password_user=(?) , avatar_user=(?) , datacreate_user=(?) , admin=(?) , authoris=(?)  where id_user=(?);"
       result <-
@@ -121,6 +99,4 @@ editing (AnEntity ent) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
-    _ -> do
-      writeLogE (errorText ErrorTakeEntityNotSupposed)
-      throwError ErrorTakeEntityNotSupposed
+ 

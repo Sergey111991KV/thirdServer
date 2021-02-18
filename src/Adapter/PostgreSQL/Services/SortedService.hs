@@ -16,11 +16,7 @@ import Control.Monad.Except ( MonadError(throwError) )
 import Database.PostgreSQL.Simple 
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
 import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed),
-      convertNewsRaw,
-      News,
-      NewsRaw )
+import Adapter.PostgreSQL.ImportLibrary
   
 
 sortedNews :: PG r m => Text -> Int -> m  [News]
