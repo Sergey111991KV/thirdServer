@@ -16,6 +16,7 @@ data ErrorServer
   | ErrorTakeEntityNotSupposed
   | NotTakeEntity
   | DataErrorPostgreSQL
+  | DataErrorPostgreSQLInServer
   | ErrorGetConfig
   | ErrorGetCookie
   | ErrorConvert

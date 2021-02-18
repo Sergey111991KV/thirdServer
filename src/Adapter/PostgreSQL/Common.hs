@@ -17,6 +17,9 @@ import Domain.Services.Auth (Auth)
 import qualified Domain.Services.LogMonad as Log
 import Database.PostgreSQL.Simple.SqlQQ
 import Control.Monad.Except 
+import Control.Exception
+
+
 type PG r m
    = (Has State r, MonadReader r m, MonadIO m, MonadThrow m, Auth m, Log.Log m)
 
@@ -51,10 +54,20 @@ withState cfg action =
     migrate state
     action state
 
-withConn :: PG r m => (Connection -> IO a) -> m a
-withConn action = do
-  pool <- asks getter
+
+withConn' :: Pool Connection -> (Connection -> IO a) -> IO a
+withConn' pool action = do
   liftIO . withResource pool $ \conn -> action conn
+
+
+withConn :: PG r m => (Connection -> IO a) -> m a
+withConn g = do
+  pool <- asks getter
+  result <- liftIO $ Control.Exception.try $ withConn' pool g 
+  case result of
+    Right a -> return a
+    Left (_ :: SomeException ) ->  throwError DataErrorPostgreSQLInServer
+   
 
 migrate :: State -> IO ()
 migrate pool =
@@ -68,22 +81,6 @@ migrate pool =
       [ MigrationInitialization
       , MigrationDirectory "src/Adapter/PostgreSQL/Migrations"
       ]
-
-execute' :: (MonadError ErrorServer m, MonadIO m, ToRow q) => Connection -> Query -> q -> m Int64
-execute' con a q =  do
-  responsePos <- liftIO $ catch (execute con a q) handler
-  case responsePos of
-    1000 ->  throwError DataErrorPostgreSQL
-    _ -> return responsePos
-  where
-    handler :: SomeException -> IO Int64 
-    handler _ = return 1000
-    -- throwPostgres ::  a -> m a
-    -- throwPostgres responsePos = do
-    --   case responsePos of
-    --     1000 -> throwError DataErrorPostgreSQL
-    --     _ -> return 
- 
 
 
 requestForPost :: Query

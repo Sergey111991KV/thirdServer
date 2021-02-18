@@ -99,4 +99,6 @@ editing (AnUser user) = do
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
- 
+editing   _ = do
+      writeLogE (errorText DataErrorPostgreSQL)
+      throwError ErrorTakeEntityNotSupposed

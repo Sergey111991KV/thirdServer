@@ -5,26 +5,7 @@ module Lib
 
 import qualified Adapter.PostgreSQL.ExportPostgres as Pos
 import ClassyPrelude
-    ( ($),
-      Monad,
-      Functor,
-      Applicative(pure),
-      Int,
-      IO,
-      Either,
-      Text,
-      getCurrentTime,
-      either,
-      (++),
-      print,
-      try,
-      newTVarIO,
-      readTVarIO,
-      MonadIO(..),
-      TVar,
-      SomeException,
-      MonadReader(..),
-      ReaderT(..) )
+   
    
 import Control.Monad.Except
     ( MonadError, ExceptT, runExceptT )
@@ -89,7 +70,6 @@ instance CommonService App where
   getOneAuthorAccess = Pos.getOneAuthorAccess
   publish = Pos.publish
   
-
 instance SortedOfService App where
   sortedNews = Pos.sortedNews
 
