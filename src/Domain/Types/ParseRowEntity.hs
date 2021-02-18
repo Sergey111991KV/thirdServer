@@ -55,6 +55,5 @@ quoted = A.char '"' *> A.option "" contents <* A.char '"'
     unQ = A.takeWhile1 (A.notInClass "\"\\")
     contents = mconcat <$> many (unQ <|> B.singleton <$> esc)
 
--- | Recognizes a plain string literal, not containing comma, quotes, or parens.
 plain :: A.Parser ByteString
 plain = A.takeWhile1 (A.notInClass ",\"()")

@@ -8,10 +8,6 @@ import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
 
 
-
-
-
-
 editingAuthorAccess :: PG r m => AnEntity -> UserId-> m  ()
 editingAuthorAccess (AnDraft  draft) (UserId idU) = do
       let q =

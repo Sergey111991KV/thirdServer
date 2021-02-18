@@ -4,8 +4,6 @@ module Domain.Types.ImportLibrary
 
 import Data.Aeson as X
 import Data.ByteString.Builder as X
-
--- import Data.Text as X
 import Data.Time as X
 import Database.PostgreSQL.Simple as X
 import Database.PostgreSQL.Simple.FromRow as X

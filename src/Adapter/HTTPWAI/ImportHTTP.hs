@@ -3,5 +3,4 @@ module Adapter.HTTPWAI.ImportHTTP
   ) where
 
 import Adapter.HTTPWAI.HelpFunction as Y
-
 import Adapter.HTTPWAI.Route as Y

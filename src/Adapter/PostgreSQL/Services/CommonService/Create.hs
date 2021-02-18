@@ -13,10 +13,6 @@ import Adapter.PostgreSQL.ImportLibrary
 
 create :: PG r m => AnEntity -> m  ()
 create (AnAuthor author) = do
-      -- result <- ff $ \conn ->
-      --     execute conn  
-      --             [sql| INSERT INTO author (id_link_user, description) VALUES (?,?);|] 
-      --             (userIdRaw $ idLinkUser author, description author)
       result <- 
         withConn $ \conn ->
           execute conn  

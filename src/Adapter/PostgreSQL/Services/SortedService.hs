@@ -11,12 +11,16 @@ import ClassyPrelude
       Text,
       (++),
       map )
-    
 import Control.Monad.Except ( MonadError(throwError) )
-import Database.PostgreSQL.Simple 
+import Database.PostgreSQL.Simple ( query ) 
 import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
 import Domain.Types.ExportTypes
-import Adapter.PostgreSQL.ImportLibrary
+    ( errorText,
+      ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed),
+      convertNewsRaw,
+      News,
+      NewsRaw )
+
   
 
 sortedNews :: PG r m => Text -> Int -> m  [News]
