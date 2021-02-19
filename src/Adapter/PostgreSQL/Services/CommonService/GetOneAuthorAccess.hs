@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetOneAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
@@ -20,15 +21,15 @@ getOneAuthorAccess idE idA = do
           writeLogE "getOneDraft DataErrorPostgreSQL "
           throwError DataErrorPostgreSQL
   where qry =
-              "SELECT  draft.id_draft, \
-                           \ draft.text_draft, \
-                           \ draft.data_create_draft, \
-                           \ draft.news_id_draft, \
-                           \ draft.main_photo_draft, \
-                           \ draft.short_name_draft, \
-                           \ draft.other_photo_draft, \
-                           \ draft.tags_id, \
-                           \ draft.id_author_draft \
-                                 \   from draft, author where draft.id_author_draft= author.id_author  \
-                                                            \    and author.id_link_user = (?) \
-                                                            \    and draft.id_draft= (?);"
+              [sql| SELECT    draft.id_draft, 
+                              draft.text_draft, 
+                              draft.data_create_draft, 
+                              draft.news_id_draft, 
+                              draft.main_photo_draft, 
+                              draft.short_name_draft, 
+                              draft.other_photo_draft, 
+                              draft.tags_id, 
+                              draft.id_author_draft 
+                              from draft, author where draft.id_author_draft= author.id_author  
+                              and author.id_link_user = (?) 
+                              and draft.id_draft= (?); |]

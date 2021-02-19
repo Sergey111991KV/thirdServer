@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.RemoveAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
@@ -12,7 +13,7 @@ removeAuthorAccess ::
      PG r m =>  Int ->  UserId -> m ()
 removeAuthorAccess idEnt idA  = do
       let q =
-            "DELETE FROM draft WHERE id_author_draft = (select id_link_user from author where id_author = (?) ) and id_draft = (?);"
+            [sql|DELETE FROM draft WHERE id_author_draft = (select id_link_user from author where id_author = (?) ) and id_draft = (?);|]
       result <- withConn $ \conn -> execute conn q (idA, idEnt)
       case result of
         1 -> do

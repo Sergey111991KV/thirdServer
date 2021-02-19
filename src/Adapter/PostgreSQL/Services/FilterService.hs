@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.FilterService where
 
 import Adapter.PostgreSQL.Common
@@ -58,7 +59,7 @@ filterCategory catId page = do
 
 filterTag :: PG r m => Int -> Int -> m [News]
 filterTag idT page = do
-  let q = requestForPostFilter ++ " where tags_news.tags_id = (?) limit 20 offset (?);"
+  let q = requestForPostFilter <> " where tags_news.tags_id = (?) limit 20 offset (?);"
   liftIO $ P.print  idT
   result <- withConn $ \conn -> query conn q (idT, page) :: IO [NewsRaw]
   case result of
@@ -138,3 +139,28 @@ toStringFromArrayInt array =
   where
     addParam [] arr = show arr
     addParam elements arr = elements ++ (',' : show arr)
+
+
+
+--  select  distinct  endNews.id_news 
+-- 				                      , endNews.data_creat_news 
+-- 				                      , endNews.id_author 
+-- 				                      , endNews.id_link_user 
+-- 				                      , endNews.description 
+-- 				                      , ARRAY(with recursive temp1 (id_category, parent_category, name_category) as ( 
+--                               select t1.id_category, t1.parent_category, t1.name_category, cast (t1.name_category as varchar (50)) as path 
+--                               from news, category t1 where t1.id_category = endnews.category_id_news 
+--                               union 
+--                               select t2.id_category, t2.parent_category, t2.name_category, cast (temp1.path || '->'|| t2.name_category as varchar(50)) 
+--                               from category t2 inner join temp1 on (temp1.parent_category = t2.id_category)) 
+--                               select distinct (id_category, name_category, parent_category) from temp1) 
+--                               , endNews.text_news 
+-- 				                      , endNews.main_photo_news 
+-- 				                      , endNews.other_photo_news 
+-- 				                      , endNews.short_name_news 
+--                               , ARRAY(select ( id_comment, text_comment,data_create_comment,news_id_comment,user_id_comment) from comment where endNews.id_news = comment.news_id_comment) 
+-- 				                      , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL ) as t) 
+-- 				                       from  ( select * from (select * from news left join author on author.id_author = news.authors_id_news ) as endN right join tags_news 
+-- 				                       on 
+-- 				                       tags_news.news_id = endN.id_news and  
+-- 				                       tags_news.tags_id = 1 ) as \ endNews

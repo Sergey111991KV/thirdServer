@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.EditingAuthorAccess where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
@@ -11,7 +12,7 @@ import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 editingAuthorAccess :: PG r m => AnEntity -> UserId-> m  ()
 editingAuthorAccess (AnDraft  draft) (UserId idU) = do
       let q =
-            "UPDATE draft SET text_draft=(?), data_create_draft=(?), news_id_draft=(?), main_photo_draft=(?), other_photo_draft=(?), short_name_draft=(?), tags_id=(?), id_author_draft=(?) FROM author where id_draft =(?) and author.id_link_user =(?);"
+            [sql| UPDATE draft SET text_draft=(?), data_create_draft=(?), news_id_draft=(?), main_photo_draft=(?), other_photo_draft=(?), short_name_draft=(?), tags_id=(?), id_author_draft=(?) FROM author where id_draft =(?) and author.id_link_user =(?);|] 
       result <-
         withConn $ \conn ->
           execute

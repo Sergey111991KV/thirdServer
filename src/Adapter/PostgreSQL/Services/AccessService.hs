@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.AccessService where
 
 import ClassyPrelude ( ($), Monad(return), Bool(..), IO )

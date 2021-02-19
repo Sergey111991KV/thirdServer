@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Publish where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
@@ -9,14 +10,14 @@ import Control.Monad.Except ( MonadError(throwError) )
 
 publish :: PG r m => UserId -> Int -> m ()
 publish idU idE = do
-  let qAuthor = "select id_author from author where id_link_user= (?);"
+  let qAuthor = [sql| select id_author from author where id_link_user= (?); |]
   resultAuthor <- withConn $ \conn -> query conn qAuthor idU :: IO [Only Int]
   case resultAuthor of
     [Only x] -> do
       writeLogD "getOne News success!"
-      let qPublich = "select updeite_news (?, ?);"
+      let qPublic = [sql| select updeite_news (?, ?); |]
       resultPublic <-
-        withConn $ \conn -> query conn qPublich (x, idE) :: IO [Only Int]
+        withConn $ \conn -> query conn qPublic (x, idE) :: IO [Only Int]
       case resultPublic of
         [Only 1] -> do
           writeLog Debug "publish Draft success!"

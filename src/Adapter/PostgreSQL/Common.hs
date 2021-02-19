@@ -100,7 +100,7 @@ requestForPost = [sql| select    endNews.id_news
 				              , endNews.short_name_news \
                       , ARRAY(select ( id_comment, text_comment,data_create_comment,news_id_comment,user_id_comment) from comment where endNews.id_news = comment.news_id_comment) 
 	 			              , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) 
-	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews "
+	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews"
                       |]
 
 

@@ -1,7 +1,8 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Editing where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
+import ClassyPrelude 
 import Domain.Types.ExportTypes
 import Adapter.PostgreSQL.ImportLibrary
 import Control.Monad.Except ( MonadError(throwError) )
@@ -10,7 +11,7 @@ import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 
 editing :: PG r m => AnEntity -> m  ()
 editing (AnAuthor author) = do
-      let q = "UPDATE author SET id_link_user=(?), description=(?) WHERE id_author = (?) ;"
+      let q = [sql| UPDATE author SET id_link_user=(?), description=(?) WHERE id_author = (?);|] 
       result <-
         withConn $ \conn ->
           execute
@@ -27,8 +28,9 @@ editing (AnAuthor author) = do
 editing (AnCategory cat) = do
       case parentCategory cat of
         Nothing  -> do
-          let qMainCat = "UPDATE category SET name_category=(?) WHERE id_category=(?);"
+          let qMainCat = [sql| UPDATE category SET name_category=(?) WHERE id_category=(?);|] 
           result <- withConn $ \conn -> execute conn qMainCat (nameCategory cat, idCategory cat)
+          liftIO $ print result
           case result of
             1 -> do
               writeLogD "update main category good!"
@@ -37,8 +39,9 @@ editing (AnCategory cat) = do
               writeLogE (errorText DataErrorPostgreSQL)
               throwError DataErrorPostgreSQL
         Just pCat -> do
-          let qNestedCat = "UPDATE category SET name_category=(?),parent_category =(?)  WHERE id_category=(?);"
-          result <- withConn $ \conn -> execute conn qNestedCat  (nameCategory cat, idCategory pCat, cat)
+          let qNestedCat = [sql| UPDATE category SET name_category=(?),parent_category =(?)  WHERE id_category=(?);|] 
+          result <- withConn $ \conn -> execute conn qNestedCat  (nameCategory cat, idCategory pCat, idCategory cat)
+          liftIO $ print result
           case result of
             1 -> do
               writeLogD "update nested category good!"
@@ -48,7 +51,7 @@ editing (AnCategory cat) = do
               throwError DataErrorPostgreSQL
 editing (AnComment comment) = do
       let q =
-            "UPDATE comment SET (text_comment,data_create_comment,news_id_comment,user_id_comment) VALUES(?,?,?,?);"
+            [sql| UPDATE comment SET (text_comment,data_create_comment,news_id_comment,user_id_comment) VALUES(?,?,?,?);|] 
       result <-
         withConn $ \conn ->
           execute
@@ -66,7 +69,7 @@ editing (AnComment comment) = do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
 editing (AnTag tag) = do
-      let qTag = "UPDATE tag SET name_tag=(?) where id_tag= (?);"
+      let qTag = [sql| UPDATE tag SET name_tag=(?) where id_tag= (?);|] 
       result <- withConn $ \conn -> execute conn qTag (nameTag tag, idTag tag)
       case result of
         1 -> do
@@ -77,7 +80,7 @@ editing (AnTag tag) = do
           throwError DataErrorPostgreSQL
 editing (AnUser user) = do
       let qUser =
-            "UPDATE usernews SET name_user=(?), lastname=(?) , login_user=(?) , password_user=(?) , avatar_user=(?) , datacreate_user=(?) , admin=(?) , authoris=(?)  where id_user=(?);"
+            [sql| UPDATE usernews SET name_user=(?), lastname=(?) , login_user=(?) , password_user=(?) , avatar_user=(?) , datacreate_user=(?) , admin=(?) , authoris=(?)  where id_user=(?);|] 
       result <-
         withConn $ \conn ->
           execute

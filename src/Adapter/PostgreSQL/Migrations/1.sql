@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS author (
 CREATE TABLE IF NOT EXISTS news (
     id_news SERIAL PRIMARY KEY,
     data_creat_news timestamp with time zone,
-    authors_id_news integer REFERENCES author(id_author),
+    authors_id_news integer REFERENCES author(id_author) ON DELETE CASCADE,
     category_id_news integer,
     text_news text,
     main_photo_news text,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS draft (
     short_name_draft text,
     other_photo_draft text[],
     tags_id integer[],
-    id_author_draft integer REFERENCES author(id_author)
+    id_author_draft integer REFERENCES author(id_author) ON DELETE CASCADE
 );
 
 

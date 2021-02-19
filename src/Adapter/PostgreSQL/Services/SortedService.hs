@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.SortedService where
 
 import Adapter.PostgreSQL.Common (PG, requestForPost, withConn)

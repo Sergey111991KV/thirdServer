@@ -1,8 +1,9 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Remove where
 
 import Adapter.PostgreSQL.Common (PG, withConn)
 import ClassyPrelude
-    ( otherwise, ($), Eq((==)), Monad(return), Int ) 
+   
 import Control.Monad.Except ( MonadError(throwError) )
 import Domain.Types.ExportTypes
 import Adapter.PostgreSQL.ImportLibrary
@@ -12,7 +13,8 @@ import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) )
 remove :: PG r m => HelpForRequest -> Int -> m ()
 remove ent idE
   | ent == AuthorEntReq = do
-    let q = "DELETE FROM author WHERE id_author = (?);"
+    let q = [sql| DELETE FROM author WHERE id_author = (?);|]
+    liftIO $ print q
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
@@ -22,7 +24,7 @@ remove ent idE
         writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == UserEntReq = do
-    let q = "DELETE FROM usernews WHERE id_user = (?);"
+    let q = [sql| DELETE FROM usernews WHERE id_user = (?);|]
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
@@ -32,7 +34,7 @@ remove ent idE
         writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == NewsEntReq = do
-    let q = "DELETE FROM news WHERE id_news = (?);"
+    let q = [sql| DELETE FROM news WHERE id_news = (?);|]
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
@@ -42,7 +44,7 @@ remove ent idE
         writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == TagEntReq = do
-    let q = "DELETE FROM tag WHERE id_tag = (?);"
+    let q = [sql| DELETE FROM tag WHERE id_tag = (?);|]
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
@@ -52,7 +54,7 @@ remove ent idE
         writeLogE (errorText DataErrorPostgreSQL)
         throwError DataErrorPostgreSQL
   | ent == CategoryEntReq = do
-    let q = "DELETE FROM category WHERE id_category = (?);"
+    let q = [sql| DELETE FROM category WHERE id_category = (?);|]
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do
