@@ -1,28 +1,49 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Domain.Types.BusinessEntity.Draft (
-  Draft(Draft,dataCreateDraft, idAuthorDraft, idDraft, mainPhotoUrl,
-      newsIdDraft, otherPhotoUrl, shortNameDraft, tagsId, textDraft)
-)
-where
+module Domain.Types.BusinessEntity.Draft
+  ( Draft
+    ( Draft
+    , dataCreateDraft
+    , idAuthorDraft
+    , idDraft
+    , mainPhotoUrl
+    , newsIdDraft
+    , otherPhotoUrl
+    , shortNameDraft
+    , tagsId
+    , textDraft
+    )
+  ) where
 
-import ClassyPrelude (Eq, Generic, Int, Maybe, Ord, Show, Text, UTCTime)
-import Domain.Types.ImportLibrary (FromJSON, FromRow, ToJSON, ToRow)
+import           ClassyPrelude                  ( Eq
+                                                , Generic
+                                                , Int
+                                                , Maybe
+                                                , Ord
+                                                , Show
+                                                , Text
+                                                , UTCTime
+                                                )
+import           Domain.Types.ImportLibrary     ( FromJSON
+                                                , FromRow
+                                                , ToJSON
+                                                , ToRow
+                                                )
 
-import qualified Database.PostgreSQL.Simple.Types as P
+import qualified Database.PostgreSQL.Simple.Types
+                                               as P
 
-data Draft =
-  Draft
-    { idDraft :: Int
-    , textDraft :: Text
-    , dataCreateDraft :: UTCTime
-    , newsIdDraft :: Maybe Int
-    , mainPhotoUrl :: Text
-    , shortNameDraft :: Text
-    , otherPhotoUrl :: P.PGArray Text
-    , tagsId :: P.PGArray Int
-    , idAuthorDraft :: Int
-    }
+data Draft = Draft
+  { idDraft         :: Int
+  , textDraft       :: Text
+  , dataCreateDraft :: UTCTime
+  , newsIdDraft     :: Maybe Int
+  , mainPhotoUrl    :: Text
+  , shortNameDraft  :: Text
+  , otherPhotoUrl   :: P.PGArray Text
+  , tagsId          :: P.PGArray Int
+  , idAuthorDraft   :: Int
+  }
   deriving (Show, Generic, Ord, Eq)
 
 instance FromRow Draft

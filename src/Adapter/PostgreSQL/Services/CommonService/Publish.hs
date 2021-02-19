@@ -1,12 +1,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Publish where
 
-import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude ( ($), Monad(return), Int, IO, (++) ) 
-import Domain.Services.LogMonad 
-import Domain.Types.ExportTypes
-import Adapter.PostgreSQL.ImportLibrary
-import Control.Monad.Except ( MonadError(throwError) )
+import           Adapter.PostgreSQL.Common      ( PG
+                                                , withConn
+                                                )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Int
+                                                , IO
+                                                , (++)
+                                                )
+import           Domain.Services.LogMonad
+import           Domain.Types.ExportTypes
+import           Adapter.PostgreSQL.ImportLibrary
+import           Control.Monad.Except           ( MonadError(throwError) )
 
 publish :: PG r m => UserId -> Int -> m ()
 publish idU idE = do
@@ -16,15 +23,14 @@ publish idU idE = do
     [Only x] -> do
       writeLogD "getOne News success!"
       let qPublic = [sql| select updeite_news (?, ?); |]
-      resultPublic <-
-        withConn $ \conn -> query conn qPublic (x, idE) :: IO [Only Int]
+      resultPublic <- withConn
+        $ \conn -> query conn qPublic (x, idE) :: IO [Only Int]
       case resultPublic of
         [Only 1] -> do
           writeLog Debug "publish Draft success!"
-          return  ()
+          return ()
         _ -> do
-          writeLogE
-            (errorText DataErrorPostgreSQL ++ " can't to publish news")
+          writeLogE (errorText DataErrorPostgreSQL ++ " can't to publish news")
           throwError DataErrorPostgreSQL
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)

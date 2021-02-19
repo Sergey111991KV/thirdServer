@@ -1,7 +1,14 @@
 module Domain.Types.BusinessEntity.ErrorServer where
 
-import ClassyPrelude
-    ( ($), Eq, Ord, Read, Show(show), Generic, Text, pack ) 
+import           ClassyPrelude                  ( ($)
+                                                , Eq
+                                                , Ord
+                                                , Read
+                                                , Show(show)
+                                                , Generic
+                                                , Text
+                                                , pack
+                                                )
 
 data ErrorServer
   = PasswordErrorInvalidAuth
@@ -28,4 +35,4 @@ data ErrorServer
 
 errorText :: ErrorServer -> Text
 errorText err = pack $ show err
-  
+

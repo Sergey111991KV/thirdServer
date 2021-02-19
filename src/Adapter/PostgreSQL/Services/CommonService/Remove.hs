@@ -1,13 +1,15 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Remove where
 
-import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude
-   
-import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Types.ExportTypes
-import Adapter.PostgreSQL.ImportLibrary
-import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
+import           Adapter.PostgreSQL.Common      ( PG
+                                                , withConn
+                                                )
+import           ClassyPrelude
+
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Domain.Types.ExportTypes
+import           Adapter.PostgreSQL.ImportLibrary
+import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
 
 
 remove :: PG r m => HelpForRequest -> Int -> m ()

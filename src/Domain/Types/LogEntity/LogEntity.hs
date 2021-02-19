@@ -1,9 +1,18 @@
 module Domain.Types.LogEntity.LogEntity where
 
 
-import ClassyPrelude (Bool, Eq, FilePath, Generic, Ord, Read, Show)
+import           ClassyPrelude                  ( Bool
+                                                , Eq
+                                                , FilePath
+                                                , Generic
+                                                , Ord
+                                                , Read
+                                                , Show
+                                                )
 
-import Data.Aeson (FromJSON, ToJSON)
+import           Data.Aeson                     ( FromJSON
+                                                , ToJSON
+                                                )
 
 newtype StateLog =
   StateLog
@@ -14,12 +23,11 @@ newtype StateLog =
 
 type LogWriteInConfig = LogWrite
 
-data LogConfig =
-  LogConfig
-    { logFile :: FilePath
-    , logLevelForFile :: LogWriteInConfig
-    , logConsole :: Bool
-    }
+data LogConfig = LogConfig
+  { logFile         :: FilePath
+  , logLevelForFile :: LogWriteInConfig
+  , logConsole      :: Bool
+  }
   deriving (Show, Generic)
 
 type LogForFile = LogWrite

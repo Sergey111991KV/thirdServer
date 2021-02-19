@@ -1,58 +1,65 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Common where
 
-import ClassyPrelude
-import Control.Monad.Catch (MonadThrow, bracket)
-import Data.Has (Has(getter))
-import Data.Pool (Pool, createPool, destroyAllResources, withResource)
-import Data.Time (NominalDiffTime)
-import Database.PostgreSQL.Simple
-import Domain.Types.ExportTypes
-import Database.PostgreSQL.Simple.Migration
-  ( MigrationCommand(MigrationDirectory, MigrationInitialization)
-  , MigrationResult(MigrationError)
-  , runMigrations
-  )
-import Domain.Services.Auth (Auth)
-import qualified Domain.Services.LogMonad as Log
-import Database.PostgreSQL.Simple.SqlQQ
-import Control.Monad.Except 
-import Control.Exception
+import           ClassyPrelude
+import           Control.Monad.Catch            ( MonadThrow
+                                                , bracket
+                                                )
+import           Data.Has                       ( Has(getter) )
+import           Data.Pool                      ( Pool
+                                                , createPool
+                                                , destroyAllResources
+                                                , withResource
+                                                )
+import           Data.Time                      ( NominalDiffTime )
+import           Database.PostgreSQL.Simple
+import           Domain.Types.ExportTypes
+import           Database.PostgreSQL.Simple.Migration
+                                                ( MigrationCommand
+                                                  ( MigrationDirectory
+                                                  , MigrationInitialization
+                                                  )
+                                                , MigrationResult
+                                                  ( MigrationError
+                                                  )
+                                                , runMigrations
+                                                )
+import           Domain.Services.Auth           ( Auth )
+import qualified Domain.Services.LogMonad      as Log
+import           Database.PostgreSQL.Simple.SqlQQ
+import           Control.Monad.Except
+import           Control.Exception
 
 
 type PG r m
-   = (Has State r, MonadReader r m, MonadIO m, MonadThrow m, Auth m, Log.Log m)
+  = (Has State r, MonadReader r m, MonadIO m, MonadThrow m, Auth m, Log.Log m)
 
 type State = Pool Connection
 
-data Config =
-  Config
-    { configUrl :: ByteString
-    , configStripeCount :: Int
-    , configMaxOpenConnPerStripe :: Int
-    , configIdleConnTimeout :: NominalDiffTime
-    }
+data Config = Config
+  { configUrl                  :: ByteString
+  , configStripeCount          :: Int
+  , configMaxOpenConnPerStripe :: Int
+  , configIdleConnTimeout      :: NominalDiffTime
+  }
   deriving (Show, Generic)
 
 withPool :: Config -> (State -> IO a) -> IO a
 withPool cfg = Control.Monad.Catch.bracket initPool cleanPool
-  where
-    initPool =
-      createPool
-        openConn
-        closeConn
-        (configStripeCount cfg)
-        (configIdleConnTimeout cfg)
-        (configMaxOpenConnPerStripe cfg)
-    cleanPool = destroyAllResources
-    openConn = connectPostgreSQL (configUrl cfg)
-    closeConn = close
+ where
+  initPool = createPool openConn
+                        closeConn
+                        (configStripeCount cfg)
+                        (configIdleConnTimeout cfg)
+                        (configMaxOpenConnPerStripe cfg)
+  cleanPool = destroyAllResources
+  openConn  = connectPostgreSQL (configUrl cfg)
+  closeConn = close
 
 withState :: Config -> (State -> IO a) -> IO a
-withState cfg action =
-  withPool cfg $ \state -> do
-    migrate state
-    action state
+withState cfg action = withPool cfg $ \state -> do
+  migrate state
+  action state
 
 
 withConn' :: Pool Connection -> (Connection -> IO a) -> IO a
@@ -62,25 +69,24 @@ withConn' pool action = do
 
 withConn :: PG r m => (Connection -> IO a) -> m a
 withConn g = do
-  pool <- asks getter
-  result <- liftIO $ Control.Exception.try $ withConn' pool g 
+  pool   <- asks getter
+  result <- liftIO $ Control.Exception.try $ withConn' pool g
   case result of
-    Right a -> return a
-    Left (_ :: SomeException ) ->  throwError DataErrorPostgreSQLInServer
-   
+    Right a                    -> return a
+    Left  (_ :: SomeException) -> throwError DataErrorPostgreSQLInServer
+
 
 migrate :: State -> IO ()
-migrate pool =
-  withResource pool $ \conn -> do
-    result <- withTransaction conn (runMigrations False conn cmds)
-    case result of
-      MigrationError err -> throwString err
-      _ -> return ()
-  where
-    cmds =
-      [ MigrationInitialization
-      , MigrationDirectory "src/Adapter/PostgreSQL/Migrations"
-      ]
+migrate pool = withResource pool $ \conn -> do
+  result <- withTransaction conn (runMigrations False conn cmds)
+  case result of
+    MigrationError err -> throwString err
+    _                  -> return ()
+ where
+  cmds =
+    [ MigrationInitialization
+    , MigrationDirectory "src/Adapter/PostgreSQL/Migrations"
+    ]
 
 
 requestForPost :: Query
@@ -126,4 +132,4 @@ requestForPostFilter = [sql|
 				                      , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) 
 				                       from tags_news, (select * from news left join author on author.id_author = news.authors_id_news ) as endNews 
                         |]
-  
+

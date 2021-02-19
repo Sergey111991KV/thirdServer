@@ -1,34 +1,38 @@
-module Domain.Types.BusinessEntity.Category   where
+module Domain.Types.BusinessEntity.Category where
 
-import ClassyPrelude
+import           ClassyPrelude
 
-import qualified Data.Attoparsec.ByteString.Char8 as A
-import Database.PostgreSQL.Simple.FromField (FromField(..), fromJSONField)
-import Domain.Types.ImportLibrary
-    ( FromJSON,
-      Value(Null),
-      ToJSON,
-      char8,
-      FromRow(..),
-      ToRow(..),
-      Action(Plain, Many),
-      field,
-      ToField(..),
-      toJSONField,
-      fromPGRow',
-      parseMaybeInt,
-      textContent )
+import qualified Data.Attoparsec.ByteString.Char8
+                                               as A
+import           Database.PostgreSQL.Simple.FromField
+                                                ( FromField(..)
+                                                , fromJSONField
+                                                )
+import           Domain.Types.ImportLibrary     ( FromJSON
+                                                , Value(Null)
+                                                , ToJSON
+                                                , char8
+                                                , FromRow(..)
+                                                , ToRow(..)
+                                                , Action(Plain, Many)
+                                                , field
+                                                , ToField(..)
+                                                , toJSONField
+                                                , fromPGRow'
+                                                , parseMaybeInt
+                                                , textContent
+                                                )
 
 
-import Database.PostgreSQL.Simple.Types (PGArray(PGArray))
-import qualified Prelude as P
+import           Database.PostgreSQL.Simple.Types
+                                                ( PGArray(PGArray) )
+import qualified Prelude                       as P
 
-data Category =
-  Category
-    { idCategory :: Int
-    , nameCategory :: Text
-    , parentCategory :: Maybe Category
-    }
+data Category = Category
+  { idCategory     :: Int
+  , nameCategory   :: Text
+  , parentCategory :: Maybe Category
+  }
   deriving (Eq, Show, Generic)
 
 instance FromRow Category
@@ -41,26 +45,29 @@ instance ToRow Category where
 
 instance ToField Category where
   toField (Category idC nameC Nothing) =
-    Many $
-    Plain (char8 '(') :
-    toField idC :
-    toField nameC :
-    toField Domain.Types.ImportLibrary.Null : [Plain (char8 ')')]
+    Many
+      $ Plain (char8 '(')
+      : toField idC
+      : toField nameC
+      : toField Domain.Types.ImportLibrary.Null
+      : [Plain (char8 ')')]
   toField (Category idC nameC (Just cat)) =
-    Many $
-    Plain (char8 '(') :
-    toField idC : toField nameC : toField (idCategory cat) : [Plain (char8 ')')]
+    Many
+      $ Plain (char8 '(')
+      : toField idC
+      : toField nameC
+      : toField (idCategory cat)
+      : [Plain (char8 ')')]
 
 instance ToJSON Category
 
 instance FromJSON Category
 
-data CategoryRaw =
-  CategoryRaw
-    { idCategoryRaw :: Int
-    , nameCategoryRaw :: Text
-    , parentCategoryRaw :: Maybe Int
-    }
+data CategoryRaw = CategoryRaw
+  { idCategoryRaw     :: Int
+  , nameCategoryRaw   :: Text
+  , parentCategoryRaw :: Maybe Int
+  }
   deriving (Eq, Show, Generic)
 
 instance FromRow CategoryRaw where
@@ -93,18 +100,18 @@ deriving instance
 
 parseCategoryRaw :: A.Parser CategoryRaw
 parseCategoryRaw = do
-  _ <- A.char '('
-  idCat <- textContent
-  _ <- A.char ','
-  nameCat <- textContent
-  _ <- A.char ','
+  _         <- A.char '('
+  idCat     <- textContent
+  _         <- A.char ','
+  nameCat   <- textContent
+  _         <- A.char ','
   parentCat <- textContent
-  _ <- A.char ')'
+  _         <- A.char ')'
   pure
-    (CategoryRaw
-       (P.read $ ClassyPrelude.unpack idCat)
-       nameCat
-       (parseMaybeInt parentCat))
+    (CategoryRaw (P.read $ ClassyPrelude.unpack idCat)
+                 nameCat
+                 (parseMaybeInt parentCat)
+    )
 
 
 
@@ -113,43 +120,51 @@ parseCategoryRaw = do
 
 convertCategoryRawArray :: [CategoryRaw] -> [Category]
 convertCategoryRawArray rawA = convertToCategoryThirdStep catA rawA2
-  where 
-    (catA, rawA2) = convertToCategoryFirstStep rawA
-  
+  where (catA, rawA2) = convertToCategoryFirstStep rawA
+
 
 convertToCategoryThirdStep :: [Category] -> [CategoryRaw] -> [Category]
-convertToCategoryThirdStep [] (_:_) = []
-convertToCategoryThirdStep catA [] = catA
-convertToCategoryThirdStep (x:xs) arrCatRaw = convertToCategoryThirdStep (xs ++ arrCat) arrCatRaw'
-  where
-    (arrCat,arrCatRaw') =  convertToCategorySecondStep x arrCatRaw 
+convertToCategoryThirdStep []       (_ : _)   = []
+convertToCategoryThirdStep catA     []        = catA
+convertToCategoryThirdStep (x : xs) arrCatRaw = convertToCategoryThirdStep
+  (xs ++ arrCat)
+  arrCatRaw'
+  where (arrCat, arrCatRaw') = convertToCategorySecondStep x arrCatRaw
 
 
-convertToCategorySecondStep :: Category -> [CategoryRaw] -> ([Category],[CategoryRaw])
-convertToCategorySecondStep  cat arr   =  convertToCategorySecondStep'  cat arr ([],[])
-  where
-    convertToCategorySecondStep' cats [] ([],rawA) = ([cats],rawA)
-    convertToCategorySecondStep' _ [] (catA ,rawA) = (catA,rawA)
-    convertToCategorySecondStep' cat' (x:xs) (catA, rawA) = case convertCategory cat' x of
-      Nothing -> convertToCategorySecondStep' cat' xs (catA, rawA ++ [x])
+convertToCategorySecondStep
+  :: Category -> [CategoryRaw] -> ([Category], [CategoryRaw])
+convertToCategorySecondStep cat arr = convertToCategorySecondStep' cat
+                                                                   arr
+                                                                   ([], [])
+ where
+  convertToCategorySecondStep' cats [] ([]  , rawA) = ([cats], rawA)
+  convertToCategorySecondStep' _    [] (catA, rawA) = (catA, rawA)
+  convertToCategorySecondStep' cat' (x : xs) (catA, rawA) =
+    case convertCategory cat' x of
+      Nothing   -> convertToCategorySecondStep' cat' xs (catA, rawA ++ [x])
       Just cat2 -> convertToCategorySecondStep' cat' xs (catA ++ [cat2], rawA)
 
-convertToCategoryFirstStep :: [CategoryRaw]  -> ([Category],[CategoryRaw])
-convertToCategoryFirstStep  = convertToCategoryFirstStep' ([],[]) 
-  where
-    convertToCategoryFirstStep' parArray [] =  parArray
-    convertToCategoryFirstStep' (cat,catR) (x:xs) = case convertMainCategory x of
-      Just y -> convertToCategoryFirstStep' ( y : cat,catR) xs
+convertToCategoryFirstStep :: [CategoryRaw] -> ([Category], [CategoryRaw])
+convertToCategoryFirstStep = convertToCategoryFirstStep' ([], [])
+ where
+  convertToCategoryFirstStep' parArray [] = parArray
+  convertToCategoryFirstStep' (cat, catR) (x : xs) =
+    case convertMainCategory x of
+      Just y  -> convertToCategoryFirstStep' (y : cat, catR) xs
       Nothing -> convertToCategoryFirstStep' (cat, x : catR) xs
-      
+
 
 convertMainCategory :: CategoryRaw -> Maybe Category
-convertMainCategory (CategoryRaw idC nameC Nothing) = Just (Category idC nameC Nothing)
-convertMainCategory (CategoryRaw idC nameC (Just 0)) = Just (Category idC nameC Nothing)
-convertMainCategory (CategoryRaw _ _ (Just _)) =  Nothing
+convertMainCategory (CategoryRaw idC nameC Nothing) =
+  Just (Category idC nameC Nothing)
+convertMainCategory (CategoryRaw idC nameC (Just 0)) =
+  Just (Category idC nameC Nothing)
+convertMainCategory (CategoryRaw _ _ (Just _)) = Nothing
 
 convertCategory :: Category -> CategoryRaw -> Maybe Category
 convertCategory (Category _ _ _) (CategoryRaw _ _ Nothing) = Nothing
-convertCategory (Category idC nameC inCat) (CategoryRaw idC1 nameC1 (Just idP)) = if idC == idP 
-  then Just $  Category idC1 nameC1 (Just $ Category idC nameC inCat) 
-  else Nothing
+convertCategory (Category idC nameC inCat) (CategoryRaw idC1 nameC1 (Just idP))
+  = if idC == idP
+    then Just $ Category idC1 nameC1 (Just $ Category idC nameC inCat)
+    else Nothing

@@ -1,18 +1,21 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.SortedService where
 
-import Adapter.PostgreSQL.Common 
-import ClassyPrelude
-import Control.Monad.Except ( MonadError(throwError) )
-import Database.PostgreSQL.Simple ( query ) 
-import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL, ErrorTakeEntityNotSupposed),
-      convertNewsRaw,
-      News,
-      NewsRaw )
-import Adapter.PostgreSQL.ImportLibrary
+import           Adapter.PostgreSQL.Common
+import           ClassyPrelude
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Database.PostgreSQL.Simple     ( query )
+import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( DataErrorPostgreSQL
+                                                  , ErrorTakeEntityNotSupposed
+                                                  )
+                                                , convertNewsRaw
+                                                , News
+                                                , NewsRaw
+                                                )
+import           Adapter.PostgreSQL.ImportLibrary
 
 
 requestForPost' :: Query
@@ -35,13 +38,12 @@ requestForPost' = [sql| select    endNews.id_news
 	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews"
                       |]
 
-sortedNews :: PG r m => Text -> Int -> m  [News]
-sortedNews txtCond page
-  | txtCond == "date" = sortedDate page
-  | txtCond == "author" = sortedAuthor page
-  | txtCond == "category" = sortedCategory page
-  | txtCond == "photo" = sortedPhoto page
-  | otherwise = throwError ErrorTakeEntityNotSupposed
+sortedNews :: PG r m => Text -> Int -> m [News]
+sortedNews txtCond page | txtCond == "date"     = sortedDate page
+                        | txtCond == "author"   = sortedAuthor page
+                        | txtCond == "category" = sortedCategory page
+                        | txtCond == "photo"    = sortedPhoto page
+                        | otherwise = throwError ErrorTakeEntityNotSupposed
 
 sortedDate :: PG r m => Int -> m [News]
 sortedDate page = do
@@ -154,7 +156,7 @@ sortedPhoto page = do
     news -> do
       writeLogD "sortedPhoto success "
       return $ map convertNewsRaw news
-      
+
 --  Здесь можно еще добавить в запрос к базе DESC или ASC - это или ввести новую переменную(что предпочтительнее - так как нельзя 
 -- будет ошибиться) или добавить еще варианты txt - тут опять же плохая масштабируемость, но в задании не говорили конкретно как 
 -- сортировать)

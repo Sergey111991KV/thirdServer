@@ -1,13 +1,13 @@
 module Domain.Services.LogMonad where
 
-import ClassyPrelude
+import           ClassyPrelude
 
-import Domain.Types.ExportTypes
- 
+import           Domain.Types.ExportTypes
 
 
-import Data.Text.Time (formatISODateTime)
-import System.IO (appendFile)
+
+import           Data.Text.Time                 ( formatISODateTime )
+import           System.IO                      ( appendFile )
 
 class (Monad m, MonadIO m) =>
       Log m
@@ -25,13 +25,12 @@ writeInTerminal :: Bool -> Text -> IO ()
 writeInTerminal bl txtInLog = do
   when bl $ ClassyPrelude.putStrLn txtInLog
 
-writFileHandler ::
-     UTCTime -> FilePath -> LogWrite -> LogWrite -> Bool -> Text -> IO ()
+writFileHandler
+  :: UTCTime -> FilePath -> LogWrite -> LogWrite -> Bool -> Text -> IO ()
 writFileHandler dat lF logConf logToCompare bl txtInLog = do
   writeInLogFile lF (logConf >= logToCompare) (txtInLog <> " " <> d)
   writeInTerminal bl txtInLog
-  where
-    d = toStrict $ formatISODateTime dat
+  where d = toStrict $ formatISODateTime dat
 
 writeLogHandler :: UTCTime -> LogConfig -> LogWrite -> Text -> IO ()
 writeLogHandler dat (LogConfig lf logLev logBool) loging =

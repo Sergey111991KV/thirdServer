@@ -1,20 +1,21 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetAllAuthorAccess where
 
-import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude
- 
-import Database.PostgreSQL.Simple
-import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) ) 
-import Domain.Types.ExportTypes
-import Adapter.PostgreSQL.ImportLibrary
-import Control.Monad.Except ( MonadError(throwError) ) 
+import           Adapter.PostgreSQL.Common      ( PG
+                                                , withConn
+                                                )
+import           ClassyPrelude
+
+import           Database.PostgreSQL.Simple
+import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
+import           Domain.Types.ExportTypes
+import           Adapter.PostgreSQL.ImportLibrary
+import           Control.Monad.Except           ( MonadError(throwError) )
 import qualified Data.ByteString.Lazy.Internal as LB
 
 getAllAuthorAccess :: PG r m => UserId -> Int -> m LB.ByteString
 getAllAuthorAccess uId page = do
-  let q =
-              [sql| SELECT  draft.id_draft, 
+  let q = [sql| SELECT  draft.id_draft, 
                             draft.text_draft, 
                             draft.data_create_draft, 
                             draft.news_id_draft, 

@@ -1,38 +1,40 @@
-module Domain.Types.BusinessEntity.Tag (Tag(Tag,idTag, nameTag)) where
+module Domain.Types.BusinessEntity.Tag
+  ( Tag(Tag, idTag, nameTag)
+  ) where
 
-import ClassyPrelude
-  ( Applicative(pure)
-  , Eq
-  , Generic
-  , Int
-  , IsString(fromString)
-  , Show
-  , String
-  , ($)
-  , unpack
-  )
-import qualified Data.Attoparsec.ByteString.Char8 as A
-import Database.PostgreSQL.Simple.FromField (FromField(..))
-import Database.PostgreSQL.Simple.Types (PGArray(PGArray))
-import Domain.Types.ImportLibrary
-  ( Action(Escape, Many, Plain)
-  , FromJSON
-  , FromRow
-  , ToField(..)
-  , ToJSON
-  , ToRow
-  , fromPGRow'
-  , intDec
-  , textContent
-  )
+import           ClassyPrelude                  ( Applicative(pure)
+                                                , Eq
+                                                , Generic
+                                                , Int
+                                                , IsString(fromString)
+                                                , Show
+                                                , String
+                                                , ($)
+                                                , unpack
+                                                )
+import qualified Data.Attoparsec.ByteString.Char8
+                                               as A
+import           Database.PostgreSQL.Simple.FromField
+                                                ( FromField(..) )
+import           Database.PostgreSQL.Simple.Types
+                                                ( PGArray(PGArray) )
+import           Domain.Types.ImportLibrary     ( Action(Escape, Many, Plain)
+                                                , FromJSON
+                                                , FromRow
+                                                , ToField(..)
+                                                , ToJSON
+                                                , ToRow
+                                                , fromPGRow'
+                                                , intDec
+                                                , textContent
+                                                )
 
-import qualified Prelude as P
+import qualified Prelude                       as P
 
-data Tag =
-  Tag
-    { idTag :: Int
-    , nameTag :: String
-    }
+data Tag = Tag
+  { idTag   :: Int
+  , nameTag :: String
+  }
   deriving (Eq, Show, Generic)
 
 instance FromField Tag where
@@ -43,14 +45,13 @@ instance FromRow Tag
 instance FromJSON Tag
 
 instance ToField Tag where
-  toField (Tag idT text) =
-    Many
-      [ Plain "("
-      , Plain (intDec idT)
-      , Plain ","
-      , Escape (fromString text)
-      , Plain ")"
-      ]
+  toField (Tag idT text) = Many
+    [ Plain "("
+    , Plain (intDec idT)
+    , Plain ","
+    , Escape (fromString text)
+    , Plain ")"
+    ]
 
 instance ToRow Tag
 
@@ -64,9 +65,9 @@ deriving instance Generic (PGArray Tag) => Generic (PGArray Tag)
 
 parseTag :: A.Parser Tag
 parseTag = do
-  _ <- A.char '('
-  idTag' <- textContent
-  _ <- A.char ','
+  _        <- A.char '('
+  idTag'   <- textContent
+  _        <- A.char ','
   nameTag' <- textContent
-  _ <- A.char ')'
+  _        <- A.char ')'
   pure (Tag (P.read $ ClassyPrelude.unpack idTag') (unpack nameTag'))

@@ -1,41 +1,61 @@
 module Adapter.HTTPWAI.HelpFunction where
 
 import ClassyPrelude
+import Control.Monad.Except
+import Data.Aeson
+import Data.ByteString.Builder
+import qualified Data.ByteString.Lazy.Internal as LB
 import Domain.Types.ExportTypes
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
-import Data.Aeson 
-import Control.Monad.Except
 import Text.Parsec as Parsec
-import Data.ByteString.Builder
-import qualified Data.ByteString.Lazy.Internal as LB
 
-serverErrorResponse :: Monad m => ErrorServer ->  m HTTP.Response
+serverErrorResponse :: Monad m => ErrorServer -> m HTTP.Response
 serverErrorResponse err = do
-        pure $ HTTP.responseLBS HTTP.status404 [] (encodeUtf8 $ fromStrict $ errorText err)
+  pure $
+    HTTP.responseLBS HTTP.status404 [] (encodeUtf8 $ fromStrict $ errorText err)
 
-successResponse ::  forall a. ToJSON a  => a  ->  HTTP.Response
-successResponse  b = HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ fromEncoding $ toEncoding  b
+successResponse ::
+     forall a. ToJSON a
+  => a
+  -> HTTP.Response
+successResponse b =
+  HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $
+  fromEncoding $ toEncoding b
 
-successResponse' ::  LB.ByteString   ->  HTTP.Response
-successResponse' b  = HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $ lazyByteString b
+successResponse' :: LB.ByteString -> HTTP.Response
+successResponse' b =
+  HTTP.responseBuilder HTTP.status200 [("Content-Type", "application/json")] $
+  lazyByteString b
 
 getCookie :: MonadError ErrorServer m => HTTP.Request -> m SessionId
-getCookie  req =
-        convertRequestToCookie $ lookup "Cookie" $ HTTP.requestHeaders req
+getCookie req =
+  convertRequestToCookie $ lookup "Cookie" $ HTTP.requestHeaders req
 
-convertRequestToCookie :: MonadError ErrorServer m =>  Maybe ByteString -> m SessionId
+convertRequestToCookie ::
+     MonadError ErrorServer m => Maybe ByteString -> m SessionId
 convertRequestToCookie Nothing = throwError ErrorGetCookie
-convertRequestToCookie (Just byt) = 
-                either (\_ -> throwError ErrorConvert) return (Parsec.parse parserCookie "" byt)
+convertRequestToCookie (Just byt) =
+  either
+    (\_ -> throwError ErrorConvert)
+    return
+    (Parsec.parse parserCookie "" byt)
 
 parserCookie :: Parsec.Parsec ByteString () SessionId
 parserCookie = do
-     _ <- Parsec.many1 (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':')
-     _ <- Parsec.char '='
-     value <- Parsec.many1 (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':') 
-     return $ SessionId $ pack value
+  _ <-
+    Parsec.many1
+      (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':')
+  _ <- Parsec.char '='
+  value <-
+    Parsec.many1
+      (Parsec.letter Parsec.<|> Parsec.digit Parsec.<|> Parsec.char ':')
+  return $ SessionId $ pack value
 
-setCookie :: MonadError ErrorServer m => SessionId  -> m HTTP.Response
-setCookie  (SessionId sess)  = return $ HTTP.responseLBS HTTP.status200 [("SetCookie", "sId=" ++ encodeUtf8 sess)] "SET-COOKIE"
-
+setCookie :: MonadError ErrorServer m => SessionId -> m HTTP.Response
+setCookie (SessionId sess) =
+  return $
+  HTTP.responseLBS
+    HTTP.status200
+    [("SetCookie", "sId=" ++ encodeUtf8 sess)]
+    "SET-COOKIE"

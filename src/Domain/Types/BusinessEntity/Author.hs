@@ -1,26 +1,34 @@
-module Domain.Types.BusinessEntity.Author ( 
-  Author(Author,description, idAuthor, idLinkUser)
+module Domain.Types.BusinessEntity.Author
+  ( Author(Author, description, idAuthor, idLinkUser)
   ) where
 
-import ClassyPrelude (Applicative((<*>)), Eq, Generic, Int, Show, Text, (<$>))
-import Database.PostgreSQL.Simple.FromField (FromField(..), fromJSONField)
-import Domain.Types.AuthEntity.Auth (UserId)
-import Domain.Types.ImportLibrary
-  ( FromJSON
-  , FromRow(..)
-  , ToField(..)
-  , ToJSON
-  , ToRow(..)
-  , field
-  , toJSONField
-  )
+import           ClassyPrelude                  ( Applicative((<*>))
+                                                , Eq
+                                                , Generic
+                                                , Int
+                                                , Show
+                                                , Text
+                                                , (<$>)
+                                                )
+import           Database.PostgreSQL.Simple.FromField
+                                                ( FromField(..)
+                                                , fromJSONField
+                                                )
+import           Domain.Types.AuthEntity.Auth   ( UserId )
+import           Domain.Types.ImportLibrary     ( FromJSON
+                                                , FromRow(..)
+                                                , ToField(..)
+                                                , ToJSON
+                                                , ToRow(..)
+                                                , field
+                                                , toJSONField
+                                                )
 
-data Author =
-  Author
-    { idAuthor :: Int
-    , idLinkUser :: UserId
-    , description :: Text
-    }
+data Author = Author
+  { idAuthor    :: Int
+  , idLinkUser  :: UserId
+  , description :: Text
+  }
   deriving (Eq, Show, Generic)
 
 instance FromJSON Author

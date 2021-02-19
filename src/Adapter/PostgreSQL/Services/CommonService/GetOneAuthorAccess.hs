@@ -1,27 +1,33 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetOneAuthorAccess where
 
-import Adapter.PostgreSQL.Common (PG, withConn)
-import ClassyPrelude ( ($), Monad(return), Int, IO ) 
-import Domain.Types.ExportTypes
-   
-import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Adapter.PostgreSQL.ImportLibrary
+import           Adapter.PostgreSQL.Common      ( PG
+                                                , withConn
+                                                )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Int
+                                                , IO
+                                                )
+import           Domain.Types.ExportTypes
+
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
+import           Adapter.PostgreSQL.ImportLibrary
 import qualified Data.ByteString.Lazy.Internal as LB
 
-getOneAuthorAccess :: PG r m => Int -> UserId -> m  LB.ByteString 
+getOneAuthorAccess :: PG r m => Int -> UserId -> m LB.ByteString
 getOneAuthorAccess idE idA = do
   resultDraft <- withConn $ \conn -> query conn qry (idA, idE) :: IO [Draft]
   case resultDraft of
     [x] -> do
-          writeLogD "getOne Draft success!"
-          return $ encode  x
+      writeLogD "getOne Draft success!"
+      return $ encode x
     _ -> do
-          writeLogE "getOneDraft DataErrorPostgreSQL "
-          throwError DataErrorPostgreSQL
-  where qry =
-              [sql| SELECT    draft.id_draft, 
+      writeLogE "getOneDraft DataErrorPostgreSQL "
+      throwError DataErrorPostgreSQL
+ where
+  qry = [sql| SELECT    draft.id_draft, 
                               draft.text_draft, 
                               draft.data_create_draft, 
                               draft.news_id_draft, 

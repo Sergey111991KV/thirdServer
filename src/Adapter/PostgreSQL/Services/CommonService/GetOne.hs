@@ -1,19 +1,22 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetOne where
 
-import Adapter.PostgreSQL.Common (PG, requestForPost, withConn)
-import ClassyPrelude
-   
-import Domain.Services.LogMonad ( Log(writeLogE, writeLogD) ) 
-import Domain.Types.ExportTypes
-   
-import Control.Monad.Except ( MonadError(throwError) ) 
-import Adapter.PostgreSQL.ImportLibrary
+import           Adapter.PostgreSQL.Common      ( PG
+                                                , requestForPost
+                                                , withConn
+                                                )
+import           ClassyPrelude
+
+import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
+import           Domain.Types.ExportTypes
+
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Adapter.PostgreSQL.ImportLibrary
 import qualified Data.ByteString.Lazy.Internal as LB
 
 
 
-getOne :: PG r m => HelpForRequest -> Int -> m LB.ByteString 
+getOne :: PG r m => HelpForRequest -> Int -> m LB.ByteString
 getOne helpR idE = do
   case helpR of
     AuthorEntReq -> do
@@ -22,7 +25,7 @@ getOne helpR idE = do
       case i of
         [x] -> do
           writeLogD "getOne Author success!"
-          return $ encode  x
+          return $ encode x
         _ -> do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
@@ -84,8 +87,9 @@ getOne helpR idE = do
           writeLogE (errorText DataErrorPostgreSQL)
           throwError DataErrorPostgreSQL
     CategoryEntReq -> do
-      let qCategory =
-            [sql| with recursive temp1 (id_category, parent_category, name_category) as ( 
+      let
+        qCategory =
+          [sql| with recursive temp1 (id_category, parent_category, name_category) as ( 
                                      select t1.id_category, t1.parent_category, t1.name_category 
                                      from category t1 where t1.id_category = (?) 
                                      union 

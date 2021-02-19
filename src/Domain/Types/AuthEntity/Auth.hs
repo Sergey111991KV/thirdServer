@@ -1,8 +1,8 @@
 module Domain.Types.AuthEntity.Auth where
 
-import ClassyPrelude
-import Database.PostgreSQL.Simple.FromField
-import Domain.Types.ImportLibrary
+import           ClassyPrelude
+import           Database.PostgreSQL.Simple.FromField
+import           Domain.Types.ImportLibrary
 
 type IsAdmin = Bool
 

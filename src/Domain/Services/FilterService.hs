@@ -1,7 +1,9 @@
 module Domain.Services.FilterService where
 
-import ClassyPrelude ( Int, Text ) 
-import Domain.Types.ExportTypes ( News ) 
+import           ClassyPrelude                  ( Int
+                                                , Text
+                                                )
+import           Domain.Types.ExportTypes       ( News )
 
 class FilterService m where
   filterOfData :: Text -> Text -> Int -> m [News]
