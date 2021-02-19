@@ -24,7 +24,7 @@ checkAdminAccess sesId = do
         _ -> do
           writeLogE "(errorText DataErrorPostgreSQL) "
           throwError DataErrorPostgreSQL
-      where qry = "select admin from usernews where id_user = ? "
+      where qry = [sql|select admin from usernews where id_user = ? ;|]
 
 checkAuthorAccess :: PG r m => SessionId -> m ()
 checkAuthorAccess sesId = do
@@ -40,4 +40,4 @@ checkAuthorAccess sesId = do
         _ -> do
           writeLogE "checkAuthorAccess DataErrorPostgreSQL "
           throwError DataErrorPostgreSQL
-      where qry = "select authoris from usernews where id_user = ? "
+      where qry = [sql| select authoris from usernews where id_user = ? ;|]

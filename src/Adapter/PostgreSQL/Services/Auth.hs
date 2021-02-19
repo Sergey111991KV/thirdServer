@@ -25,7 +25,7 @@ import Adapter.PostgreSQL.ImportLibrary
 findUserId :: PG r m => Login -> Password -> m UserId
 findUserId login password = do
   let q =
-        "SELECT id_user FROM userNews where login_user = (?) and password_user = (?)"
+        [sql| SELECT id_user FROM userNews where login_user = (?) and password_user = (?);|]
   i <- withConn $ \conn -> query conn q (login, password) :: IO [UserId]
   case i of
     [x] -> do
@@ -39,7 +39,7 @@ newSession :: PG r m => UserId -> m  SessionId
 newSession user = do
   deleteOldSession user
   insertNewSession user
-  let qry = "select key from session where user_news_id= ?"
+  let qry = [sql| select key from session where user_news_id= ?;|]
   result <- withConn $ \conn -> query conn qry [userIdRaw user]
   case result of
         [sId] -> do
@@ -62,7 +62,7 @@ deleteOldSession us = do
       throwError DataErrorPostgreSQL
  
   where
-    qry = "delete from session where user_news_id = ?"
+    qry = [sql|delete from session where user_news_id = ?|]
 
 insertNewSession :: PG r m => UserId -> m  ()
 insertNewSession uId = do
@@ -76,7 +76,7 @@ insertNewSession uId = do
       writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
   where
-    qry = "INSERT INTO session (key, user_news_id) values (?,?)"
+    qry = [sql|INSERT INTO session (key, user_news_id) values (?,?);|]
 
 findUserIdBySession :: PG r m => SessionId -> m  UserId
 findUserIdBySession sesId = do
@@ -89,4 +89,4 @@ findUserIdBySession sesId = do
       writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
   where
-    qry = "select user_news_id from session where key = ? "
+    qry = [sql|select user_news_id from session where key = ? ;|]

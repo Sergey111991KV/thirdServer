@@ -1,4 +1,4 @@
-#! /bin/bash
+curl/FilterAllOfTags.sh#! /bin/bash
 
 
 
