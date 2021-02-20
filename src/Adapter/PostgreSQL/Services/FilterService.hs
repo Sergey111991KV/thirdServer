@@ -8,8 +8,10 @@ import           Domain.Types.ExportTypes
 import           Adapter.PostgreSQL.ImportLibrary
 import           Control.Monad.Except           ( MonadError(throwError) )
 import qualified Prelude                       as P
+import qualified Data.ByteString.Lazy.Internal as LB
 
-filterOfData :: PG r m => Text -> Text -> Int -> m [News]
+
+filterOfData :: PG r m => Text -> Text -> Int -> m LB.ByteString
 filterOfData condition time page = do
   let
     q =
@@ -39,7 +41,7 @@ filterOfData condition time page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterOfData success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
 conversCond :: Text -> Query
 conversCond txtCond | txtCond == "less"  = " where data_creat_news <= (?)"
@@ -47,8 +49,9 @@ conversCond txtCond | txtCond == "less"  = " where data_creat_news <= (?)"
                     | txtCond == "equel" = " where data_creat_news == (?)"
                     | otherwise          = "Error"
 
-filterAuthor :: PG r m => Int -> Int -> m [News]
+filterAuthor :: PG r m => Int -> Int -> m LB.ByteString
 filterAuthor idA page = do
+  print "filterAuthor"
   let q = [sql| select  distinct  endNews.id_news 
 				                        , endNews.data_creat_news 
 				                        , endNews.id_author 
@@ -75,9 +78,9 @@ filterAuthor idA page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterAuthor success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-filterCategory :: PG r m => Int -> Int -> m [News]
+filterCategory :: PG r m => Int -> Int -> m LB.ByteString
 filterCategory catId page = do
   let q = [sql| select  distinct  endNews.id_news 
 				                        , endNews.data_creat_news 
@@ -105,9 +108,9 @@ filterCategory catId page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterCategory success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-filterTag :: PG r m => Int -> Int -> m [News]
+filterTag :: PG r m => Int -> Int -> m LB.ByteString
 filterTag idT page = do
   let q = [sql| select  distinct  endNews.id_news 
 				                      , endNews.data_creat_news 
@@ -138,9 +141,9 @@ filterTag idT page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterTeg success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-filterOneOfTags :: PG r m => Text -> Int -> m [News]
+filterOneOfTags :: PG r m => Text -> Int -> m LB.ByteString
 filterOneOfTags idTarray page = do
   let reqArr = "{" ++ idTarray ++ "}"
   let q = [sql| select  distinct  endNews.id_news 
@@ -170,9 +173,9 @@ filterOneOfTags idTarray page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterOneOfTags success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-filterAllOfTags :: PG r m => Text -> Int -> m [News]
+filterAllOfTags :: PG r m => Text -> Int -> m LB.ByteString
 filterAllOfTags idTarray page = do
   let reqArr = createAllTagRequest $ unpack idTarray
   let q = [sql| select  distinct  endNews.id_news 
@@ -203,7 +206,7 @@ filterAllOfTags idTarray page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterAllOfTags success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
 createAllTagRequest :: String -> String
 createAllTagRequest = createAllTagRequest' "%"
@@ -213,7 +216,7 @@ createAllTagRequest = createAllTagRequest' "%"
   createAllTagRequest' arr (x : xs) =
     createAllTagRequest' (arr ++ [x] ++ "%") xs
 
-filterName :: PG r m => Text -> Int -> m [News]
+filterName :: PG r m => Text -> Int -> m LB.ByteString
 filterName txtName page = do
   let q = [sql| select  distinct  endNews.id_news 
 				                        , endNews.data_creat_news 
@@ -243,9 +246,9 @@ filterName txtName page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterName success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-filterContent :: PG r m => Text -> Int -> m [News]
+filterContent :: PG r m => Text -> Int -> m LB.ByteString
 filterContent txtContent page = do
   let insertText = "%" ++ txtContent ++ "%"
   let q = [sql| select  distinct  endNews.id_news 
@@ -274,7 +277,7 @@ filterContent txtContent page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "filterContent success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
 toStringFromArrayInt :: [Int] -> Text
 toStringFromArrayInt array = pack $ "{" ++ P.foldl addParam "" array ++ "}"

@@ -59,5 +59,41 @@ toHelpForRequest text = do
     "comment"  -> return CommentEntReq
     "category" -> return CategoryEntReq
     "draft"    -> return DraftEntReq
+    "authors"   -> return AuthorEntReq
+    "users"     -> return UserEntReq
+    "news_s"     -> return NewsEntReq
+    "tags"      -> return TagEntReq
+    "comments"  -> return CommentEntReq
+    "categorys" -> return CategoryEntReq
+    "drafts"    -> return DraftEntReq
+    "filterNews" -> return FilterNewsReq
+    "sortedNews" -> return SortedNewsReq
     _          -> throwError ErrorSupposedHelpRequest
 
+
+toQuantity :: MonadError ErrorServer m => Text -> m Quantity
+toQuantity text = do
+  case text of
+    "author"   -> return One
+    "user"     -> return One
+    "news"     -> return One
+    "tag"      -> return One
+    "comment"  -> return One
+    "category" -> return One
+    "draft"    -> return One
+    "authors"   -> return Plural
+    "users"     -> return Plural
+    "news_s"     -> return Plural
+    "tags"      -> return Plural
+    "comments"  -> return Plural
+    "categorys" -> return Plural
+    "drafts"    -> return Plural
+    "filterNews" -> return Plural
+    "sortedNews" -> return Plural
+    _          -> throwError ErrorSupposedHelpRequest
+
+getIntFromQueryArray :: MonadError ErrorServer m =>  [(Text, Maybe Text)] -> Text -> m Int
+getIntFromQueryArray = undefined 
+
+getTextFromQueryArray :: MonadError ErrorServer m =>  [(Text, Maybe Text)] -> Text -> m Text
+getTextFromQueryArray = undefined 

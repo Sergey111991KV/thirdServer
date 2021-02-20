@@ -1,10 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetOne where
 
-import           Adapter.PostgreSQL.Common      ( PG
-                                                , requestForPost
-                                                , withConn
-                                                )
+import           Adapter.PostgreSQL.Common      
 import           ClassyPrelude
 
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )

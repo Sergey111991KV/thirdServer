@@ -23,6 +23,8 @@ data HelpForRequest
   | CommentEntReq
   | CategoryEntReq
   | DraftEntReq
+  | SortedNewsReq
+  | FilterNewsReq
   | NotEntity
   deriving (Ord, Eq, Show, Generic)
 
@@ -34,4 +36,4 @@ data AnEntity = AnAuthor Author
               | AnDraft Draft
               | AnCategory Category
 
-
+data Quantity = One | Plural

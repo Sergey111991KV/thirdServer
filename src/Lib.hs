@@ -1,4 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
 module Lib
   ( mainServer
   ) where
@@ -74,7 +73,10 @@ instance CommonService App where
 
 
 instance SortedOfService App where
-  sortedNews = Pos.sortedNews
+  sortedDate = Pos.sortedDate
+  sortedAuthor = Pos.sortedAuthor
+  sortedCategory = Pos.sortedCategory
+  sortedPhoto = Pos.sortedPhoto
 
 instance FilterService App where
   filterOfData    = Pos.filterOfData

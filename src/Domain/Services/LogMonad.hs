@@ -3,9 +3,6 @@ module Domain.Services.LogMonad where
 import           ClassyPrelude
 
 import           Domain.Types.ExportTypes
-
-
-
 import           Data.Text.Time                 ( formatISODateTime )
 import           System.IO                      ( appendFile )
 

@@ -8,8 +8,10 @@ import           Domain.Services.Auth           ( Auth(findUserIdBySession) )
 import           Domain.Services.AccessService  ( Access(..) )
 import qualified Data.ByteString.Lazy.Internal as LB
 import           Domain.Services.EntityService
+import Domain.Services.FilterService
+import Domain.Services.SortedOfService
 
-class (Access m, Entity m) =>
+class (SortedOfService m, FilterService m) =>
       CommonService m
   where
   create :: AnEntity -> m  ()
@@ -104,4 +106,21 @@ getArrayCommon sess helpReq page = do
     NewsEntReq -> getAll helpReq page
     _          -> throwError NotTakeEntity
 
+getCommon :: CommonService m => SessionId -> Text -> [(Text, Maybe Text)] -> m LB.ByteString
+getCommon _ _ [] = throwError EmptyQueryArray
+getCommon sess helpReqText arr = do
+  quan <- toQuantity helpReqText
+  case quan of
+    One -> do
+      help <- toHelpForRequest helpReqText
+      page <- getIntFromQueryArray  arr "id_Entity"
+      getOneCommon sess help page
+    Plural  -> do
+      help <- toHelpForRequest helpReqText
+      case help of
+        SortedNewsReq ->  sortedNews  arr
+        FilterNewsReq ->  filteredNews arr 
+        _ -> do
+          page <- getIntFromQueryArray  arr "page"
+          getArrayCommon sess help page
 

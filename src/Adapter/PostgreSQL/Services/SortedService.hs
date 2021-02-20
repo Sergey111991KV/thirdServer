@@ -4,48 +4,14 @@ module Adapter.PostgreSQL.Services.SortedService where
 import           Adapter.PostgreSQL.Common
 import           ClassyPrelude
 import           Control.Monad.Except           ( MonadError(throwError) )
-import           Database.PostgreSQL.Simple     ( query )
+import           Database.PostgreSQL.Simple    
 import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
-import           Domain.Types.ExportTypes       ( errorText
-                                                , ErrorServer
-                                                  ( DataErrorPostgreSQL
-                                                  , ErrorTakeEntityNotSupposed
-                                                  )
-                                                , convertNewsRaw
-                                                , News
-                                                , NewsRaw
-                                                )
+import           Domain.Types.ExportTypes       
 import           Adapter.PostgreSQL.ImportLibrary
+import qualified Data.ByteString.Lazy.Internal as LB
 
 
-requestForPost' :: Query
-requestForPost' = [sql| select    endNews.id_news 
-			                , endNews.data_creat_news 
-	 			              , endNews.id_author 
-	 			              , endNews.id_link_user 
-			                , endNews.description 
-	 			              , ARRAY(with recursive temp1 (id_category, parent_category, name_category) as ( select t1.id_category, t1.parent_category, t1.name_category, cast (t1.name_category as varchar (50)) as path 
-                      from news, category t1 where t1.id_category = endnews.category_id_news union 
-                      select t2.id_category, t2.parent_category, t2.name_category, cast (temp1.path || '->'|| t2.name_category as varchar(50)) 
-                      from category t2 inner join temp1 on (temp1.parent_category = t2.id_category)) 
-                      select distinct (id_category, name_category, parent_category) from temp1) 
-                      , endNews.text_news 
-	 			              , endNews.main_photo_news 
-	 			              , endNews.other_photo_news 
-				              , endNews.short_name_news \
-                      , ARRAY(select ( id_comment, text_comment,data_create_comment,news_id_comment,user_id_comment) from comment where endNews.id_news = comment.news_id_comment) 
-	 			              , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) 
-	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews"
-                      |]
-
-sortedNews :: PG r m => Text -> Int -> m [News]
-sortedNews txtCond page | txtCond == "date"     = sortedDate page
-                        | txtCond == "author"   = sortedAuthor page
-                        | txtCond == "category" = sortedCategory page
-                        | txtCond == "photo"    = sortedPhoto page
-                        | otherwise = throwError ErrorTakeEntityNotSupposed
-
-sortedDate :: PG r m => Int -> m [News]
+sortedDate :: PG r m => Int -> m LB.ByteString
 sortedDate page = do
   let q = [sql| select    endNews.id_news 
 			                , endNews.data_creat_news 
@@ -71,9 +37,9 @@ sortedDate page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "sortedDate success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-sortedAuthor :: PG r m => Int -> m [News]
+sortedAuthor :: PG r m => Int -> m LB.ByteString
 sortedAuthor page = do
   let q = [sql| select    endNews.id_news 
 			                , endNews.data_creat_news 
@@ -99,9 +65,9 @@ sortedAuthor page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "sortedAuthor success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-sortedCategory :: PG r m => Int -> m [News]
+sortedCategory :: PG r m => Int -> m LB.ByteString
 sortedCategory page = do
   let q = [sql| select    endNews.id_news 
 			                , endNews.data_creat_news 
@@ -127,9 +93,9 @@ sortedCategory page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "sortedCategory success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
-sortedPhoto :: PG r m => Int -> m [News]
+sortedPhoto :: PG r m => Int -> m LB.ByteString
 sortedPhoto page = do
   let q = [sql| select    endNews.id_news 
 			                , endNews.data_creat_news 
@@ -155,7 +121,7 @@ sortedPhoto page = do
       throwError DataErrorPostgreSQL
     news -> do
       writeLogD "sortedPhoto success "
-      return $ map convertNewsRaw news
+      return $ encode $ map convertNewsRaw news
 
 --  Здесь можно еще добавить в запрос к базе DESC или ASC - это или ввести новую переменную(что предпочтительнее - так как нельзя 
 -- будет ошибиться) или добавить еще варианты txt - тут опять же плохая масштабируемость, но в задании не говорили конкретно как 

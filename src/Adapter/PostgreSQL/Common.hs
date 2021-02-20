@@ -56,6 +56,8 @@ withPool cfg = Control.Monad.Catch.bracket initPool cleanPool
   openConn  = connectPostgreSQL (configUrl cfg)
   closeConn = close
 
+  
+
 withState :: Config -> (State -> IO a) -> IO a
 withState cfg action = withPool cfg $ \state -> do
   migrate state

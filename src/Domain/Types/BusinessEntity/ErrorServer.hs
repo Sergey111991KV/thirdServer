@@ -14,6 +14,8 @@ data ErrorServer
   = PasswordErrorInvalidAuth
   | LoginErrorInvalidAuth
   | NotCreateSession
+  | ErrorGetPageQuery
+  | ErrorGetPageQueryConvertText
   | NotGetUserIdFromSession
   | NotForAdmin
   | NotForAuthor
@@ -24,12 +26,14 @@ data ErrorServer
   | NotTakeEntity
   | DataErrorPostgreSQL
   | DataErrorPostgreSQLInServer
+  | DataErrorPostgreSQLConnection
   | ErrorGetConfig
   | ErrorGetCookie
   | ErrorConvert
   | ErrorNonUserId
   | ErrorConvertNewsRaw
   | ErrorSupposedHelpRequest
+  | EmptyQueryArray
 
   deriving (Eq, Ord, Read, Show, Generic)
 

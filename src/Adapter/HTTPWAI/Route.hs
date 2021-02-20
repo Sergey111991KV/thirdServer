@@ -9,6 +9,7 @@ import           Domain.Types.ExportTypes
 import           Adapter.HTTPWAI.HelpFunction
 import           Domain.Services.ExportServices
 import qualified BasicPrelude                  as BP
+import           Control.Monad.Except
 
 type Router = [Text]
 
@@ -19,6 +20,19 @@ data API
   | DELETE Router
   | UNKNOWN
   deriving (Show, Eq)
+
+getPage :: (Monad m, CommonService m, MonadIO m, SortedOfService m, FilterService m)
+  => HTTP.Request
+  -> m Int
+getPage req = do
+  print $ HTTP.queryToQueryText $ HTTP.queryString req
+  let maybePageArray = lookup "page" $ HTTP.queryToQueryText $ HTTP.queryString req
+  case maybePageArray of
+    Nothing -> throwError ErrorGetPageQuery
+    Just maybePage -> do 
+      case maybePage of
+        Nothing ->  throwError ErrorGetPageQueryConvertText
+        Just page ->  return $ (BP.read page :: Int)
 
 
 route
@@ -48,103 +62,110 @@ route req = do
         publishAction sess unpackIdEntity
         return $ successResponse ("publish news" :: Text)
 
-      GET ["news", "sortedNews", condition, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- sortedNews condition unpackPage
-        return $ successResponse news
-
-      GET ["news", "filterAuthor", condition, page] -> do
-        let unpackPage     = BP.read page :: Int
-        let unpackIdAuthor = BP.read condition :: Int
-        news <- filterAuthor unpackIdAuthor unpackPage
-        return $ successResponse news
-      GET ["news", "filterCategory", condition, page] -> do
-        let unpackPage       = BP.read page :: Int
-        let unpackIdCategory = BP.read condition :: Int
-        news <- filterCategory unpackIdCategory unpackPage
-        return $ successResponse news
-      GET ["news", "filterOfData", condition, date, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- filterOfData condition date unpackPage
-        return $ successResponse news
-      GET ["news", "filterOneOfTags", condition, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- filterOneOfTags condition unpackPage
-        return $ successResponse news
-      GET ["news", "filterAllOfTags", condition, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- filterAllOfTags condition unpackPage
-        return $ successResponse news
-      GET ["news", "filterName", condition, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- filterName condition unpackPage
-        return $ successResponse news
-      GET ["news", "filterTag", condition, page] -> do
-        let unpackPage  = BP.read page :: Int
-        let unpackIdTag = BP.read condition :: Int
-        news <- filterTag unpackIdTag unpackPage
-        return $ successResponse news
-      GET ["news", "filterContent", condition, page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- filterContent condition unpackPage
-        return $ successResponse news
-
-      GET ["user", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        user <- getOneCommon sess UserEntReq unpackIdEntity
-        return $ successResponse' user
-      GET ["users", page] -> do
-        let unpackPage = BP.read page :: Int
-        users <- getArrayCommon sess UserEntReq unpackPage
-        return $ successResponse' users
-      GET ["author", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        author <- getOneCommon sess AuthorEntReq unpackIdEntity
-        return $ successResponse' author
-      GET ["authors", page] -> do
-        let unpackPage = BP.read page :: Int
-        authors <- getArrayCommon sess AuthorEntReq unpackPage
-        return $ successResponse' authors
-      GET ["category", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        category <- getOneCommon sess CategoryEntReq unpackIdEntity
-        return $ successResponse' category
-      GET ["categorys", page] -> do
-        let unpackPage = BP.read page :: Int
-        categorys <- getArrayCommon sess CategoryEntReq unpackPage
-        return $ successResponse' categorys
-      GET ["comment", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        comment <- getOneCommon sess CommentEntReq unpackIdEntity
-        return $ successResponse' comment
-      GET ["comments", page] -> do
-        let unpackPage = BP.read page :: Int
-        comments' <- getArrayCommon sess CommentEntReq unpackPage
-        return $ successResponse' comments'
-      GET ["draft", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        draft <- getOneCommon sess DraftEntReq unpackIdEntity
-        return $ successResponse' draft
-      GET ["drafts", page] -> do
-        let unpackPage = BP.read page :: Int
-        drafts <- getArrayCommon sess DraftEntReq unpackPage
-        return $ successResponse' drafts
-      GET ["tag", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        tag <- getOneCommon sess TagEntReq unpackIdEntity
-        return $ successResponse' tag
-      GET ["tags", page] -> do
-        let unpackPage = BP.read page :: Int
-        tags <- getArrayCommon sess TagEntReq unpackPage
-        return $ successResponse' tags
-      GET ["news", idE] -> do
-        let unpackIdEntity = BP.read idE :: Int
-        news <- getOneCommon sess NewsEntReq unpackIdEntity
+      GET arr -> do
+        let help = Prelude.head arr
+        news <- getCommon sess help (HTTP.queryToQueryText $ HTTP.queryString req)
         return $ successResponse' news
-      GET ["news_s", page] -> do
-        let unpackPage = BP.read page :: Int
-        news <- getArrayCommon sess NewsEntReq unpackPage
-        return $ successResponse' news
+
+
+      -- GET ["news", "sortedNews", condition, page] -> do
+      --   print $ lookup "page" $ HTTP.queryToQueryText $ HTTP.queryString req
+      --   let unpackPage = BP.read page :: Int
+      --   news <- sortedNews condition unpackPage
+      --   return $ successResponse news
+
+      -- GET ["news", "filterAuthor", condition] -> do
+      --   page  <- getPage req
+      --   let unpackIdAuthor = BP.read condition :: Int
+      --   news <- filterAuthor unpackIdAuthor page
+      --   return $ successResponse news
+      -- GET ["news", "filterCategory", condition, page] -> do
+      --   page  <- getPage req
+      --   let unpackIdCategory = BP.read condition :: Int
+      --   news <- filterCategory unpackIdCategory unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterOfData", condition, date, page] -> do
+      --   page  <- getPage req
+      --   news <- filterOfData condition date unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterOneOfTags", condition, page] -> do
+      --   page  <- getPage req
+      --   news <- filterOneOfTags condition unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterAllOfTags", condition, page] -> do
+      --   page  <- getPage req
+      --   news <- filterAllOfTags condition unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterName", condition, page] -> do
+      --   page  <- getPage req
+      --   news <- filterName condition unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterTag", condition, page] -> do
+      --   page  <- getPage req
+      --   let unpackIdTag = BP.read condition :: Int
+      --   news <- filterTag unpackIdTag unpackPage
+      --   return $ successResponse news
+      -- GET ["news", "filterContent", condition, page] -> do
+      --   page  <- getPage req
+      --   news <- filterContent condition unpackPage
+      --   return $ successResponse news
+
+      -- GET ["user", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   user <- getOneCommon sess UserEntReq unpackIdEntity
+      --   return $ successResponse' user
+      -- GET ["users", page] -> do
+      --   page  <- getPage req
+      --   users <- getArrayCommon sess UserEntReq unpackPage
+      --   return $ successResponse' users
+      -- GET ["author", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   author <- getOneCommon sess AuthorEntReq unpackIdEntity
+      --   return $ successResponse' author
+      -- GET ["authors", page] -> do
+      --   page  <- getPage req
+      --   authors <- getArrayCommon sess AuthorEntReq unpackPage
+      --   return $ successResponse' authors
+      -- GET ["category", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   category <- getOneCommon sess CategoryEntReq unpackIdEntity
+      --   return $ successResponse' category
+      -- GET ["categorys", page] -> do
+      --   page  <- getPage req
+      --   categorys <- getArrayCommon sess CategoryEntReq unpackPage
+      --   return $ successResponse' categorys
+      -- GET ["comment", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   comment <- getOneCommon sess CommentEntReq unpackIdEntity
+      --   return $ successResponse' comment
+      -- GET ["comments", page] -> do
+      --   page  <- getPage req
+      --   comments' <- getArrayCommon sess CommentEntReq unpackPage
+      --   return $ successResponse' comments'
+      -- GET ["draft", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   draft <- getOneCommon sess DraftEntReq unpackIdEntity
+      --   return $ successResponse' draft
+      -- GET ["drafts", page] -> do
+      --   page  <- getPage req
+      --   drafts <- getArrayCommon sess DraftEntReq unpackPage
+      --   return $ successResponse' drafts
+      -- GET ["tag", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   tag <- getOneCommon sess TagEntReq unpackIdEntity
+      --   return $ successResponse' tag
+      -- GET ["tags", page] -> do
+      --   page  <- getPage req
+      --   tags <- getArrayCommon sess TagEntReq unpackPage
+      --   return $ successResponse' tags
+      -- GET ["news", idE] -> do
+      --   let unpackIdEntity = BP.read idE :: Int
+      --   news <- getOneCommon sess NewsEntReq unpackIdEntity
+      --   return $ successResponse' news
+      -- GET ["news_s", page] -> do
+      --   page  <- getPage req
+      --   news <- getArrayCommon sess NewsEntReq unpackPage
+      --   return $ successResponse' news
 
       POST arr -> do
         help    <- toHelpForRequest $ Prelude.head arr

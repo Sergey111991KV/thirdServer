@@ -10,3 +10,6 @@ class (MonadError ErrorServer m) =>
     fromAnEntity :: AnEntity -> m HelpForRequest
     toAnEntity :: ByteString -> HelpForRequest -> m AnEntity
     toHelpForRequest :: Text -> m HelpForRequest
+    toQuantity :: Text -> m Quantity
+    getIntFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Int
+    getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text

@@ -1,17 +1,12 @@
 module Domain.Services.Auth where
 
 import           ClassyPrelude
-import           Control.Monad.Except           ( MonadError )
+
 import           Domain.Services.LogMonad       ( Log(..) )
-import           Domain.Types.ExportTypes       ( ErrorServer
-                                                , Login
-                                                , Password
-                                                , SessionId
-                                                , UserId
-                                                )
+import           Domain.Types.ExportTypes       
+import Domain.Services.EntityService
 
-
-class (Log m, MonadError ErrorServer m) =>
+class (Log m,  Entity m) =>
       Auth m
   where
   findUserId :: Login -> Password -> m  UserId
