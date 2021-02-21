@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: beebb1765707b22eea2a17e85272090555c234d956e5a880b46560832f44d6ea
+-- hash: 80a3a5d3e6c2c78280e8fba53be7e20a659e9c248822d4e9efb94bc679568904
 
 name:           thirdServer
 version:        0.1.0.0
@@ -27,12 +27,12 @@ source-repository head
 
 library
   exposed-modules:
+      Adapter.HTTPWAI.ExportHTTP
       Adapter.HTTPWAI.HelpFunction
-      Adapter.HTTPWAI.ImportHTTP
       Adapter.HTTPWAI.Route
       Adapter.PostgreSQL.Common
-      Adapter.PostgreSQL.ImportLibrary
       Adapter.PostgreSQL.ExportPostgres
+      Adapter.PostgreSQL.ImportLibrary
       Adapter.PostgreSQL.Services.AccessService
       Adapter.PostgreSQL.Services.Auth
       Adapter.PostgreSQL.Services.CommonService.Create
@@ -49,11 +49,13 @@ library
       Adapter.PostgreSQL.Services.SortedService
       Domain.Config.Config
       Domain.Config.ParseConfig
+      Domain.DomainEntityLogic.DomainEntityLogic
       Domain.Services.AccessService
       Domain.Services.Auth
       Domain.Services.CommonService
-      Domain.Services.FilterService
+      Domain.Services.EntityService
       Domain.Services.ExportServices
+      Domain.Services.FilterService
       Domain.Services.LogMonad
       Domain.Services.SortedOfService
       Domain.Types.AuthEntity.Auth
@@ -66,15 +68,14 @@ library
       Domain.Types.BusinessEntity.News
       Domain.Types.BusinessEntity.Tag
       Domain.Types.BusinessEntity.User
-      Domain.Types.HelpForRequest.HelpForRequest
-      Domain.Types.ImportLibrary
       Domain.Types.ExportTypes
+      Domain.Types.ImportLibrary
       Domain.Types.LogEntity.LogEntity
       Domain.Types.ParseRowEntity
       Lib
   hs-source-dirs:
       src
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
   build-depends:
       aeson
     , attoparsec
@@ -95,6 +96,7 @@ library
     , resource-pool
     , strict
     , string-random
+    , template-haskell
     , text
     , text-time
     , time
@@ -112,7 +114,7 @@ executable thirdServer-exe
       Paths_thirdServer
   hs-source-dirs:
       app
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
   ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -134,6 +136,7 @@ executable thirdServer-exe
     , resource-pool
     , strict
     , string-random
+    , template-haskell
     , text
     , text-time
     , thirdServer
@@ -147,14 +150,11 @@ test-suite thirdServer-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Domain.Services.AuthSpec
-      Domain.Services.CommonServiceSpec
       Domain.Types.BusinessEntity.CategorySpec
-      Fixture
       Paths_thirdServer
   hs-source-dirs:
       test
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -176,6 +176,7 @@ test-suite thirdServer-test
     , resource-pool
     , strict
     , string-random
+    , template-haskell
     , text
     , text-time
     , thirdServer

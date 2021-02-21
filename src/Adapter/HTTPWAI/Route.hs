@@ -49,7 +49,9 @@ route req = do
       GET arr -> do
         liftIO $ print $ HTTP.queryString req
         let help = Prelude.head arr
-        news <- getCommon sess help (HTTP.queryToQueryText $ HTTP.queryString req)
+        news <- getCommon sess
+                          help
+                          (HTTP.queryToQueryText $ HTTP.queryString req)
         return $ successResponse' news
 
       POST arr -> do

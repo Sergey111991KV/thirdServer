@@ -55,11 +55,11 @@ instance Access App where
   checkAdminAccess  = Pos.checkAdminAccess
 
 instance Entity App where
-  fromAnEntity     = DomLog.fromAnEntity
-  toAnEntity       = DomLog.toAnEntity
-  toHelpForRequest = DomLog.toHelpForRequest
-  toQuantity = DomLog.toQuantity
-  getIntFromQueryArray = DomLog.getIntFromQueryArray
+  fromAnEntity          = DomLog.fromAnEntity
+  toAnEntity            = DomLog.toAnEntity
+  toHelpForRequest      = DomLog.toHelpForRequest
+  toQuantity            = DomLog.toQuantity
+  getIntFromQueryArray  = DomLog.getIntFromQueryArray
   getTextFromQueryArray = DomLog.getTextFromQueryArray
 
 instance CommonService App where
@@ -76,10 +76,10 @@ instance CommonService App where
 
 
 instance SortedOfService App where
-  sortedDate = Pos.sortedDate
-  sortedAuthor = Pos.sortedAuthor
+  sortedDate     = Pos.sortedDate
+  sortedAuthor   = Pos.sortedAuthor
   sortedCategory = Pos.sortedCategory
-  sortedPhoto = Pos.sortedPhoto
+  sortedPhoto    = Pos.sortedPhoto
 
 instance FilterService App where
   filterOfData    = Pos.filterOfData

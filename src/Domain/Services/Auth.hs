@@ -3,8 +3,8 @@ module Domain.Services.Auth where
 import           ClassyPrelude
 
 import           Domain.Services.LogMonad       ( Log(..) )
-import           Domain.Types.ExportTypes       
-import Domain.Services.EntityService
+import           Domain.Types.ExportTypes
+import           Domain.Services.EntityService
 
 class (Log m,  Entity m) =>
       Auth m

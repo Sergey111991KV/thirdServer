@@ -1,56 +1,56 @@
 module Domain.Services.FilterService where
 
-import           ClassyPrelude                 
-import           Domain.Types.ExportTypes      
+import           ClassyPrelude
+import           Domain.Types.ExportTypes
 import qualified Data.ByteString.Lazy.Internal as LB
-import           Control.Monad.Except 
-import Domain.Services.AccessService 
-import Domain.Services.EntityService 
+import           Control.Monad.Except
+import           Domain.Services.AccessService
+import           Domain.Services.EntityService
 
 
 class Access m =>
   FilterService m where
-  filterOfData :: Text -> Text -> Int -> m LB.ByteString 
-  filterAuthor :: Int -> Int -> m LB.ByteString 
-  filterCategory :: Int -> Int -> m LB.ByteString 
-  filterTag :: Int -> Int -> m LB.ByteString 
-  filterOneOfTags :: Text -> Int -> m LB.ByteString 
-  filterAllOfTags :: Text -> Int -> m LB.ByteString 
-  filterName :: Text -> Int -> m LB.ByteString 
-  filterContent :: Text -> Int -> m LB.ByteString 
+  filterOfData :: Text -> Text -> Int -> m LB.ByteString
+  filterAuthor :: Int -> Int -> m LB.ByteString
+  filterCategory :: Int -> Int -> m LB.ByteString
+  filterTag :: Int -> Int -> m LB.ByteString
+  filterOneOfTags :: Text -> Int -> m LB.ByteString
+  filterAllOfTags :: Text -> Int -> m LB.ByteString
+  filterName :: Text -> Int -> m LB.ByteString
+  filterContent :: Text -> Int -> m LB.ByteString
 
 
-filteredNews :: FilterService m =>  [(Text, Maybe Text)] -> m  LB.ByteString
-filteredNews  arr = do
-    print arr
-    page <- getIntFromQueryArray arr  "page"
-    print page
-    filterCondition <- getTextFromQueryArray arr "filterCondition"
-    case filterCondition of
-      "date"  -> do
-              condition <- getTextFromQueryArray arr "condition"
-              date <- getTextFromQueryArray arr "date"
-              filterOfData condition date page
-      "author"  -> do
-              idA <- getIntFromQueryArray arr "author_id"  
-              print     idA
-              filterAuthor idA page
-      "category" -> do
-              idC <- getIntFromQueryArray arr "category_id"     
-              filterCategory idC page
-      "tag"    ->  do
-              idT <- getIntFromQueryArray arr "tag_id" 
-              filterTag idT page
-      "oneOfTag"  -> do
-              arrTag <- getTextFromQueryArray arr "tags_arr"
-              filterOneOfTags arrTag page
-      "allOfTag" -> do
-              arrTag <- getTextFromQueryArray arr "tags_arr"
-              filterAllOfTags arrTag page
-      "name"    -> do
-              name <- getTextFromQueryArray arr "name_filter"
-              filterName name page
-      "content" -> do
-              content <- getTextFromQueryArray arr "content"
-              filterContent content page
-      _         -> throwError ErrorTakeEntityNotSupposed
+filteredNews :: FilterService m => [(Text, Maybe Text)] -> m LB.ByteString
+filteredNews arr = do
+  print arr
+  page <- getIntFromQueryArray arr "page"
+  print page
+  filterCondition <- getTextFromQueryArray arr "filterCondition"
+  case filterCondition of
+    "date" -> do
+      condition <- getTextFromQueryArray arr "condition"
+      date      <- getTextFromQueryArray arr "date"
+      filterOfData condition date page
+    "author" -> do
+      idA <- getIntFromQueryArray arr "author_id"
+      print idA
+      filterAuthor idA page
+    "category" -> do
+      idC <- getIntFromQueryArray arr "category_id"
+      filterCategory idC page
+    "tag" -> do
+      idT <- getIntFromQueryArray arr "tag_id"
+      filterTag idT page
+    "oneOfTag" -> do
+      arrTag <- getTextFromQueryArray arr "tags_arr"
+      filterOneOfTags arrTag page
+    "allOfTag" -> do
+      arrTag <- getTextFromQueryArray arr "tags_arr"
+      filterAllOfTags arrTag page
+    "name" -> do
+      name <- getTextFromQueryArray arr "name_filter"
+      filterName name page
+    "content" -> do
+      content <- getTextFromQueryArray arr "content"
+      filterContent content page
+    _ -> throwError ErrorTakeEntityNotSupposed

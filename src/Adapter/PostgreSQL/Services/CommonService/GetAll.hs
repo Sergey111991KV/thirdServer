@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetAll where
 
-import           Adapter.PostgreSQL.Common      
+import           Adapter.PostgreSQL.Common
 import           ClassyPrelude
 
 import           Database.PostgreSQL.Simple

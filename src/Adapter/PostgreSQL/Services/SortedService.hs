@@ -4,9 +4,9 @@ module Adapter.PostgreSQL.Services.SortedService where
 import           Adapter.PostgreSQL.Common
 import           ClassyPrelude
 import           Control.Monad.Except           ( MonadError(throwError) )
-import           Database.PostgreSQL.Simple    
+import           Database.PostgreSQL.Simple
 import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
-import           Domain.Types.ExportTypes       
+import           Domain.Types.ExportTypes
 import           Adapter.PostgreSQL.ImportLibrary
 import qualified Data.ByteString.Lazy.Internal as LB
 
