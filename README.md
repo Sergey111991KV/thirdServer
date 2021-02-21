@@ -32,7 +32,7 @@ Take command:
     *   Adapter/HTTPWAI - implementashion http protocol
 ###    All module have 2 imports:
                 ImportLibrary - import common method and librarys inside in file 
-                Import*MODULE - import external all method of MODULE
+                Export*MODULE - import external all method of MODULE
             
            
 ## How to use.

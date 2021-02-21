@@ -50,6 +50,9 @@ toAnEntity b CategoryEntReq = do
 toAnEntity _ _ = throwError ErrorConvert
 
 
+
+
+
 toHelpForRequest :: MonadError ErrorServer m => Text -> m HelpForRequest
 toHelpForRequest text = do
   case text of

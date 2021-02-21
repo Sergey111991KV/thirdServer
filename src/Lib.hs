@@ -120,7 +120,7 @@ mainServer = do
     print
     (\conf -> do
       caseOfConf <- Config.parseConf conf
-      either (\err -> print (errorText err ++ "take option for server"))
+      either (\err -> print (errorText err ++ " take option for server"))
              mainWithConfig
              caseOfConf
     )

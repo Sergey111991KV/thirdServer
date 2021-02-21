@@ -23,7 +23,6 @@ route
   => HTTP.Request
   -> m HTTP.Response
 route req = do
-  liftIO $ print $ HTTP.queryString req
   either notAutorized autorized (getCookie req)
  where
   notAutorized ErrorGetCookie = do

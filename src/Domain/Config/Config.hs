@@ -32,9 +32,6 @@ configVKwithPair
   :: Either Pars.ParseError [ConfigPair] -> Either ErrorServer Config
 configVKwithPair (Left  _         ) = Left ErrorGetConfig
 configVKwithPair (Right configPair) = do
-  if postgresOption == Nothing P.&& port == Nothing
-    then Left ErrorGetConfig
-    else do
       Right Config
         { configPort = P.read $ fromMaybe "3000" port
         , configLog  = Log.StateLog

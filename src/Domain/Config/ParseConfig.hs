@@ -15,11 +15,14 @@ toPairs = do
   return (key, value)
 
 myParser :: Parsec.Parsec Text () [ConfigPair]
-myParser = Parsec.sepBy toPairs mySeparator
-
+myParser = Parsec.many1 $ do
+  pair <- toPairs 
+  Parsec.eof <|> mySeparator
+  return pair
+  
 mySeparator :: Parsec.Parsec Text () ()
 mySeparator = do
-  _ <- Parsec.char '\n'
+  _ <- Parsec.endOfLine 
   return ()
 
 helpText :: Parsec.Parsec Text () String

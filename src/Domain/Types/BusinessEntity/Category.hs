@@ -163,7 +163,7 @@ convertMainCategory (CategoryRaw idC nameC (Just 0)) =
 convertMainCategory (CategoryRaw _ _ (Just _)) = Nothing
 
 convertCategory :: Category -> CategoryRaw -> Maybe Category
-convertCategory (Category _ _ _) (CategoryRaw _ _ Nothing) = Nothing
+convertCategory  Category {} (CategoryRaw _ _ Nothing) = Nothing
 convertCategory (Category idC nameC inCat) (CategoryRaw idC1 nameC1 (Just idP))
   = if idC == idP
     then Just $ Category idC1 nameC1 (Just $ Category idC nameC inCat)
