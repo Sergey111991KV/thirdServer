@@ -2,5 +2,4 @@
 
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/news/filterAuthor/1?page=0
-#  http://localhost:3000/news/filterAuthor?page=0
+curl -H application/x-www-form-urlencoded -b 'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET -G http://localhost:3000/filterNews -d 'page=0&filterCondition=author&author_id=1'

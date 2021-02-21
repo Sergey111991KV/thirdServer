@@ -2,4 +2,5 @@
 
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/news_s/0
+
+curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET -G http://localhost:3000/news_s -d 'page=0'

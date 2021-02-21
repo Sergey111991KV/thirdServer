@@ -22,7 +22,9 @@ class Access m =>
 
 filteredNews :: FilterService m =>  [(Text, Maybe Text)] -> m  LB.ByteString
 filteredNews  arr = do
+    print arr
     page <- getIntFromQueryArray arr  "page"
+    print page
     filterCondition <- getTextFromQueryArray arr "filterCondition"
     case filterCondition of
       "date"  -> do
@@ -30,7 +32,8 @@ filteredNews  arr = do
               date <- getTextFromQueryArray arr "date"
               filterOfData condition date page
       "author"  -> do
-              idA <- getIntFromQueryArray arr "author_id"      
+              idA <- getIntFromQueryArray arr "author_id"  
+              print     idA
               filterAuthor idA page
       "category" -> do
               idC <- getIntFromQueryArray arr "category_id"     

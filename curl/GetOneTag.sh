@@ -2,4 +2,5 @@
 
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/tag/3
+
+curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET -G http://localhost:3000/tag -d 'id_Entity=1'

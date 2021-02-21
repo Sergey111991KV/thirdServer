@@ -1,4 +1,4 @@
-module Adapter.HTTPWAI.ImportHTTP
+module Adapter.HTTPWAI.ExportHTTP
   ( module Y
   ) where
 

@@ -19,7 +19,7 @@ import           Domain.Types.ExportTypes
 import qualified Domain.Types.LogEntity.LogEntity
                                                as Log
 import qualified Network.Wai.Handler.Warp      as W
-import qualified Adapter.HTTPWAI.ImportHTTP    as MyHTTP
+import qualified Adapter.HTTPWAI.ExportHTTP    as MyHTTP
 import qualified Domain.DomainEntityLogic.DomainEntityLogic
                                                as DomLog
 
@@ -58,6 +58,9 @@ instance Entity App where
   fromAnEntity     = DomLog.fromAnEntity
   toAnEntity       = DomLog.toAnEntity
   toHelpForRequest = DomLog.toHelpForRequest
+  toQuantity = DomLog.toQuantity
+  getIntFromQueryArray = DomLog.getIntFromQueryArray
+  getTextFromQueryArray = DomLog.getTextFromQueryArray
 
 instance CommonService App where
   create              = Pos.create
@@ -103,6 +106,7 @@ mainWithConfig config = withState config $ \port state -> do
     eitherResponse <- runApp state $ MyHTTP.route request
     response       <- either
       (\e -> do
+        print "serverErrorResponse"
         MyHTTP.serverErrorResponse e
       )
       pure

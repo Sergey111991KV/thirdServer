@@ -119,7 +119,8 @@ getCommon sess helpReqText arr = do
       help <- toHelpForRequest helpReqText
       case help of
         SortedNewsReq ->  sortedNews  arr
-        FilterNewsReq ->  filteredNews arr 
+        FilterNewsReq ->  do
+          filteredNews arr 
         _ -> do
           page <- getIntFromQueryArray  arr "page"
           getArrayCommon sess help page

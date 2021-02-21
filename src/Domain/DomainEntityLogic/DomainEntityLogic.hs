@@ -5,6 +5,7 @@ import           Domain.Types.ExportTypes
 import           ClassyPrelude
 import           Control.Monad.Except
 import           Data.Aeson
+import qualified Prelude
 
 fromAnEntity :: MonadError ErrorServer m => AnEntity -> m HelpForRequest
 fromAnEntity (AnAuthor   _) = return AuthorEntReq
@@ -64,7 +65,7 @@ toHelpForRequest text = do
     "news_s"     -> return NewsEntReq
     "tags"      -> return TagEntReq
     "comments"  -> return CommentEntReq
-    "categorys" -> return CategoryEntReq
+    "categories" -> return CategoryEntReq
     "drafts"    -> return DraftEntReq
     "filterNews" -> return FilterNewsReq
     "sortedNews" -> return SortedNewsReq
@@ -86,14 +87,31 @@ toQuantity text = do
     "news_s"     -> return Plural
     "tags"      -> return Plural
     "comments"  -> return Plural
-    "categorys" -> return Plural
+    "categories" -> return Plural
     "drafts"    -> return Plural
     "filterNews" -> return Plural
     "sortedNews" -> return Plural
     _          -> throwError ErrorSupposedHelpRequest
 
-getIntFromQueryArray :: MonadError ErrorServer m =>  [(Text, Maybe Text)] -> Text -> m Int
-getIntFromQueryArray = undefined 
+getIntFromQueryArray :: (MonadError ErrorServer m, MonadIO m) =>  [(Text, Maybe Text)] -> Text -> m Int
+getIntFromQueryArray arr param = do
+  let maybeResultArray = lookup param arr
+  case maybeResultArray of
+    Nothing -> throwError ErrorGetPageQueryConvertText
+    Just maybeResul -> do
+      case maybeResul of
+        Nothing -> throwError ErrorGetPageQueryConvertText
+        Just result -> do
+          let resultInt = Prelude.read $ unpack result :: Int
+          return resultInt
 
-getTextFromQueryArray :: MonadError ErrorServer m =>  [(Text, Maybe Text)] -> Text -> m Text
-getTextFromQueryArray = undefined 
+getTextFromQueryArray :: (MonadError ErrorServer m, MonadIO m) =>  [(Text, Maybe Text)] -> Text -> m Text
+getTextFromQueryArray arr param = do
+  let maybeResultArray = lookup param arr
+  case maybeResultArray of
+    Nothing -> throwError ErrorGetPageQueryConvertText
+    Just maybeResul -> do
+      case maybeResul of
+        Nothing -> throwError ErrorGetPageQueryConvertText
+        Just result -> do
+          return result

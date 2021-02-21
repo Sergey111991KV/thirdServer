@@ -2,4 +2,5 @@
 
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET http://localhost:3000/news/filterName/4/0
+curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -X GET -G http://localhost:3000/filterNews -d 'page=0&filterCondition=name&name_filter=4'
+
