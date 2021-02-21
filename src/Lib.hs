@@ -106,7 +106,6 @@ mainWithConfig config = withState config $ \port state -> do
     eitherResponse <- runApp state $ MyHTTP.route request
     response       <- either
       (\e -> do
-        print "serverErrorResponse"
         MyHTTP.serverErrorResponse e
       )
       pure

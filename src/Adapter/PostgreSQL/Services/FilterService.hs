@@ -51,7 +51,6 @@ conversCond txtCond | txtCond == "less"  = " where data_creat_news <= (?)"
 
 filterAuthor :: PG r m => Int -> Int -> m LB.ByteString
 filterAuthor idA page = do
-  print "filterAuthor"
   let q = [sql| select  distinct  endNews.id_news 
 				                        , endNews.data_creat_news 
 				                        , endNews.id_author 
