@@ -1,6 +1,7 @@
 module Domain.Config.ParseConfig where
 
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($), Monad(return), Text, String, Alternative((<|>)) )
 import qualified Text.Parsec                   as Parsec
 
 type ConfigPair = (String, String)

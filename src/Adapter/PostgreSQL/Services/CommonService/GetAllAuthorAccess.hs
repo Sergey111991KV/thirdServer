@@ -4,12 +4,11 @@ module Adapter.PostgreSQL.Services.CommonService.GetAllAuthorAccess where
 import           Adapter.PostgreSQL.Common      ( PG
                                                 , withConn
                                                 )
-import           ClassyPrelude
-
-import           Database.PostgreSQL.Simple
+import ClassyPrelude ( ($), Monad(return), Int, IO, (++), null )
 import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
-import           Domain.Types.ExportTypes
-import           Adapter.PostgreSQL.ImportLibrary
+import Domain.Types.ExportTypes
+    ( errorText, ErrorServer(DataErrorPostgreSQL), UserId, Draft )
+import Adapter.PostgreSQL.ImportLibrary ( encode, query, sql )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import qualified Data.ByteString.Lazy.Internal as LB
 

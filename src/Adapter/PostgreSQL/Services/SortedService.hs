@@ -1,13 +1,18 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.SortedService where
 
-import           Adapter.PostgreSQL.Common
-import           ClassyPrelude
+import Adapter.PostgreSQL.Common ( withConn, PG )
+import ClassyPrelude
+    ( ($), Monad(return), Int, IO, Text, (++), map )
 import           Control.Monad.Except           ( MonadError(throwError) )
-import           Database.PostgreSQL.Simple
 import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
-import           Domain.Types.ExportTypes
-import           Adapter.PostgreSQL.ImportLibrary
+import Domain.Types.ExportTypes
+    ( errorText,
+      ErrorServer(DataErrorPostgreSQL, ErrorGetPageQueryConvertText),
+      convertNewsRaw,
+      NewsRaw )
+import Adapter.PostgreSQL.ImportLibrary
+    ( Query, encode, query, sql )
 import qualified Data.ByteString.Lazy.Internal as LB
 
 getQueryOfsortedDate ::  MonadError ErrorServer m => Text -> m Query 

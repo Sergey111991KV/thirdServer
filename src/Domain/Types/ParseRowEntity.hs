@@ -1,6 +1,26 @@
 module Domain.Types.ParseRowEntity where
 
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($),
+      Typeable,
+      Applicative((<*), pure, (*>)),
+      Monoid(mconcat),
+      Bool(True),
+      Int,
+      Maybe(..),
+      Either(Right, Left),
+      Text,
+      ByteString,
+      UTCTime,
+      Alternative((<|>), many),
+      (.),
+      (<$>),
+      maybe,
+      unpack,
+      formatTime,
+      defaultTimeLocale,
+      parseTimeM,
+      Utf8(decodeUtf8) )
 
 import qualified Data.Attoparsec.ByteString.Char8
                                                as A

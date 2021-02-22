@@ -1,10 +1,11 @@
 module Domain.Services.Auth where
 
-import           ClassyPrelude
+import ClassyPrelude ( Monad((>>=)) )
 
 import           Domain.Services.LogMonad       ( Log(..) )
-import           Domain.Types.ExportTypes
-import           Domain.Services.EntityService
+import Domain.Types.ExportTypes
+    ( Login, Password, SessionId, UserId )
+import Domain.Services.EntityService ( Entity )
 
 class (Log m,  Entity m) =>
       Auth m

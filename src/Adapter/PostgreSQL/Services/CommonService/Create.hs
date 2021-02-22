@@ -1,14 +1,27 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.Create where
 
-import           Adapter.PostgreSQL.Common
-import           ClassyPrelude
-import           Domain.Types.ExportTypes
+import Adapter.PostgreSQL.Common ( withConn, PG )
+import ClassyPrelude ( ($), Monad(return), Maybe(Just, Nothing) )
+import Domain.Types.ExportTypes
+    ( errorText,
+      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
+      UserId(userIdRaw),
+      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
+            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft),
+      Category(parentCategory, nameCategory, idCategory),
+      Tag(nameTag),
+      Comment(textComments, dataCreateComments, newsIdComments,
+              usersIdComments),
+      Author(idLinkUser, description),
+      User(nameUser, lastName, userLogin, userPassword, avatar,
+           dataCreate, userIsAdmin, userIsAuthor),
+      AnEntity(AnUser, AnAuthor, AnCategory, AnComment, AnDraft, AnTag) )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Database.PostgreSQL.Simple.Types
                                                 ( Null(Null) )
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
-import           Adapter.PostgreSQL.ImportLibrary
+import Adapter.PostgreSQL.ImportLibrary ( execute, sql )
 
 
 

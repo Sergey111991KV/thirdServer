@@ -47,8 +47,8 @@ I used spec library for testing app and empty structure.
 
 Registration and Authentication | Api
 ------------ | -------------
-auth  | Get /api/auth/:login/:password  
-exit  | Get /api/auth/exit             
+auth  | Get /auth/:login/:password  
+exit  | Get /auth/exit             
 
 
 ### Get standard methods all entity

@@ -1,14 +1,30 @@
 module Adapter.HTTPWAI.HelpFunction where
 
 import ClassyPrelude
+    ( ($),
+      Monad(return),
+      Applicative(pure),
+      Maybe(..),
+      ByteString,
+      either,
+      (++),
+      pack,
+      IsMap(lookup),
+      LazySequence(fromStrict),
+      Utf8(encodeUtf8) )
 import Control.Monad.Except
-import Data.Aeson
-import Data.ByteString.Builder
+    ( MonadError(throwError) )
+import Data.Aeson ( ToJSON(toEncoding), fromEncoding )
+import Data.ByteString.Builder ( lazyByteString )
 import qualified Data.ByteString.Lazy.Internal as LB
 import Domain.Types.ExportTypes
+    ( errorText,
+      ErrorServer(ErrorConvert, ErrorGetCookie),
+      SessionId(SessionId) )
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as HTTP
 import Text.Parsec as Parsec
+    ( Parsec, char, digit, letter, many1, (<|>), parse )
 
 serverErrorResponse :: Monad m => ErrorServer -> m HTTP.Response
 serverErrorResponse err = do

@@ -1,7 +1,24 @@
 module Domain.Config.Config where
 
 import qualified Adapter.PostgreSQL.Common     as Pos
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($),
+      Enum(fromEnum, toEnum),
+      Monad(return),
+      Functor(fmap),
+      Show,
+      Generic,
+      Bool(True),
+      Char,
+      Int,
+      IO,
+      Word8,
+      Either(..),
+      Text,
+      (.),
+      fromMaybe,
+      pack,
+      IsMap(lookup) )
 
 import           Domain.Config.ParseConfig      ( ConfigPair
                                                 , myParser

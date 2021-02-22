@@ -1,7 +1,8 @@
 module Domain.Services.EntityService where
 
-import           ClassyPrelude
-import           Domain.Types.ExportTypes
+import ClassyPrelude ( Int, Maybe, Text, ByteString )
+import Domain.Types.ExportTypes
+    ( ErrorServer, Quantity, AnEntity, HelpForRequest )
 import           Control.Monad.Except           ( MonadError )
 
 class (MonadError ErrorServer m) =>

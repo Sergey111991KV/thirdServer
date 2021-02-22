@@ -1,10 +1,39 @@
 module Domain.DomainEntityLogic.DomainEntityLogic where
 
 
-import           Domain.Types.ExportTypes
-import           ClassyPrelude
-import           Control.Monad.Except
-import           Data.Aeson
+import Domain.Types.ExportTypes
+    ( ErrorServer(ErrorGetPageQueryConvertText, ErrorConvert,
+                  ErrorSupposedHelpRequest),
+      Draft,
+      Category,
+      Tag,
+      Comment,
+      Author,
+      User,
+      News,
+      Quantity(..),
+      AnEntity(..),
+      HelpForRequest(SortedNewsReq, AuthorEntReq, UserEntReq, NewsEntReq,
+                     TagEntReq, CommentEntReq, CategoryEntReq, DraftEntReq,
+                     FilterNewsReq) )
+import ClassyPrelude
+    ( ($),
+      Monad(return),
+      Int,
+      Maybe(..),
+      Either,
+      Text,
+      ByteString,
+      String,
+      (.),
+      either,
+      unpack,
+      MonadIO,
+      IsMap(lookup),
+      LazySequence(fromStrict) )
+import Control.Monad.Except
+    ( MonadError(throwError) )
+import Data.Aeson ( eitherDecode )
 import qualified Prelude
 
 fromAnEntity :: MonadError ErrorServer m => AnEntity -> m HelpForRequest

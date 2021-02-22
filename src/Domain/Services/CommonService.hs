@@ -1,15 +1,27 @@
 module Domain.Services.CommonService where
 
-import           ClassyPrelude
-import           Domain.Types.ExportTypes
+import ClassyPrelude ( Monad((>>), (>>=)), Int, Maybe, Text )
+import Domain.Types.ExportTypes
+    ( ErrorServer(EmptyQueryArray, NotTakeEntity),
+      SessionId,
+      UserId,
+      Quantity(Plural, One),
+      AnEntity,
+      HelpForRequest(FilterNewsReq, AuthorEntReq, UserEntReq, TagEntReq,
+                     CommentEntReq, CategoryEntReq, DraftEntReq, NewsEntReq,
+                     SortedNewsReq) )
 
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.Auth           ( Auth(findUserIdBySession) )
 import           Domain.Services.AccessService  ( Access(..) )
 import qualified Data.ByteString.Lazy.Internal as LB
-import           Domain.Services.EntityService
-import           Domain.Services.FilterService
-import           Domain.Services.SortedOfService
+import Domain.Services.EntityService
+    ( Entity(getIntFromQueryArray, fromAnEntity, toQuantity,
+             toHelpForRequest) )
+import Domain.Services.FilterService
+    ( filteredNews, FilterService )
+import Domain.Services.SortedOfService
+    ( sortedNews, SortedOfService )
 
 class (SortedOfService m, FilterService m) =>
       CommonService m
@@ -49,7 +61,7 @@ editingCommon sess ent = do
   helpR <- fromAnEntity ent
   case helpR of
     AuthorEntReq   -> checkAdminAccess sess >> editing ent
-    UserEntReq     -> checkAdminAccess sess >> editing ent -- this logic is not good, because need user check, but it is option - I can remove it
+    UserEntReq     -> checkAdminAccess sess >> editing ent 
     TagEntReq      -> checkAdminAccess sess >> editing ent
     CommentEntReq  -> editing ent
     CategoryEntReq -> checkAdminAccess sess >> editing ent

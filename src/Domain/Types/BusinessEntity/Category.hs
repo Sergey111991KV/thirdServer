@@ -1,6 +1,17 @@
 module Domain.Types.BusinessEntity.Category where
 
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($),
+      Eq((==)),
+      Show,
+      Applicative(pure, (<*>)),
+      Generic,
+      Int,
+      Maybe(..),
+      Text,
+      (<$>),
+      (++),
+      unpack )
 
 import qualified Data.Attoparsec.ByteString.Char8
                                                as A

@@ -1,11 +1,13 @@
 module Domain.Services.SortedOfService where
 
-import           ClassyPrelude
-import           Domain.Types.ExportTypes
+import ClassyPrelude ( Int, Maybe, Text )
+import Domain.Types.ExportTypes
+    ( ErrorServer(ErrorTakeEntityNotSupposed) )
 import qualified Data.ByteString.Lazy.Internal as LB
 import           Control.Monad.Except           ( MonadError(throwError) )
-import           Domain.Services.AccessService
-import           Domain.Services.EntityService
+import Domain.Services.AccessService ( Access )
+import Domain.Services.EntityService
+    ( Entity(getTextFromQueryArray, getIntFromQueryArray) )
 
 
 class Access m =>

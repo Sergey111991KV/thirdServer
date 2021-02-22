@@ -1,7 +1,22 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Common where
 
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($),
+      Monad(return),
+      Show,
+      Generic,
+      Bool(False),
+      Int,
+      IO,
+      Either(Left, Right),
+      ByteString,
+      (.),
+      asks,
+      throwString,
+      MonadIO(..),
+      SomeException,
+      MonadReader )
 import           Control.Monad.Catch            ( MonadThrow
                                                 , bracket
                                                 )
@@ -12,8 +27,10 @@ import           Data.Pool                      ( Pool
                                                 , withResource
                                                 )
 import           Data.Time                      ( NominalDiffTime )
-import           Database.PostgreSQL.Simple
-import           Domain.Types.ExportTypes
+import Database.PostgreSQL.Simple
+    ( Connection, close, connectPostgreSQL, Query, withTransaction )
+import Domain.Types.ExportTypes
+    ( ErrorServer(DataErrorPostgreSQLInServer) )
 import           Database.PostgreSQL.Simple.Migration
                                                 ( MigrationCommand
                                                   ( MigrationDirectory
@@ -26,9 +43,10 @@ import           Database.PostgreSQL.Simple.Migration
                                                 )
 import           Domain.Services.Auth           ( Auth )
 import qualified Domain.Services.LogMonad      as Log
-import           Database.PostgreSQL.Simple.SqlQQ
-import           Control.Monad.Except
-import           Control.Exception
+import Database.PostgreSQL.Simple.SqlQQ ( sql )
+import Control.Monad.Except
+    ( Monad(return), MonadIO(..), MonadError(throwError) )
+import Control.Exception ( SomeException, try )
 
 
 type PG r m
