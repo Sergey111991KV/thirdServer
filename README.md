@@ -125,6 +125,7 @@ GET /sortedNews
 Query Param:  
 
             page (Pagination parameter) = Int
+
             conditionSorted ++
                 date        (Sorted by date)
                         conditionOfDate ( ASC | DESC) = Text 
@@ -137,9 +138,10 @@ Query Param:
 GET /filterNews
 
 Query Param:  
-         page (Pagination parameter) = Int
-         filterCondition (Type filter) =
-                date,
+            page (Pagination parameter) = Int
+
+            filterCondition (Type filter) =
+                date, 
                     condition (Сondition of Date sorted) = Text [ ASC | DESC ]
                     date = Text
                 author
