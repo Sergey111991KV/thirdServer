@@ -96,6 +96,7 @@ toQuantity text = do
     "sortedNews" -> return Plural
     _            -> throwError ErrorSupposedHelpRequest
 
+
 getIntFromQueryArray
   :: (MonadError ErrorServer m, MonadIO m)
   => [(Text, Maybe Text)]

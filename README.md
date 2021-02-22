@@ -51,82 +51,108 @@ auth  | Get /api/auth/:login/:password
 exit  | Get /api/auth/exit             
 
 
-### Get methods all entity
+### Get standard methods all entity
 
 Entity       | Api
 ------------ | -------------
-users        | GET /api/getAll/user/:page
-authors      | GET /api/getAll/author/:page
-tags         | GET /api/getAll/tag/:page
-categories   | GET api/getAll/category/:page
-drafts       | GET /api/getAll/draft/:page
-news         | GET /api/getAll/news/:page
+users        | GET /users
+authors      | GET /authors
+tags         | GET /tags
+categories   | GET categories
+drafts       | GET /drafts
+news         | GET /news_s
+
+Query Param:  
+        page (Pagination parameter) = Int
 
 ### Get methods one entity
 
 Entity       | Api
 ------------ | -------------
-users | GET /api/getOne/user/:id
-authors | GET /api/getOne/author/:id
-tags | GET /api/getOne/tag/:id
-categories | GET /api/getOne/category/:id
-drafts | GET /api/getOne/draft/:id
-news | GET /api/getOne/news/:id
-comments | GET /api/getOne/comment/:id
+users | GET /user
+authors | GET /author
+tags | GET /tag
+categories | GET /category
+drafts | GET /draft
+news | GET /news
+comments | GET /comment
+
+Query Param:  
+        id_Entity (ID what entity you want) = Int
 
 ### Create methods
 
 Entity       | Api
 ------------ | -------------
-author | POST /api/create/author
-tag | POST /api/create/tag
-category | POST /api/create/category
-draft | POST /api/create/draft
-news by publishing draft | PUT /api/publish/:id
+author | POST /author
+tag | POST /tag
+category | POST /category
+draft | POST /draft
 comment | POST /api/create/comment
 user |  POST /api/create/user
 
-### Edit methods
 
+### Publish methods (it unites in itself Create and Edit methods of news)
+
+PUT /publish/:id
+
+### Edit methods
 
 Entity       | Api
 ------------ | -------------
-author | PUT /api/editing/author
-tag | PUT /api/editing/tag 
-category | PUT /api/editing/category
-draft | PUT /api/editing/draft
-user | PUT /api/editing/user
+author | PUT /author
+tag | PUT /tag 
+category | PUT /category
+draft | PUT /draft
+user | PUT /user
 
 ### Delete methods
 
 Entity       | Api
 ------------ | -------------
-user | DELETE /api/delete/author/:id
-author | DELETE /api/delete/user/:id
-tag | DELETE /api/delete/tag/:id
-category | DELETE /api/delete/category/:id
-draft | DELETE /api/delete/draft/:id
-news | DELETE /api/delete/author/:id
-comment | DELETE /api/delete/comment/:id
+user | DELETE /author/:id
+author | DELETE /user/:id
+tag | DELETE /tag/:id
+category | DELETE /category/:id
+draft | DELETE /draft/:id
+news | DELETE /author/:id
+comment | DELETE /comment/:id
 
 ### Sorted news
 
-Sort         | Api
------------- | -------------
-author | /api/news/sortedNews/author/:page
-category | /api/news/sortedNews/category/:page
-date | /api/news/sortedNews/date/:page
-photo | /api/news/sortedNews/photo/:page
+GET /sortedNews
+
+Query Param:  
+        page (Pagination parameter) = Int
+        conditionSorted ++
+                date        (Sorted by date)
+                        conditionOfDate ( ASC | DESC) = Text 
+                author      (Sorted by author)
+                category    (Sorted by category)
+                photo       (Sorted by photo)
 
 ### Filter news
 
-Filter       | Api
------------- | -------------
-all of Tag | /api/news/filterAllOfTags/:id,id/:page
-one of Tag | /api/news/filterOneOfTags/:id,id/:page
-tag | /api/news/filterTeg/:id/:page
-author | /api/news/filterAuthor/:id/:page
-category | /api/news/filterCategory/:id/:page
-content | /api/news/filterContent/:descrip/:page
-name | /api/news/filterName/:news/:page
-date | /api/news/filterOfData/less/:yyyy-mm-dd/:page
+GET /filterNews
+
+Query Param:  
+         page (Pagination parameter) = Int
+         filterCondition (Type filter) =
+                date,
+                    condition (Сondition of Date sorted) = Text [ ASC | DESC ]
+                    date = Text
+                author
+                    author_id = Int
+                category
+                    category_id = Int
+                tag 
+                    tag_id = Int
+                oneOfTag
+                    tags_arr (Сondition one of Tag Array Id) = Text
+                allOfTag 
+                    tags_arr (Сondition all of Tag Array Id)  = Text
+                name
+                    name_filter  = Text
+                content
+                    content  = Text
+    

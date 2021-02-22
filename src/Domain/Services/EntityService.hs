@@ -13,3 +13,4 @@ class (MonadError ErrorServer m) =>
     toQuantity :: Text -> m Quantity
     getIntFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Int
     getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text
+

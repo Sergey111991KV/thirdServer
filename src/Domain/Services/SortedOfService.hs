@@ -10,7 +10,7 @@ import           Domain.Services.EntityService
 
 class Access m =>
   SortedOfService m where
-  sortedDate ::  Int -> m LB.ByteString
+  sortedDate ::  Text -> Int -> m LB.ByteString
   sortedAuthor ::  Int -> m  LB.ByteString
   sortedCategory ::  Int -> m  LB.ByteString
   sortedPhoto ::  Int -> m  LB.ByteString
@@ -21,7 +21,9 @@ sortedNews arr = do
   page            <- getIntFromQueryArray arr "page"
   conditionSorted <- getTextFromQueryArray arr "conditionSorted"
   case conditionSorted of
-    "date"     -> sortedDate page
+    "date"     -> do
+      dateCond <- getTextFromQueryArray arr "conditionOfDate"  
+      sortedDate dateCond page
     "author"   -> sortedAuthor page
     "category" -> sortedCategory page
     "photo"    -> sortedPhoto page
