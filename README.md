@@ -88,8 +88,8 @@ author | POST /author
 tag | POST /tag
 category | POST /category
 draft | POST /draft
-comment | POST /api/create/comment
-user |  POST /api/create/user
+comment | POST /create/comment
+user |  POST /create/user
 
 
 ### Publish methods (it unites in itself Create and Edit methods of news)
