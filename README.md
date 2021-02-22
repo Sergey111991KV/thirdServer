@@ -123,8 +123,9 @@ comment | DELETE /comment/:id
 GET /sortedNews
 
 Query Param:  
-        page (Pagination parameter) = Int
-        conditionSorted ++
+
+            page (Pagination parameter) = Int
+            conditionSorted ++
                 date        (Sorted by date)
                         conditionOfDate ( ASC | DESC) = Text 
                 author      (Sorted by author)
