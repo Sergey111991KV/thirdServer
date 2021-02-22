@@ -4,8 +4,7 @@ import ClassyPrelude
     ( ($), Eq, Ord, Show, Generic, Bool, Int, Text, (<$>) )
 import Database.PostgreSQL.Simple.FromField ( FromField(..) )
 import Domain.Types.ImportLibrary
-    ( Generic,
-      FromJSON,
+    ( FromJSON,
       ToJSON,
       field,
       FromRow(..),

@@ -45,8 +45,8 @@ import           Domain.Services.Auth           ( Auth )
 import qualified Domain.Services.LogMonad      as Log
 import Database.PostgreSQL.Simple.SqlQQ ( sql )
 import Control.Monad.Except
-    ( Monad(return), MonadIO(..), MonadError(throwError) )
-import Control.Exception ( SomeException, try )
+    (  MonadError(throwError) )
+import Control.Exception ( try ) 
 
 
 type PG r m

@@ -96,18 +96,35 @@ CREATE TABLE IF NOT EXISTS session (
 
 
 
-CREATE OR REPLACE FUNCTION updeite_news(auth INT, dr INT) RETURNS Int AS
+CREATE OR REPLACE FUNCTION tag_news_insert(arrtag int[], n int) RETURNS Int AS $$
+	 		DECLARE
+   			x int;
+			BEGIN
+  			FOREACH x IN ARRAY arrtag
+  			LOOP
+   				insert INTO tags_news (tags_id, news_id)
+   				VALUES (x , n);
+   			END LOOP;
+  			RETURN 0;
+			END;
+			$$ LANGUAGE plpgsql; 
+
+
+CREATE OR REPLACE FUNCTION updeite_news_with_tags(auth INT, dr INT) RETURNS Int AS
 $$
 BEGIN
 					if count(*) <> 0 from draft where id_author_draft=auth and id_draft=dr and news_id_draft IS NULL  
 						then
+						WITH upd AS (
 							WITH draft_temp as (SELECT * from draft where id_author_draft=auth and id_draft = dr)
 							INSERT INTO  	news (data_creat_news, authors_id_news, category_id_news, text_news, main_photo_news, other_photo_news, short_name_news)
-							SELECT 		data_create_draft, id_author_draft, 3,text_draft, main_photo_draft, other_photo_draft, short_name_draft   from draft_temp;
-							return 1;
+							SELECT 		data_create_draft, id_author_draft, 3,text_draft, main_photo_draft, other_photo_draft, short_name_draft   from draft_temp returning id_news)
+							select * from upd;
+							return upd.id_news;
 						else 
 							if count(*) <> 0 from draft where id_author_draft=auth and id_draft=dr 
 								then
+								
 									WITH draft_temp as (SELECT * from draft where id_author_draft=auth and id_draft = dr)
 									UPDATE 	news SET data_creat_news = data_create_draft
 													, authors_id_news = id_author_draft
@@ -116,7 +133,8 @@ BEGIN
 													, main_photo_news = main_photo_draft
 													, other_photo_news = other_photo_draft
 													, short_name_news = short_name_draft FROM draft_temp where id_news= news_id_draft;
-													return 1;
+									
+									return draft.news_id_draft from draft where draft.id_draft = dr ;
 								else return 0;
 							END IF;
 					END IF;	
@@ -124,6 +142,5 @@ BEGIN
 			
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql;	 	
 
-			

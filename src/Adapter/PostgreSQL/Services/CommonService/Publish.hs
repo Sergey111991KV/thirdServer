@@ -4,12 +4,7 @@ module Adapter.PostgreSQL.Services.CommonService.Publish where
 import           Adapter.PostgreSQL.Common      ( PG
                                                 , withConn
                                                 )
-import           ClassyPrelude                  ( ($)
-                                                , Monad(return)
-                                                , Int
-                                                , IO
-                                                , (++)
-                                                )
+import ClassyPrelude ( ($), Monad(return), Int, IO )                  
 import Domain.Services.LogMonad
     ( Log(writeLogE, writeLogD, writeLog) )
 import Domain.Types.ExportTypes
@@ -27,16 +22,12 @@ publish idU idE = do
   case resultAuthor of
     [Only x] -> do
       writeLogD "getOne News success!"
-      let qPublic = [sql| select updeite_news (?, ?); |]
-      resultPublic <- withConn
-        $ \conn -> query conn qPublic (x, idE) :: IO [Only Int]
-      case resultPublic of
-        [Only 1] -> do
-          writeLog Debug "publish Draft success!"
-          return ()
-        _ -> do
-          writeLogE (errorText DataErrorPostgreSQL ++ " can't to publish news")
-          throwError DataErrorPostgreSQL
+      -- let qPublic = [sql| select updeite_news (?, ?); |]
+      let   qPublic    = [sql| select tag_news_insert (tags_id,updeite_news_with_tags((?),(?))) from draft where draft.id_draft = (?) ;  |]
+      _ <- withConn
+        $ \conn -> query conn qPublic (x, idE, idE) :: IO [Only Int]
+      writeLog Debug "publish Draft success!"
+      return ()
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)
       throwError DataErrorPostgreSQL
