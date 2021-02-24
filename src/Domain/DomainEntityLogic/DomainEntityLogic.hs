@@ -48,35 +48,37 @@ fromAnEntity (AnCategory _) = return CategoryEntReq
 
 toAnEntity
   :: MonadError ErrorServer m => ByteString -> HelpForRequest -> m AnEntity
-toAnEntity b AuthorEntReq = do
-  either (\_ -> throwError ErrorConvert)
+toAnEntity b help  = do
+  case help of
+    AuthorEntReq ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnAuthor)
          (eitherDecode $ fromStrict b :: Either String Author)
-toAnEntity b UserEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    UserEntReq  ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnUser)
          (eitherDecode $ fromStrict b :: Either String User)
-toAnEntity b NewsEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    NewsEntReq  ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnNews)
          (eitherDecode $ fromStrict b :: Either String News)
-toAnEntity b CommentEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    CommentEntReq ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnComment)
          (eitherDecode $ fromStrict b :: Either String Comment)
-toAnEntity b TagEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    TagEntReq  ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnTag)
          (eitherDecode $ fromStrict b :: Either String Tag)
-toAnEntity b DraftEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    DraftEntReq ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnDraft)
          (eitherDecode $ fromStrict b :: Either String Draft)
-toAnEntity b CategoryEntReq = do
-  either (\_ -> throwError ErrorConvert)
+    CategoryEntReq ->
+      either (\_ -> throwError ErrorConvert)
          (return . AnCategory)
          (eitherDecode $ fromStrict b :: Either String Category)
-toAnEntity _ _ = throwError ErrorConvert
+    _ -> throwError ErrorConvert
 
 
 
