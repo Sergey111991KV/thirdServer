@@ -141,7 +141,7 @@ GET /filterNews
 Param       | Keys 
 ------------ | -------------
 filterCondition | date
-  _ |  condition |   ASC or DESC 
+  dd |  condition |   ASC or DESC 
 
 Query Param:  
             page (Pagination parameter) = Int
