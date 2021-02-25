@@ -138,10 +138,11 @@ Query Param:
 
 GET /filterNews
 
-Param       | Keys 
+Param       | Keys | Param       | Keys | Param       | Keys 
 ------------ | -------------
-filterCondition | date
-  dd |  condition |   ASC or DESC 
+page (Pagination parameter) | Int
+filterCondition | date |  condition |   ASC or DESC | date | Text
+   
 
 Query Param:  
             page (Pagination parameter) = Int
@@ -149,7 +150,7 @@ Query Param:
             filterCondition (Type filter) =
                 date, 
                     condition (Сondition of Date sorted) = Text [ ASC | DESC ]
-                    date = Text
+                    
                 author
                     author_id = Int
                 category
