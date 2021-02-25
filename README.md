@@ -138,8 +138,8 @@ Query Param:
 
 GET /filterNews
 
-Param       | Keys | Param       | Keys | Param       | Keys 
------------- | -------------
+Param        | Keys | Param       | Keys | Param       | Keys 
+------------ | ---- | ----------- | ---- | ----------- | -----
 page (Pagination parameter) | Int
 filterCondition | date |  condition |   ASC or DESC | date | Text
    
