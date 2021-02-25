@@ -124,45 +124,34 @@ GET /sortedNews
 
 Query Param:  
 
-            page (Pagination parameter) = Int
-
-            conditionSorted ++
-                date        (Sorted by date)
-                        conditionOfDate ( ASC | DESC) = Text 
-                author      (Sorted by author)
-                category    (Sorted by category)
-                photo       (Sorted by photo)
+Param        | Keys | Param       | Keys 
+------------ | ---- | ----------- | ---- 
+page (Pagination parameter) | Int
+conditionSorted | date | conditionOfDate |  ASC or DESC
+conditionSorted | author 
+conditionSorted | category 
+conditionSorted | photo 
+           
 
 ### Filter news
 
 
 GET /filterNews
 
+Query Param: 
+
 Param        | Keys | Param       | Keys | Param       | Keys 
 ------------ | ---- | ----------- | ---- | ----------- | -----
 page (Pagination parameter) | Int
 filterCondition | date |  condition |   ASC or DESC | date | Text
-   
+filterCondition | author |  author_id |  Int
+filterCondition | category |  category_id |  Int
+filterCondition | tag |  tag_id |   Int
+filterCondition | oneOfTag |   tags_arr (Сondition one of Tag Array Id)  |   Text
+filterCondition | allOfTag |   tags_arr (Сondition all of Tag Array Id)  | Text 
+filterCondition | name |  name_filter |   Text
+filterCondition | content |  content |  Text
+ 
 
-Query Param:  
-            page (Pagination parameter) = Int
-
-            filterCondition (Type filter) =
-                date, 
-                    condition (Сondition of Date sorted) = Text [ ASC | DESC ]
                     
-                author
-                    author_id = Int
-                category
-                    category_id = Int
-                tag 
-                    tag_id = Int
-                oneOfTag
-                    tags_arr (Сondition one of Tag Array Id) = Text
-                allOfTag 
-                    tags_arr (Сondition all of Tag Array Id)  = Text
-                name
-                    name_filter  = Text
-                content
-                    content  = Text
-    
+              
