@@ -2,39 +2,29 @@ module Domain.DomainEntityLogic.DomainEntityLogic where
 
 
 import Domain.Types.ExportTypes
-    ( ErrorServer(ErrorGetPageQueryConvertText, ErrorConvert,
-                  ErrorSupposedHelpRequest),
-      Draft,
-      Category,
-      Tag,
-      Comment,
-      Author,
-      User,
-      News,
-      Quantity(..),
-      AnEntity(..),
-      HelpForRequest(SortedNewsReq, AuthorEntReq, UserEntReq, NewsEntReq,
-                     TagEntReq, CommentEntReq, CategoryEntReq, DraftEntReq,
-                     FilterNewsReq) )
+   
+   
+   
 import ClassyPrelude
     ( ($),
       Monad(return),
       Int,
       Maybe(..),
-      Either,
       Text,
       ByteString,
-      String,
       (.),
       either,
       unpack,
       MonadIO,
       IsMap(lookup),
       LazySequence(fromStrict) )
+  
+   
 import Control.Monad.Except
     ( MonadError(throwError) )
-import Data.Aeson ( eitherDecode )
+import Data.Aeson ( FromJSON, eitherDecode )
 import qualified Prelude
+
 
 fromAnEntity :: MonadError ErrorServer m => AnEntity -> m HelpForRequest
 fromAnEntity (AnAuthor   _) = return AuthorEntReq
@@ -46,42 +36,24 @@ fromAnEntity (AnDraft    _) = return DraftEntReq
 fromAnEntity (AnCategory _) = return CategoryEntReq
 
 
+
 toAnEntity
   :: MonadError ErrorServer m => ByteString -> HelpForRequest -> m AnEntity
-toAnEntity b help  = do
-  case help of
-    AuthorEntReq ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnAuthor)
-         (eitherDecode $ fromStrict b :: Either String Author)
-    UserEntReq  ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnUser)
-         (eitherDecode $ fromStrict b :: Either String User)
-    NewsEntReq  ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnNews)
-         (eitherDecode $ fromStrict b :: Either String News)
-    CommentEntReq ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnComment)
-         (eitherDecode $ fromStrict b :: Either String Comment)
-    TagEntReq  ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnTag)
-         (eitherDecode $ fromStrict b :: Either String Tag)
-    DraftEntReq ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnDraft)
-         (eitherDecode $ fromStrict b :: Either String Draft)
-    CategoryEntReq ->
-      either (\_ -> throwError ErrorConvert)
-         (return . AnCategory)
-         (eitherDecode $ fromStrict b :: Either String Category)
-    _ -> throwError ErrorConvert
+toAnEntity b AuthorEntReq = decodeFromBytestring AnAuthor b
+toAnEntity b UserEntReq = decodeFromBytestring AnUser b
+toAnEntity b NewsEntReq = decodeFromBytestring AnNews b
+toAnEntity b CommentEntReq = decodeFromBytestring AnComment b
+toAnEntity b TagEntReq = decodeFromBytestring AnTag b
+toAnEntity b DraftEntReq = decodeFromBytestring AnDraft b
+toAnEntity b CategoryEntReq = decodeFromBytestring AnCategory b
+toAnEntity _ _ = throwError ErrorConvert
+  
 
-
-
+decodeFromBytestring :: ( FromJSON b, MonadError ErrorServer m) => (b -> a) -> ByteString -> m a
+decodeFromBytestring anent =
+  either (\_ -> throwError ErrorConvert)
+         (return . anent)
+         . eitherDecode . fromStrict
 
 
 toHelpForRequest :: MonadError ErrorServer m => Text -> m HelpForRequest
