@@ -62,8 +62,13 @@ categories   | GET categories
 drafts       | GET /drafts
 news         | GET /news_s
 
+
 Query Param:  
-        page (Pagination parameter) = Int
+
+Param        | Keys  
+------------ | ---- 
+page (Pagination parameter)    | Int   
+
 
 ### Get methods one entity
 
@@ -78,7 +83,10 @@ news | GET /news
 comments | GET /comment
 
 Query Param:  
-        id_Entity (ID what entity you want) = Int
+
+Param        | Keys  
+------------ | ---- 
+id_Entity    | Int        
 
 ### Create methods
 
@@ -127,7 +135,7 @@ Query Param:
 Param        | Keys | Param       | Keys 
 ------------ | ---- | ----------- | ---- 
 page (Pagination parameter) | Int
-conditionSorted | date | conditionOfDate |  ASC or DESC
+conditionSorted | date | conditionOfDate |  ASC or DESC :: Text
 conditionSorted | author 
 conditionSorted | category 
 conditionSorted | photo 
@@ -143,7 +151,7 @@ Query Param:
 Param        | Keys | Param       | Keys | Param       | Keys 
 ------------ | ---- | ----------- | ---- | ----------- | -----
 page (Pagination parameter) | Int
-filterCondition | date |  condition |   ASC or DESC | date | Text
+filterCondition | date |  condition |   ASC or DESC :: Text | date | Text
 filterCondition | author |  author_id |  Int
 filterCondition | category |  category_id |  Int
 filterCondition | tag |  tag_id |   Int
