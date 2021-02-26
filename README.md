@@ -159,6 +159,7 @@ filterCondition | oneOfTag |   tags_arr (Сondition one of Tag Array Id)  |   Te
 filterCondition | allOfTag |   tags_arr (Сondition all of Tag Array Id)  | Text 
 filterCondition | name |  name_filter |   Text
 filterCondition | content |  content |  Text
+filterCondition | allContent |  content |  Text
  
 
                     

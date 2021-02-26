@@ -90,7 +90,7 @@ instance FilterService App where
   filterAllOfTags = Pos.filterAllOfTags
   filterName      = Pos.filterName
   filterContent   = Pos.filterContent
-
+  filterAllContent = Pos.filterAllContent
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()
 withState config action = do

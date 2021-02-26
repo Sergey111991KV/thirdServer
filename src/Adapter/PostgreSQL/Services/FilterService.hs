@@ -297,6 +297,40 @@ filterContent txtContent page = do
       writeLogD "filterContent success "
       return $ encode $ map convertNewsRaw news
 
+filterAllContent :: PG r m => Text -> Int -> m LB.ByteString
+filterAllContent txtContent page = do
+  let insertText = "%" ++ txtContent ++ "%"
+  let q = [sql| 
+        with t as  (select  * from tags_news left join  tag on tag.id_tag = tags_news.tags_id  WHERE tag.id_tag IS not NULL ) 
+	 		, endNews as (select * from news left join author on author.id_author = news.authors_id_news )
+        select  distinct  endNews.id_news , endNews.data_creat_news , endNews.id_author  , endNews.id_link_user , endNews.description 
+			, ARRAY(with recursive temp1 (id_category, parent_category, name_category) as ( select t1.id_category, t1.parent_category, t1.name_category, 
+        cast (t1.name_category as varchar (50)) as path 
+      from news, category t1 where t1.id_category = endnews.category_id_news  union 
+      select t2.id_category, t2.parent_category, t2.name_category, cast (temp1.path || '->'|| t2.name_category as varchar(50)) 
+      from category t2 inner join temp1 on (temp1.parent_category = t2.id_category)) 
+      select distinct (id_category, name_category, parent_category) from temp1) 
+      , endNews.text_news  , endNews.main_photo_news , endNews.other_photo_news  , endNews.short_name_news 
+			, ARRAY(select distinct ( id_comment, text_comment,data_create_comment,news_id_comment,user_id_comment) from comment where endNews.id_news = comment.news_id_comment) 
+			as comment_n   , ARRAY(select distinct ( id_tag, name_tag) from t where t.news_id = endNews.id_news  ) as tag_n
+			 from tags_news, endNews, comment, tag, author where 
+			(comment.text_comment like (?) and comment.news_id_comment = endNews.id_news) 
+				                        or (tag.name_tag like (?) and tag.id_tag = endNews.id_news) 
+				                        or endNews.description  like (?)
+				                        or endNews.text_news like (?)
+				                        or (endNews.id_author = author.id_author and author.description  like (?))
+                                limit 20 offset (?) ;|]
+  result <- withConn $ \conn -> query conn q (insertText,insertText,insertText,insertText,insertText, page) :: IO [NewsRaw]
+  case result of
+    [] -> do
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterContent")
+      throwError DataErrorPostgreSQL
+    news -> do
+      writeLogD "filterContent success "
+      return $ encode $ map convertNewsRaw news
+
+
+
 toStringFromArrayInt :: [Int] -> Text
 toStringFromArrayInt array = pack $ "{" ++ P.foldl addParam "" array ++ "}"
  where

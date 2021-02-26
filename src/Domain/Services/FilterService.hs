@@ -20,6 +20,7 @@ class Access m =>
   filterAllOfTags :: Text -> Int -> m LB.ByteString
   filterName :: Text -> Int -> m LB.ByteString
   filterContent :: Text -> Int -> m LB.ByteString
+  filterAllContent :: Text -> Int -> m LB.ByteString
 
 
 filteredNews :: FilterService m => [(Text, Maybe Text)] -> m LB.ByteString
@@ -55,4 +56,7 @@ filteredNews arr = do
     "content" -> do
       content <- getTextFromQueryArray arr "content"
       filterContent content page
+    "allContent" -> do
+      content <- getTextFromQueryArray arr "content"
+      filterAllContent content page
     _ -> throwError ErrorTakeEntityNotSupposed
