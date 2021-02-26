@@ -37,7 +37,7 @@ data Config = Config
   deriving (Generic, Show)
 
 parseConf :: Text -> IO (Either ErrorServer Config)
-parseConf = return . configVKwithPair . getPairFromFile
+parseConf = return . configWithPair . getPairFromFile
 
 charToWord8 :: Char -> Word8
 charToWord8 = toEnum . fromEnum
@@ -45,10 +45,10 @@ charToWord8 = toEnum . fromEnum
 getPairFromFile :: Text -> Either Pars.ParseError [ConfigPair]
 getPairFromFile = Pars.parse myParser ""
 
-configVKwithPair
+configWithPair
   :: Either Pars.ParseError [ConfigPair] -> Either ErrorServer Config
-configVKwithPair (Left  _         ) = Left ErrorGetConfig
-configVKwithPair (Right configPair) = do
+configWithPair (Left  _         ) = Left ErrorGetConfig
+configWithPair (Right configPair) = do
       Right Config
         { configPort = P.read $ fromMaybe "3000" port
         , configLog  = Log.StateLog
