@@ -1,6 +1,6 @@
 module Domain.Services.FilterService where
 
-import ClassyPrelude ( Int, Maybe, Text, print )
+import ClassyPrelude ( Int, Maybe, Text )
 import Domain.Types.ExportTypes
     ( ErrorServer(ErrorTakeEntityNotSupposed) )
 import qualified Data.ByteString.Lazy.Internal as LB
@@ -25,9 +25,7 @@ class Access m =>
 
 filteredNews :: FilterService m => [(Text, Maybe Text)] -> m LB.ByteString
 filteredNews arr = do
-  print arr
   page <- getIntFromQueryArray arr "page"
-  print page
   filterCondition <- getTextFromQueryArray arr "filterCondition"
   case filterCondition of
     "date" -> do
@@ -36,7 +34,6 @@ filteredNews arr = do
       filterOfData condition date page
     "author" -> do
       idA <- getIntFromQueryArray arr "author_id"
-      print idA
       filterAuthor idA page
     "category" -> do
       idC <- getIntFromQueryArray arr "category_id"

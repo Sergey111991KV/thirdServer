@@ -88,5 +88,10 @@ instance FromJSON (PGArray Comment)
 
 instance ToJSON (PGArray Comment)
 
+instance ToField [Comment] where
+
+instance FromField [Comment]
+
+
 deriving instance
          Generic (PGArray Comment) => Generic (PGArray Comment)

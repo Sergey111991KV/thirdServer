@@ -323,10 +323,10 @@ filterAllContent txtContent page = do
   result <- withConn $ \conn -> query conn q (insertText,insertText,insertText,insertText,insertText, page) :: IO [NewsRaw]
   case result of
     [] -> do
-      writeLogE (errorText DataErrorPostgreSQL ++ " filterContent")
+      writeLogE (errorText DataErrorPostgreSQL ++ " filterAllContent")
       throwError DataErrorPostgreSQL
     news -> do
-      writeLogD "filterContent success "
+      writeLogD "filterAllContent success "
       return $ encode $ map convertNewsRaw news
 
 

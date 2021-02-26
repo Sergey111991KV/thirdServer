@@ -4,22 +4,9 @@ module Domain.Types.BusinessEntity.News
   , convertNewsRaw
   ) where
 
-import           ClassyPrelude                  ( Applicative((<*>))
-                                                , Eq
-                                                , Generic
-                                                , Int
-                                                , Monad(return)
-                                                , Show
-                                                , Text
-                                                , UTCTime
-                                                , ($)
-                                                , (<$>)
-                                                , ap
-                                                , head
-                                                , impureNonNull
-                                                )
+import           ClassyPrelude                
 import           Database.PostgreSQL.Simple.Types
-                                                ( PGArray(fromPGArray) )
+                                               
 import           Domain.Types.BusinessEntity.Author
                                                 ( Author(Author) )
 import           Domain.Types.BusinessEntity.Category
@@ -33,12 +20,8 @@ import           Domain.Types.BusinessEntity.Draft
                                                 ( )
 import           Domain.Types.BusinessEntity.Tag
                                                 ( Tag )
-import           Domain.Types.ImportLibrary     ( FromJSON
-                                                , FromRow(..)
-                                                , ToJSON
-                                                , ToRow
-                                                , field
-                                                )
+import           Domain.Types.ImportLibrary   
+import           Database.PostgreSQL.Simple.FromField  
 
 data News = News
   { idNews            :: Int
@@ -47,10 +30,10 @@ data News = News
   , category          :: Category
   , textNews          :: Text
   , mainPhotoUrlNews  :: Text
-  , otherPhotoUrlNews :: PGArray Text
+  , otherPhotoUrlNews :: [Text]
   , shortNameNews     :: Text
-  , comments          :: PGArray Comment
-  , tegs              :: PGArray Tag
+  , comments          :: [Comment]
+  , tags              :: [Tag]
   }
   deriving (Eq, Show, Generic)
 
@@ -81,17 +64,26 @@ instance FromRow NewsRaw where
       <*> field
       <*> field
       <*> field
+      -- fromPGArray
 
 convertNewsRaw :: NewsRaw -> News
 convertNewsRaw (NewsRaw isNR datNR authNR catNR textNR mainNR otherNR shortNR commNR tagNR)
-  = News isNR datNR authNR convCat textNR mainNR otherNR shortNR commNR tagNR
+  = News isNR datNR authNR convCat textNR mainNR (fromPGArray otherNR) shortNR (fromPGArray commNR) (fromPGArray tagNR)
  where
   convCat = head $ impureNonNull $ convertCategoryRawArray $ fromPGArray catNR
 
 instance FromRow News
 
-instance ToRow News
+instance ToRow News 
+
+
+instance FromField [Text]
+
+
+
+instance ToField [Text]
+
 
 instance FromJSON News
 
-instance ToJSON News
+instance ToJSON News 

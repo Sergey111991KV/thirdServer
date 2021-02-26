@@ -13,7 +13,6 @@ import ClassyPrelude
       (.),
       either,
       (++),
-      print,
       unpack,
       MonadIO(..) )
 import qualified Network.HTTP.Types            as HTTP
@@ -78,7 +77,6 @@ route req = do
         return $ successResponse ("publish news" :: Text)
 
       GET arr -> do
-        liftIO $ print $ HTTP.queryString req
         let help = Prelude.head arr
         news <- getCommon sess
                           help

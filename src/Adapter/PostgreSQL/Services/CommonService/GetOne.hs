@@ -8,7 +8,6 @@ import ClassyPrelude
       Int,
       IO,
       (++),
-      print,
       null,
       head,
       impureNonNull )
@@ -77,7 +76,6 @@ getOne helpR idE = do
 	 			              , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) 
 	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews where endNews.id_news = (?);|]
       i <- withConn $ \conn -> query conn qNews [idE] :: IO [NewsRaw]
-      print i
       case i of
         [x] -> do
           writeLogD "getOne News success!"

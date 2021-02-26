@@ -10,7 +10,6 @@ import ClassyPrelude
       Eq((==)),
       Monad(return),
       Int,
-      print,
       MonadIO(liftIO) )
 
 import           Control.Monad.Except           ( MonadError(throwError) )
@@ -27,7 +26,6 @@ remove :: PG r m => HelpForRequest -> Int -> m ()
 remove ent idE
   | ent == AuthorEntReq = do
     let q = [sql| DELETE FROM author WHERE id_author = (?);|]
-    liftIO $ print q
     result <- withConn $ \conn -> execute conn q [idE]
     case result of
       1 -> do

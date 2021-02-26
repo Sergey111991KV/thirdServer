@@ -8,7 +8,6 @@ import ClassyPrelude
     ( ($),
       Monad(return),
       Maybe(Just, Nothing),
-      print,
       MonadIO(liftIO) )
 import Domain.Types.ExportTypes
     ( errorText,
@@ -50,7 +49,6 @@ editing (AnCategory cat) = do
             [sql| UPDATE category SET name_category=(?) WHERE id_category=(?);|]
       result <- withConn
         $ \conn -> execute conn qMainCat (nameCategory cat, idCategory cat)
-      liftIO $ print result
       case result of
         1 -> do
           writeLogD "update main category good!"
@@ -66,7 +64,6 @@ editing (AnCategory cat) = do
         conn
         qNestedCat
         (nameCategory cat, idCategory pCat, idCategory cat)
-      liftIO $ print result
       case result of
         1 -> do
           writeLogD "update nested category good!"

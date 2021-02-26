@@ -55,6 +55,10 @@ instance ToField Tag where
 
 instance ToRow Tag
 
+instance FromField [Tag]
+
+instance ToField [Tag]
+
 instance ToJSON Tag
 
 instance FromJSON (PGArray Tag)
