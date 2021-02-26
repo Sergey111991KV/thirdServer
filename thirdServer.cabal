@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 80a3a5d3e6c2c78280e8fba53be7e20a659e9c248822d4e9efb94bc679568904
+-- hash: 6bb41c20d7721df6578d59c6fccf8e13f957cf354bfadc00d7c6b68c80550f69
 
 name:           thirdServer
 version:        0.1.0.0
@@ -76,6 +76,7 @@ library
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
+  ghc-options: -Wall -Werror
   build-depends:
       aeson
     , attoparsec

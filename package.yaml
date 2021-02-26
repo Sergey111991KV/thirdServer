@@ -52,6 +52,9 @@ library:
   when:
     condition: false
     other-modules: Paths_thirdServer
+  ghc-options:
+    - -Wall
+    - -Werror
   source-dirs: src
 
 
