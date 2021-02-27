@@ -9,12 +9,20 @@ import           ClassyPrelude                  ( ($)
                                                 , Int
                                                 , IO
                                                 )
-import Domain.Types.ExportTypes
-    ( ErrorServer(DataErrorPostgreSQL), UserId, Draft )
+import           Domain.Types.ExportTypes       ( ErrorServer
+                                                  ( DataErrorPostgreSQL
+                                                  )
+                                                , UserId
+                                                , Draft
+                                                )
 
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
-import Adapter.PostgreSQL.ImportLibrary ( encode, query, sql )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( encode
+                                                , query
+                                                , sql
+                                                )
 import qualified Data.ByteString.Lazy.Internal as LB
 
 getOneAuthorAccess :: PG r m => Int -> UserId -> m LB.ByteString
@@ -31,7 +39,7 @@ getOneAuthorAccess idE idA = do
   qry = [sql| SELECT    draft.id_draft, 
                               draft.text_draft, 
                               draft.data_create_draft, 
-                              draft.news_id_draft, 
+                              draft.news_id_draft,
                               draft.main_photo_draft, 
                               draft.short_name_draft, 
                               draft.other_photo_draft, 
@@ -40,3 +48,4 @@ getOneAuthorAccess idE idA = do
                               from draft, author where draft.id_author_draft= author.id_author  
                               and author.id_link_user = (?) 
                               and draft.id_draft= (?); |]
+

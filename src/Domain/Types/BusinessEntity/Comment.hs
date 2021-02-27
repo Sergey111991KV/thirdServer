@@ -6,7 +6,8 @@ module Domain.Types.BusinessEntity.Comment
     , textComments
     , usersIdComments
     )
-  ) where
+  )
+where
 
 import           ClassyPrelude                  ( Applicative(pure)
                                                 , Eq
@@ -33,9 +34,10 @@ import           Domain.Types.ImportLibrary     ( FromJSON
 import qualified Data.Attoparsec.ByteString.Char8
                                                as A
 import           Database.PostgreSQL.Simple.FromField
-                                                ( FromField(..) )
-import           Database.PostgreSQL.Simple.Types
-                                                ( PGArray(PGArray) )
+                                                ( fromJSONField
+                                                , FromField(..)
+                                                )
+
 import           Domain.Types.AuthEntity.Auth   ( UserId(UserId) )
 
 import qualified Prelude                       as P
@@ -84,14 +86,8 @@ parseComment = do
              (UserId $ P.read $ ClassyPrelude.unpack userId)
     )
 
-instance FromJSON (PGArray Comment)
+instance FromField [Comment] where
+  fromField = fromJSONField
 
-instance ToJSON (PGArray Comment)
-
-instance ToField [Comment] where
-
-instance FromField [Comment]
-
-
-deriving instance
-         Generic (PGArray Comment) => Generic (PGArray Comment)
+instance ToField  [Comment] where
+  toField = toJSONField

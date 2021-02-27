@@ -1,6 +1,7 @@
 module Domain.Types.BusinessEntity.Tag
   ( Tag(Tag, idTag, nameTag)
-  ) where
+  )
+where
 
 import           ClassyPrelude                  ( Applicative(pure)
                                                 , Eq
@@ -15,18 +16,21 @@ import           ClassyPrelude                  ( Applicative(pure)
 import qualified Data.Attoparsec.ByteString.Char8
                                                as A
 import           Database.PostgreSQL.Simple.FromField
-                                                ( FromField(..) )
-import           Database.PostgreSQL.Simple.Types
-                                                ( PGArray(PGArray) )
-import           Domain.Types.ImportLibrary     ( Action(Escape, Many, Plain)
+                                                ( fromJSONField
+                                                , FromField(..)
+                                                )
+
+
+import           Domain.Types.ImportLibrary     ( fromPGRow'
+                                                , textContent
                                                 , FromJSON
+                                                , Action(Plain, Many, Escape)
+                                                , ToJSON
+                                                , intDec
+                                                , toJSONField
                                                 , FromRow
                                                 , ToField(..)
-                                                , ToJSON
                                                 , ToRow
-                                                , fromPGRow'
-                                                , intDec
-                                                , textContent
                                                 )
 
 import qualified Prelude                       as P
@@ -55,17 +59,17 @@ instance ToField Tag where
 
 instance ToRow Tag
 
-instance FromField [Tag]
+instance FromField [Tag] where
+  fromField = fromJSONField
 
-instance ToField [Tag]
+instance ToField [Tag] where
+  toField = toJSONField
 
 instance ToJSON Tag
 
-instance FromJSON (PGArray Tag)
 
-instance ToJSON (PGArray Tag)
 
-deriving instance Generic (PGArray Tag) => Generic (PGArray Tag)
+
 
 parseTag :: A.Parser Tag
 parseTag = do

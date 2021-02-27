@@ -1,24 +1,24 @@
 module Domain.Config.Config where
 
 import qualified Adapter.PostgreSQL.Common     as Pos
-import ClassyPrelude
-    ( ($),
-      Enum(fromEnum, toEnum),
-      Monad(return),
-      Functor(fmap),
-      Show,
-      Generic,
-      Bool(True),
-      Char,
-      Int,
-      IO,
-      Word8,
-      Either(..),
-      Text,
-      (.),
-      fromMaybe,
-      pack,
-      IsMap(lookup) )
+import           ClassyPrelude                  ( ($)
+                                                , Enum(fromEnum, toEnum)
+                                                , Monad(return)
+                                                , Functor(fmap)
+                                                , Show
+                                                , Generic
+                                                , Bool(True)
+                                                , Char
+                                                , Int
+                                                , IO
+                                                , Word8
+                                                , Either(..)
+                                                , Text
+                                                , (.)
+                                                , fromMaybe
+                                                , pack
+                                                , IsMap(lookup)
+                                                )
 
 import           Domain.Config.ParseConfig      ( ConfigPair
                                                 , myParser
@@ -49,24 +49,24 @@ configWithPair
   :: Either Pars.ParseError [ConfigPair] -> Either ErrorServer Config
 configWithPair (Left  _         ) = Left ErrorGetConfig
 configWithPair (Right configPair) = do
-      Right Config
-        { configPort = P.read $ fromMaybe "3000" port
-        , configLog  = Log.StateLog
-                         { Log.logStCong = Log.LogConfig
-                                             { Log.logFile = "log-journal"
-                                             , Log.logLevelForFile = Log.Debug
-                                             , Log.logConsole = True
-                                             }
-                         }
-        , configPG   = Pos.Config
-                         { Pos.configUrl = pack $ fmap charToWord8 $ fromMaybe
-                                             "postgres"
-                                             postgresOption
-                         , Pos.configStripeCount          = 2
-                         , Pos.configMaxOpenConnPerStripe = 5
-                         , Pos.configIdleConnTimeout      = 10
-                         }
-        }
+  Right Config
+    { configPort = P.read $ fromMaybe "3000" port
+    , configLog  = Log.StateLog
+                     { Log.logStCong = Log.LogConfig
+                                         { Log.logFile         = "log-journal"
+                                         , Log.logLevelForFile = Log.Debug
+                                         , Log.logConsole      = True
+                                         }
+                     }
+    , configPG   = Pos.Config
+                     { Pos.configUrl = pack $ fmap charToWord8 $ fromMaybe
+                                         "postgres"
+                                         postgresOption
+                     , Pos.configStripeCount          = 2
+                     , Pos.configMaxOpenConnPerStripe = 5
+                     , Pos.configIdleConnTimeout      = 10
+                     }
+    }
  where
   postgresOption = lookup "postgres" configPair
   port           = lookup "port" configPair

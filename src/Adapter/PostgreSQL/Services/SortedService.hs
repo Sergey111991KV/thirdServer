@@ -1,23 +1,38 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.SortedService where
 
-import Adapter.PostgreSQL.Common ( withConn, PG )
-import ClassyPrelude
-    ( ($), Monad(return), Int, IO, Text, (++), map )
+import           Adapter.PostgreSQL.Common      ( withConn
+                                                , PG
+                                                )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Int
+                                                , IO
+                                                , Text
+                                                , (++)
+                                                , map
+                                                )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL, ErrorGetPageQueryConvertText),
-      convertNewsRaw,
-      NewsRaw )
-import Adapter.PostgreSQL.ImportLibrary
-    ( Query, encode, query, sql )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( DataErrorPostgreSQL
+                                                  , ErrorGetPageQueryConvertText
+                                                  )
+                                                , convertNewsRaw
+                                                , NewsRaw
+                                                )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( Query
+                                                , encode
+                                                , query
+                                                , sql
+                                                )
 import qualified Data.ByteString.Lazy.Internal as LB
 
-getQueryOfsortedDate ::  MonadError ErrorServer m => Text -> m Query 
+getQueryOfsortedDate :: MonadError ErrorServer m => Text -> m Query
 getQueryOfsortedDate txtCondSort = do
-  case txtCondSort of 
+  case txtCondSort of
     "DESC" -> return [sql| select    endNews.id_news 
 			                , endNews.data_creat_news 
 	 			              , endNews.id_author 
@@ -52,11 +67,11 @@ getQueryOfsortedDate txtCondSort = do
                       , ARRAY(select ( id_comment, text_comment,data_create_comment,news_id_comment,user_id_comment) from comment where endNews.id_news = comment.news_id_comment) 
 	 			              , ARRAY(select ( id_tag, name_tag) from (select * from tags_news left join  tag on tag.id_tag = tags_news.tags_id and tags_news.news_id = endNews.id_news   WHERE tag.id_tag IS not NULL) as t) 
 	 			               from (select * from news left join author on author.id_author = news.authors_id_news ) as endNews ORDER BY data_creat_news ASC limit 20 offset (?);|]
-    _  -> throwError ErrorGetPageQueryConvertText
+    _ -> throwError ErrorGetPageQueryConvertText
 
-sortedDate :: PG r m =>  Text -> Int -> m LB.ByteString
+sortedDate :: PG r m => Text -> Int -> m LB.ByteString
 sortedDate txtCondSort page = do
-  q <- getQueryOfsortedDate txtCondSort
+  q      <- getQueryOfsortedDate txtCondSort
   result <- withConn $ \conn -> query conn q [page] :: IO [NewsRaw]
   case result of
     [] -> do

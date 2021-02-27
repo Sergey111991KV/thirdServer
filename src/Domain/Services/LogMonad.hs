@@ -1,22 +1,24 @@
 module Domain.Services.LogMonad where
 
-import ClassyPrelude
-    ( ($),
-      Monad,
-      Ord((>=)),
-      Semigroup((<>)),
-      Bool,
-      IO,
-      Text,
-      UTCTime,
-      when,
-      FilePath,
-      putStrLn,
-      unpack,
-      MonadIO,
-      LazySequence(toStrict) )
+import           ClassyPrelude                  ( ($)
+                                                , Monad
+                                                , Ord((>=))
+                                                , Semigroup((<>))
+                                                , Bool
+                                                , IO
+                                                , Text
+                                                , UTCTime
+                                                , when
+                                                , FilePath
+                                                , putStrLn
+                                                , unpack
+                                                , MonadIO
+                                                , LazySequence(toStrict)
+                                                )
 
-import Domain.Types.ExportTypes ( LogConfig(LogConfig), LogWrite )
+import           Domain.Types.ExportTypes       ( LogConfig(LogConfig)
+                                                , LogWrite
+                                                )
 import           Data.Text.Time                 ( formatISODateTime )
 import           System.IO                      ( appendFile )
 

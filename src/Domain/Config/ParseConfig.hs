@@ -1,7 +1,11 @@
 module Domain.Config.ParseConfig where
 
-import ClassyPrelude
-    ( ($), Monad(return), Text, String, Alternative((<|>)) )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Text
+                                                , String
+                                                , Alternative((<|>))
+                                                )
 import qualified Text.Parsec                   as Parsec
 
 type ConfigPair = (String, String)
@@ -17,13 +21,13 @@ toPairs = do
 
 myParser :: Parsec.Parsec Text () [ConfigPair]
 myParser = Parsec.many1 $ do
-  pair <- toPairs 
+  pair <- toPairs
   Parsec.eof <|> mySeparator
   return pair
-  
+
 mySeparator :: Parsec.Parsec Text () ()
 mySeparator = do
-  _ <- Parsec.endOfLine 
+  _ <- Parsec.endOfLine
   return ()
 
 helpText :: Parsec.Parsec Text () String

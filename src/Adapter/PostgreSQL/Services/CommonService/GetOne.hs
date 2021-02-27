@@ -1,35 +1,50 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.CommonService.GetOne where
 
-import Adapter.PostgreSQL.Common ( withConn, PG )
-import ClassyPrelude
-    ( ($),
-      Monad(return),
-      Int,
-      IO,
-      (++),
-      null,
-      head,
-      impureNonNull )
+import           Adapter.PostgreSQL.Common      ( withConn
+                                                , PG
+                                                )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Int
+                                                , IO
+                                                , (++)
+                                                , null
+                                                , head
+                                                , impureNonNull
+                                                )
 
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, ErrorConvert,
-                  DataErrorPostgreSQL),
-      convertCategoryRawArray,
-      CategoryRaw,
-      Tag,
-      Comment,
-      Author,
-      User,
-      convertNewsRaw,
-      NewsRaw,
-      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
-                     NewsEntReq, TagEntReq, CommentEntReq) )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( ErrorTakeEntityNotSupposed
+                                                  , ErrorConvert
+                                                  , DataErrorPostgreSQL
+                                                  )
+                                                , convertCategoryRawArray
+                                                , CategoryRaw
+                                                , Tag
+                                                , Comment
+                                                , Author
+                                                , User
+                                                , convertNewsRaw
+                                                , NewsRaw
+                                                , HelpForRequest
+                                                  ( CategoryEntReq
+                                                  , AuthorEntReq
+                                                  , UserEntReq
+                                                  , NewsEntReq
+                                                  , TagEntReq
+                                                  , CommentEntReq
+                                                  )
+                                                )
 
 import           Control.Monad.Except           ( MonadError(throwError) )
-import Adapter.PostgreSQL.ImportLibrary ( encode, query, sql )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( encode
+                                                , query
+                                                , sql
+                                                )
 import qualified Data.ByteString.Lazy.Internal as LB
 
 

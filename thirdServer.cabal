@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6bb41c20d7721df6578d59c6fccf8e13f957cf354bfadc00d7c6b68c80550f69
+-- hash: 2ba60758999ca77969e42d8dec8f0ad9fe9dca358bd373f9ee0e7352a8166159
 
 name:           thirdServer
 version:        0.1.0.0
@@ -75,7 +75,7 @@ library
       Lib
   hs-source-dirs:
       src
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses RankNTypes
   ghc-options: -Wall -Werror
   build-depends:
       aeson
@@ -83,6 +83,7 @@ library
     , base >=4.7 && <5
     , basic-prelude
     , blaze-builder
+    , brittany
     , bytestring
     , classy-prelude
     , data-has
@@ -115,7 +116,7 @@ executable thirdServer-exe
       Paths_thirdServer
   hs-source-dirs:
       app
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses RankNTypes
   ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -123,6 +124,7 @@ executable thirdServer-exe
     , base >=4.7 && <5
     , basic-prelude
     , blaze-builder
+    , brittany
     , bytestring
     , classy-prelude
     , data-has
@@ -155,7 +157,7 @@ test-suite thirdServer-test
       Paths_thirdServer
   hs-source-dirs:
       test
-  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses
+  default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses RankNTypes
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -163,6 +165,7 @@ test-suite thirdServer-test
     , base >=4.7 && <5
     , basic-prelude
     , blaze-builder
+    , brittany
     , bytestring
     , classy-prelude
     , data-has

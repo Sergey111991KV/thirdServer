@@ -1,6 +1,7 @@
 module Adapter.PostgreSQL.ExportPostgres
   ( module Y
-  ) where
+  )
+where
 
 import           Adapter.PostgreSQL.Common     as Y
 import           Adapter.PostgreSQL.Services.Auth

@@ -1,22 +1,22 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Common where
 
-import ClassyPrelude
-    ( ($),
-      Monad(return),
-      Show,
-      Generic,
-      Bool(False),
-      Int,
-      IO,
-      Either(Left, Right),
-      ByteString,
-      (.),
-      asks,
-      throwString,
-      MonadIO(..),
-      SomeException,
-      MonadReader )
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Show
+                                                , Generic
+                                                , Bool(False)
+                                                , Int
+                                                , IO
+                                                , Either(Left, Right)
+                                                , ByteString
+                                                , (.)
+                                                , asks
+                                                , throwString
+                                                , MonadIO(..)
+                                                , SomeException
+                                                , MonadReader
+                                                )
 import           Control.Monad.Catch            ( MonadThrow
                                                 , bracket
                                                 )
@@ -27,10 +27,16 @@ import           Data.Pool                      ( Pool
                                                 , withResource
                                                 )
 import           Data.Time                      ( NominalDiffTime )
-import Database.PostgreSQL.Simple
-    ( Connection, close, connectPostgreSQL, Query, withTransaction )
-import Domain.Types.ExportTypes
-    ( ErrorServer(DataErrorPostgreSQLInServer) )
+import           Database.PostgreSQL.Simple     ( Connection
+                                                , close
+                                                , connectPostgreSQL
+                                                , Query
+                                                , withTransaction
+                                                )
+import           Domain.Types.ExportTypes       ( ErrorServer
+                                                  ( DataErrorPostgreSQLInServer
+                                                  )
+                                                )
 import           Database.PostgreSQL.Simple.Migration
                                                 ( MigrationCommand
                                                   ( MigrationDirectory
@@ -43,10 +49,10 @@ import           Database.PostgreSQL.Simple.Migration
                                                 )
 import           Domain.Services.Auth           ( Auth )
 import qualified Domain.Services.LogMonad      as Log
-import Database.PostgreSQL.Simple.SqlQQ ( sql )
-import Control.Monad.Except
-    (  MonadError(throwError) )
-import Control.Exception ( try ) 
+import           Database.PostgreSQL.Simple.SqlQQ
+                                                ( sql )
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Control.Exception              ( try )
 
 
 type PG r m

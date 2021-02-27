@@ -11,7 +11,8 @@ module Domain.Types.BusinessEntity.User
     , userLogin
     , userPassword
     )
-  ) where
+  )
+where
 
 import           ClassyPrelude                  ( Applicative((<*>))
                                                 , Eq

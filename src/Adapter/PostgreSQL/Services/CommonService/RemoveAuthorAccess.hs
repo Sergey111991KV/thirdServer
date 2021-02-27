@@ -17,7 +17,10 @@ import           Domain.Types.ExportTypes       ( errorText
                                                 )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
-import Adapter.PostgreSQL.ImportLibrary ( execute, sql )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( execute
+                                                , sql
+                                                )
 
 removeAuthorAccess :: PG r m => Int -> UserId -> m ()
 removeAuthorAccess idEnt idA = do

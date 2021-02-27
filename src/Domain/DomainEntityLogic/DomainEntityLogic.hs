@@ -1,28 +1,29 @@
 module Domain.DomainEntityLogic.DomainEntityLogic where
 
 
-import Domain.Types.ExportTypes
-   
-   
-   
-import ClassyPrelude
-    ( ($),
-      Monad(return),
-      Int,
-      Maybe(..),
-      Text,
-      ByteString,
-      (.),
-      either,
-      unpack,
-      MonadIO,
-      IsMap(lookup),
-      LazySequence(fromStrict) )
-  
-   
-import Control.Monad.Except
-    ( MonadError(throwError) )
-import Data.Aeson ( FromJSON, eitherDecode )
+import           Domain.Types.ExportTypes
+
+
+
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Int
+                                                , Maybe(..)
+                                                , Text
+                                                , ByteString
+                                                , (.)
+                                                , either
+                                                , unpack
+                                                , MonadIO
+                                                , IsMap(lookup)
+                                                , LazySequence(fromStrict)
+                                                )
+
+
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Data.Aeson                     ( FromJSON
+                                                , eitherDecode
+                                                )
 import qualified Prelude
 
 
@@ -39,21 +40,22 @@ fromAnEntity (AnCategory _) = return CategoryEntReq
 
 toAnEntity
   :: MonadError ErrorServer m => ByteString -> HelpForRequest -> m AnEntity
-toAnEntity b AuthorEntReq = decodeFromBytestring AnAuthor b
-toAnEntity b UserEntReq = decodeFromBytestring AnUser b
-toAnEntity b NewsEntReq = decodeFromBytestring AnNews b
-toAnEntity b CommentEntReq = decodeFromBytestring AnComment b
-toAnEntity b TagEntReq = decodeFromBytestring AnTag b
-toAnEntity b DraftEntReq = decodeFromBytestring AnDraft b
+toAnEntity b AuthorEntReq   = decodeFromBytestring AnAuthor b
+toAnEntity b UserEntReq     = decodeFromBytestring AnUser b
+toAnEntity b NewsEntReq     = decodeFromBytestring AnNews b
+toAnEntity b CommentEntReq  = decodeFromBytestring AnComment b
+toAnEntity b TagEntReq      = decodeFromBytestring AnTag b
+toAnEntity b DraftEntReq    = decodeFromBytestring AnDraft b
 toAnEntity b CategoryEntReq = decodeFromBytestring AnCategory b
-toAnEntity _ _ = throwError ErrorConvert
-  
+toAnEntity _ _              = throwError ErrorConvert
 
-decodeFromBytestring :: ( FromJSON b, MonadError ErrorServer m) => (b -> a) -> ByteString -> m a
+
+decodeFromBytestring
+  :: (FromJSON b, MonadError ErrorServer m) => (b -> a) -> ByteString -> m a
 decodeFromBytestring anent =
-  either (\_ -> throwError ErrorConvert)
-         (return . anent)
-         . eitherDecode . fromStrict
+  either (\_ -> throwError ErrorConvert) (return . anent)
+    . eitherDecode
+    . fromStrict
 
 
 toHelpForRequest :: MonadError ErrorServer m => Text -> m HelpForRequest

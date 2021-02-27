@@ -1,6 +1,7 @@
 module Lib
   ( mainServer
-  ) where
+  )
+where
 
 import qualified Adapter.PostgreSQL.ExportPostgres
                                                as Pos
@@ -82,14 +83,14 @@ instance SortedOfService App where
   sortedPhoto    = Pos.sortedPhoto
 
 instance FilterService App where
-  filterOfData    = Pos.filterOfData
-  filterAuthor    = Pos.filterAuthor
-  filterCategory  = Pos.filterCategory
-  filterTag       = Pos.filterTag
-  filterOneOfTags = Pos.filterOneOfTags
-  filterAllOfTags = Pos.filterAllOfTags
-  filterName      = Pos.filterName
-  filterContent   = Pos.filterContent
+  filterOfData     = Pos.filterOfData
+  filterAuthor     = Pos.filterAuthor
+  filterCategory   = Pos.filterCategory
+  filterTag        = Pos.filterTag
+  filterOneOfTags  = Pos.filterOneOfTags
+  filterAllOfTags  = Pos.filterAllOfTags
+  filterName       = Pos.filterName
+  filterContent    = Pos.filterContent
   filterAllContent = Pos.filterAllContent
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()

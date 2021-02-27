@@ -2,18 +2,25 @@
 
 module Domain.Types.BusinessEntity.Entity where
 
-import ClassyPrelude ( Eq, Ord, Show, Generic )
-import Domain.Types.BusinessEntity.Author ( Author )
+import           ClassyPrelude                  ( Eq
+                                                , Ord
+                                                , Show
+                                                , Generic
+                                                )
+import           Domain.Types.BusinessEntity.Author
+                                                ( Author )
 import           Domain.Types.BusinessEntity.Category
                                                 ( Category )
-import Domain.Types.BusinessEntity.Comment ( Comment )
+import           Domain.Types.BusinessEntity.Comment
+                                                ( Comment )
 import           Domain.Types.BusinessEntity.Draft
                                                 ( Draft )
 import           Domain.Types.BusinessEntity.News
                                                 ( News )
 import           Domain.Types.BusinessEntity.Tag
                                                 ( Tag )
-import Domain.Types.BusinessEntity.User ( User )
+import           Domain.Types.BusinessEntity.User
+                                                ( User )
 
 data HelpForRequest
   = AuthorEntReq

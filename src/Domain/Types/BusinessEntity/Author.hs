@@ -1,6 +1,7 @@
 module Domain.Types.BusinessEntity.Author
   ( Author(Author, description, idAuthor, idLinkUser)
-  ) where
+  )
+where
 
 import           ClassyPrelude                  ( Applicative((<*>))
                                                 , Eq

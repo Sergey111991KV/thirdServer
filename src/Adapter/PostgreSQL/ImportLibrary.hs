@@ -1,6 +1,7 @@
 module Adapter.PostgreSQL.ImportLibrary
   ( module X
-  ) where
+  )
+where
 
 import           Data.Aeson                    as X
 import           Data.ByteString.Builder       as X

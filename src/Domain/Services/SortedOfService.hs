@@ -1,13 +1,21 @@
 module Domain.Services.SortedOfService where
 
-import ClassyPrelude ( Int, Maybe, Text )
-import Domain.Types.ExportTypes
-    ( ErrorServer(ErrorTakeEntityNotSupposed) )
+import           ClassyPrelude                  ( Int
+                                                , Maybe
+                                                , Text
+                                                )
+import           Domain.Types.ExportTypes       ( ErrorServer
+                                                  ( ErrorTakeEntityNotSupposed
+                                                  )
+                                                )
 import qualified Data.ByteString.Lazy.Internal as LB
 import           Control.Monad.Except           ( MonadError(throwError) )
-import Domain.Services.AccessService ( Access )
-import Domain.Services.EntityService
-    ( Entity(getTextFromQueryArray, getIntFromQueryArray) )
+import           Domain.Services.AccessService  ( Access )
+import           Domain.Services.EntityService  ( Entity
+                                                  ( getTextFromQueryArray
+                                                  , getIntFromQueryArray
+                                                  )
+                                                )
 
 
 class Access m =>
@@ -23,8 +31,8 @@ sortedNews arr = do
   page            <- getIntFromQueryArray arr "page"
   conditionSorted <- getTextFromQueryArray arr "conditionSorted"
   case conditionSorted of
-    "date"     -> do
-      dateCond <- getTextFromQueryArray arr "conditionOfDate"  
+    "date" -> do
+      dateCond <- getTextFromQueryArray arr "conditionOfDate"
       sortedDate dateCond page
     "author"   -> sortedAuthor page
     "category" -> sortedCategory page

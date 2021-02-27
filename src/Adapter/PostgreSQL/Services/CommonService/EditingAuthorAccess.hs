@@ -7,14 +7,29 @@ import           Adapter.PostgreSQL.Common      ( PG
 import           ClassyPrelude                  ( ($)
                                                 , Monad(return)
                                                 )
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      UserId(UserId),
-      Draft(textDraft, dataCreateDraft, newsIdDraft, mainPhotoUrl,
-            otherPhotoUrl, shortNameDraft, tagsId, idAuthorDraft, idDraft),
-      AnEntity(AnDraft) )
-import Adapter.PostgreSQL.ImportLibrary ( execute, sql )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( DataErrorPostgreSQL
+                                                  )
+                                                , UserId(UserId)
+                                                , Draft
+                                                  ( textDraft
+                                                  , dataCreateDraft
+                                                  , newsIdDraft
+                                                  , mainPhotoUrl
+                                                  , otherPhotoUrl
+                                                  , shortNameDraft
+                                                  , tagsId
+                                                  , idAuthorDraft
+                                                  , idDraft
+                                                  )
+                                                , AnEntity(AnDraft)
+                                                )
+
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( execute
+                                                , sql
+                                                )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
 

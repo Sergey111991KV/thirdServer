@@ -46,6 +46,7 @@ dependencies:
 - basic-prelude
 - strict
 - template-haskell
+- brittany
 
 
 library:
@@ -88,6 +89,7 @@ default-extensions:
 - DataKinds
 - QuasiQuotes 
 - MultiParamTypeClasses
+- RankNTypes
 
 
 tests:

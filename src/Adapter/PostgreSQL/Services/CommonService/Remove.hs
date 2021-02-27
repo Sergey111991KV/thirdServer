@@ -4,21 +4,31 @@ module Adapter.PostgreSQL.Services.CommonService.Remove where
 import           Adapter.PostgreSQL.Common      ( PG
                                                 , withConn
                                                 )
-import ClassyPrelude
-    ( otherwise,
-      ($),
-      Eq((==)),
-      Monad(return),
-      Int,
-      MonadIO(liftIO) )
+import           ClassyPrelude                  ( otherwise
+                                                , ($)
+                                                , Eq((==))
+                                                , Monad(return)
+                                                , Int
+                                                )
 
 import           Control.Monad.Except           ( MonadError(throwError) )
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(ErrorTakeEntityNotSupposed, DataErrorPostgreSQL),
-      HelpForRequest(CategoryEntReq, AuthorEntReq, UserEntReq,
-                     NewsEntReq, TagEntReq) )
-import Adapter.PostgreSQL.ImportLibrary ( execute, sql )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( ErrorTakeEntityNotSupposed
+                                                  , DataErrorPostgreSQL
+                                                  )
+                                                , HelpForRequest
+                                                  ( CategoryEntReq
+                                                  , AuthorEntReq
+                                                  , UserEntReq
+                                                  , NewsEntReq
+                                                  , TagEntReq
+                                                  )
+                                                )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( execute
+                                                , sql
+                                                )
 import           Domain.Services.LogMonad       ( Log(writeLogE, writeLogD) )
 
 

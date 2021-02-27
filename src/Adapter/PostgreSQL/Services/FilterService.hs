@@ -1,30 +1,38 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.FilterService where
 
-import Adapter.PostgreSQL.Common ( withConn, PG )
-import ClassyPrelude
-    ( otherwise,
-      ($),
-      Eq((==)),
-      Monad(return),
-      Show(show),
-      Semigroup((<>)),
-      Int,
-      IO,
-      Text,
-      String,
-      (++),
-      map,
-      pack,
-      unpack )
-import Domain.Services.LogMonad ( Log(writeLogD, writeLogE) )
-import Domain.Types.ExportTypes
-    ( errorText,
-      ErrorServer(DataErrorPostgreSQL),
-      convertNewsRaw,
-      NewsRaw )
-import Adapter.PostgreSQL.ImportLibrary
-    ( Query, encode, query, sql )
+import           Adapter.PostgreSQL.Common      ( withConn
+                                                , PG
+                                                )
+import           ClassyPrelude                  ( otherwise
+                                                , ($)
+                                                , Eq((==))
+                                                , Monad(return)
+                                                , Show(show)
+                                                , Semigroup((<>))
+                                                , Int
+                                                , IO
+                                                , Text
+                                                , String
+                                                , (++)
+                                                , map
+                                                , pack
+                                                , unpack
+                                                )
+import           Domain.Services.LogMonad       ( Log(writeLogD, writeLogE) )
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( DataErrorPostgreSQL
+                                                  )
+                                                , convertNewsRaw
+                                                , NewsRaw
+                                                )
+import           Adapter.PostgreSQL.ImportLibrary
+                                                ( Query
+                                                , encode
+                                                , query
+                                                , sql
+                                                )
 import           Control.Monad.Except           ( MonadError(throwError) )
 import qualified Prelude                       as P
 import qualified Data.ByteString.Lazy.Internal as LB
@@ -320,7 +328,11 @@ filterAllContent txtContent page = do
 				                        or endNews.text_news like (?)
 				                        or (endNews.id_author = author.id_author and author.description  like (?))
                                 limit 20 offset (?) ;|]
-  result <- withConn $ \conn -> query conn q (insertText,insertText,insertText,insertText,insertText, page) :: IO [NewsRaw]
+  result <- withConn $ \conn ->
+    query conn
+          q
+          (insertText, insertText, insertText, insertText, insertText, page) :: IO
+        [NewsRaw]
   case result of
     [] -> do
       writeLogE (errorText DataErrorPostgreSQL ++ " filterAllContent")

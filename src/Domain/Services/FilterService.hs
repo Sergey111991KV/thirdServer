@@ -1,13 +1,21 @@
 module Domain.Services.FilterService where
 
-import ClassyPrelude ( Int, Maybe, Text )
-import Domain.Types.ExportTypes
-    ( ErrorServer(ErrorTakeEntityNotSupposed) )
+import           ClassyPrelude                  ( Int
+                                                , Maybe
+                                                , Text
+                                                )
+import           Domain.Types.ExportTypes       ( ErrorServer
+                                                  ( ErrorTakeEntityNotSupposed
+                                                  )
+                                                )
 import qualified Data.ByteString.Lazy.Internal as LB
-import Control.Monad.Except ( MonadError(throwError) )
-import Domain.Services.AccessService ( Access )
-import Domain.Services.EntityService
-    ( Entity(getTextFromQueryArray, getIntFromQueryArray) )
+import           Control.Monad.Except           ( MonadError(throwError) )
+import           Domain.Services.AccessService  ( Access )
+import           Domain.Services.EntityService  ( Entity
+                                                  ( getTextFromQueryArray
+                                                  , getIntFromQueryArray
+                                                  )
+                                                )
 
 
 class Access m =>
@@ -25,7 +33,7 @@ class Access m =>
 
 filteredNews :: FilterService m => [(Text, Maybe Text)] -> m LB.ByteString
 filteredNews arr = do
-  page <- getIntFromQueryArray arr "page"
+  page            <- getIntFromQueryArray arr "page"
   filterCondition <- getTextFromQueryArray arr "filterCondition"
   case filterCondition of
     "date" -> do

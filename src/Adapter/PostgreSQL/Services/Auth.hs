@@ -4,7 +4,8 @@ module Adapter.PostgreSQL.Services.Auth
   , newSession
   , findUserIdBySession
   , deleteOldSession
-  ) where
+  )
+where
 
 import           Adapter.PostgreSQL.Common      ( withConn
                                                 , PG
