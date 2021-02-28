@@ -9,17 +9,11 @@ import           ClassyPrelude                  ( ($)
                                                 , Int
                                                 , IO
                                                 )
-import           Domain.Services.LogMonad       ( Log
-                                                  ( writeLogE
-                                                  , writeLogD
-                                                  , writeLog
-                                                  )
-                                                )
+import           Domain.Services.LogMonad
 import           Domain.Types.ExportTypes       ( errorText
                                                 , ErrorServer
                                                   ( DataErrorPostgreSQL
                                                   )
-                                                , LogWrite(Debug)
                                                 , UserId
                                                 )
 import           Adapter.PostgreSQL.ImportLibrary
@@ -36,12 +30,11 @@ publish idU idE = do
   case resultAuthor of
     [Only x] -> do
       writeLogD "getOne News success!"
-      -- let qPublic = [sql| select updeite_news (?, ?); |]
       let
         qPublic
           = [sql| select tag_news_insert (tags_id,updeite_news_with_tags((?),(?))) from draft where draft.id_draft = (?) ;  |]
       _ <- withConn $ \conn -> query conn qPublic (x, idE, idE) :: IO [Only Int]
-      writeLog Debug "publish Draft success!"
+      writeLogD "publish Draft success!"
       return ()
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)

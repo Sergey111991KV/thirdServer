@@ -1,13 +1,12 @@
 module Domain.Types.LogEntity.LogEntity where
 
 
-import           ClassyPrelude                  ( Bool
-                                                , Eq
-                                                , FilePath
-                                                , Generic
+import           ClassyPrelude                  ( Eq
                                                 , Ord
                                                 , Read
                                                 , Show
+                                                , Generic
+                                                , FilePath
                                                 )
 
 import           Data.Aeson                     ( FromJSON
@@ -21,26 +20,23 @@ newtype StateLog =
   deriving (Generic, Show)
 
 
-type LogWriteInConfig = LogWrite
-
 data LogConfig = LogConfig
   { logFile         :: FilePath
-  , logLevelForFile :: LogWriteInConfig
-  , logConsole      :: Bool
+  , logLevel        :: LogLevel
   }
   deriving (Show, Generic)
 
-type LogForFile = LogWrite
 
-data LogWrite
+data LogLevel
   = Debug
   | Warning
   | Error
   deriving (Eq, Ord, Read, Show, Generic)
 
-instance ToJSON LogWrite
 
-instance FromJSON LogWrite
+instance ToJSON LogLevel
+
+instance FromJSON LogLevel
 
 instance ToJSON LogConfig
 

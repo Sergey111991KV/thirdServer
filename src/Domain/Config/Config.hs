@@ -7,18 +7,19 @@ import           ClassyPrelude                  ( ($)
                                                 , Functor(fmap)
                                                 , Show
                                                 , Generic
-                                                , Bool(True)
                                                 , Char
                                                 , Int
                                                 , IO
                                                 , Word8
                                                 , Either(..)
                                                 , Text
+                                                , String
                                                 , (.)
                                                 , fromMaybe
                                                 , pack
                                                 , IsMap(lookup)
                                                 )
+
 
 import           Domain.Config.ParseConfig      ( ConfigPair
                                                 , myParser
@@ -53,10 +54,10 @@ configWithPair (Right configPair) = do
     { configPort = P.read $ fromMaybe "3000" port
     , configLog  = Log.StateLog
                      { Log.logStCong = Log.LogConfig
-                                         { Log.logFile         = "log-journal"
-                                         , Log.logLevelForFile = Log.Debug
-                                         , Log.logConsole      = True
-                                         }
+                       { Log.logFile  = "log-journal"
+                       , Log.logLevel = parseLogFromText
+                                          $ fromMaybe "Debug" logConfigFromFile
+                       }
                      }
     , configPG   = Pos.Config
                      { Pos.configUrl = pack $ fmap charToWord8 $ fromMaybe
@@ -68,5 +69,12 @@ configWithPair (Right configPair) = do
                      }
     }
  where
-  postgresOption = lookup "postgres" configPair
-  port           = lookup "port" configPair
+  logConfigFromFile = lookup "logConfig" configPair
+  postgresOption    = lookup "postgres" configPair
+  port              = lookup "port" configPair
+
+parseLogFromText :: String -> Log.LogLevel
+parseLogFromText txt = case txt of
+  "Warning" -> Log.Warning
+  "Error"   -> Log.Error
+  _         -> Log.Debug
