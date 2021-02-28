@@ -31,7 +31,6 @@ dependencies:
 - hspec
 - text-time
 - exceptions
-- http-client
 - http-types 
 - wai
 - warp

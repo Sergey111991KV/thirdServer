@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2ba60758999ca77969e42d8dec8f0ad9fe9dca358bd373f9ee0e7352a8166159
+-- hash: 9a5adb907e9fafea5ce353d4c64ce9f8e35d21c3a214140792a1a187bf9f4923
 
 name:           thirdServer
 version:        0.1.0.0
@@ -89,7 +89,6 @@ library
     , data-has
     , exceptions
     , hspec
-    , http-client
     , http-types
     , mtl
     , parsec
@@ -130,7 +129,6 @@ executable thirdServer-exe
     , data-has
     , exceptions
     , hspec
-    , http-client
     , http-types
     , mtl
     , parsec
@@ -171,7 +169,6 @@ test-suite thirdServer-test
     , data-has
     , exceptions
     , hspec
-    , http-client
     , http-types
     , mtl
     , parsec
