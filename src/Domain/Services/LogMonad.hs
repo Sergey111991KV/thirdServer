@@ -24,7 +24,7 @@ import           System.IO                      ( appendFile )
 class (Monad m, MonadIO m) =>
       Log m
   where
-  writeLog  :: LogLevel -> Text -> m ()
+  writeLog  :: LogServer -> Text -> m ()
   writeLogE :: Text -> m ()
   writeLogW :: Text -> m ()
   writeLogD :: Text -> m ()
@@ -32,8 +32,9 @@ class (Monad m, MonadIO m) =>
 writeInLogFile :: FilePath -> Text -> IO ()
 writeInLogFile lF txtInLog = appendFile lF (ClassyPrelude.unpack txtInLog)
 
+type LogServer = LogLevel
 
-writeLogHandler :: UTCTime -> LogConfig -> LogLevel -> Text -> IO ()
+writeLogHandler :: UTCTime -> LogConfig -> LogServer -> Text -> IO ()
 writeLogHandler dat logConf logServ txt = when
   (logLevel logConf <= logServ)
   (do
@@ -41,5 +42,6 @@ writeLogHandler dat logConf logServ txt = when
     writeInLogFile (logFile logConf) (txt <> " " <> d)
   )
   where d = toStrict $ formatISODateTime dat
+
 
 
