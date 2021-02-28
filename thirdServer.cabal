@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9a5adb907e9fafea5ce353d4c64ce9f8e35d21c3a214140792a1a187bf9f4923
+-- hash: 2bdefbef00037d2629e910844bfaab7e04e18f8d5a28c60eccbe73132a148683
 
 name:           thirdServer
 version:        0.1.0.0
@@ -47,6 +47,7 @@ library
       Adapter.PostgreSQL.Services.CommonService.RemoveAuthorAccess
       Adapter.PostgreSQL.Services.FilterService
       Adapter.PostgreSQL.Services.SortedService
+      App
       Domain.Config.Config
       Domain.Config.ParseConfig
       Domain.DomainEntityLogic.DomainEntityLogic
@@ -72,7 +73,6 @@ library
       Domain.Types.ImportLibrary
       Domain.Types.LogEntity.LogEntity
       Domain.Types.ParseRowEntity
-      Lib
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude OverloadedStrings DeriveGeneric GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts ScopedTypeVariables StandaloneDeriving FlexibleInstances UndecidableInstances DataKinds QuasiQuotes MultiParamTypeClasses RankNTypes

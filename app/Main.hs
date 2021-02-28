@@ -2,7 +2,7 @@ module Main where
 
 import ClassyPrelude ( IO )
 
-import Lib 
+import App 
 
 main :: IO ()
 main = mainServer

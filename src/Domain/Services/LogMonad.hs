@@ -38,13 +38,13 @@ writeInTerminal :: Bool -> Text -> IO ()
 writeInTerminal bl txtInLog = do
   when bl $ ClassyPrelude.putStrLn txtInLog
 
-writFileHandler
+writeFileHandler
   :: UTCTime -> FilePath -> LogWrite -> LogWrite -> Bool -> Text -> IO ()
-writFileHandler dat lF logConf logToCompare bl txtInLog = do
+writeFileHandler dat lF logConf logToCompare bl txtInLog = do
   writeInLogFile lF (logConf >= logToCompare) (txtInLog <> " " <> d)
   writeInTerminal bl txtInLog
   where d = toStrict $ formatISODateTime dat
 
 writeLogHandler :: UTCTime -> LogConfig -> LogWrite -> Text -> IO ()
 writeLogHandler dat (LogConfig lf logLev logBool) loging =
-  writFileHandler dat lf logLev loging logBool
+  writeFileHandler dat lf logLev loging logBool

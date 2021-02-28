@@ -19,8 +19,8 @@ class (Log m,  Entity m) =>
   deleteOldSession :: UserId -> m  ()
 
 sessionByAuth :: Auth m => Login -> Password -> m SessionId
-sessionByAuth loggin password = do
-  uIdResult <- findUserId loggin password
+sessionByAuth login password = do
+  uIdResult <- findUserId login password
   newSession uIdResult
 
 exitSession :: Auth m => SessionId -> m ()
