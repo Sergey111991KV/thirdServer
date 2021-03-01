@@ -5,18 +5,49 @@ where
 
 import qualified Adapter.PostgreSQL.ExportPostgres
                                                as Pos
-import           ClassyPrelude
+import ClassyPrelude
+    ( ($),
+      Monad(return, (>>=)),
+      Functor,
+      Applicative(pure),
+      Int,
+      IO,
+      Either(..),
+      Text,
+      either,
+      print,
+      getCurrentTime,
+      try,
+      newTVarIO,
+      readTVarIO,
+      MonadIO(..),
+      TVar,
+      SomeException,
+      MonadReader(..),
+      ReaderT(..) )
 
 
-import           Control.Monad.Except           ( MonadError
-                                                , ExceptT
-                                                , runExceptT
-                                                )
+import Control.Monad.Except
+    ( 
+      MonadError(throwError),
+      ExceptT,
+      runExceptT )
+     
 import           Control.Monad.Catch            ( MonadThrow )
 import qualified Data.Text.IO                  as TIO
 import qualified Domain.Config.Config          as Config
-import           Domain.Services.ExportServices
-import           Domain.Types.ExportTypes
+import Domain.Services.ExportServices
+    ( Entity(..),
+      writeLogHandler,
+      Log(..),
+      Auth(..),
+      Access(..),
+      SortedOfService(..),
+      FilterService(..),
+      CommonService(..) )
+import Domain.Types.ExportTypes
+    ( ErrorServer(ErrorReadFile, ErrorGetConfig),
+      LogLevel(Debug, Error, Warning) )
 import qualified Domain.Types.LogEntity.LogEntity
                                                as Log
 import qualified Network.Wai.Handler.Warp      as W
@@ -115,18 +146,23 @@ mainWithConfig config = withState config $ \port state -> do
 
 mainServer :: IO ()
 mainServer = do
-  configFromFile :: Either SomeException Text <- ClassyPrelude.try
-    $ TIO.readFile "server.config"
-  either
-    print
-    (\conf -> do
-      caseOfConf <- Config.parseConf conf
-      either
-        (\err -> print (errorText err ++ " take option for server"))
-        (\c -> do
-          print c
-          mainWithConfig c
-        )
-        caseOfConf
-    )
-    configFromFile
+  eitherConfig <- runExceptT $ getTextFromFile >>= getConfigFromText
+  case eitherConfig of
+    Left e -> print e
+    Right conf -> mainWithConfig conf
+
+getConfigFromText ::  (MonadIO m, MonadError ErrorServer m) => Text -> m  Config.Config
+getConfigFromText txt = do
+  caseOfConf <- liftIO $ Config.parseConf txt
+  case caseOfConf of
+    Left _ -> throwError ErrorGetConfig
+    Right conf -> return conf
+
+getTextFromFile :: (MonadIO m, MonadError ErrorServer m) =>   m Text
+getTextFromFile  = do
+  configFromFile :: Either SomeException Text <- liftIO $ ClassyPrelude.try 
+    $ TIO.readFile "server.config" 
+  case configFromFile of
+    Left _ -> throwError ErrorReadFile
+    Right txt -> return txt
+

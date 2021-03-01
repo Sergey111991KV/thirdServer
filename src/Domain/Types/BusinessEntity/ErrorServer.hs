@@ -30,6 +30,7 @@ data ErrorServer
   | ErrorGetConfig
   | ErrorGetCookie
   | ErrorConvert
+  | ErrorReadFile
   | ErrorNonUserId
   | ErrorConvertNewsRaw
   | ErrorSupposedHelpRequest
