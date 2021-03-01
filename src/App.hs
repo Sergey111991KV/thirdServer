@@ -137,9 +137,7 @@ mainWithConfig config = withState config $ \port state -> do
   W.run port $ \request respond -> do
     eitherResponse <- runApp state $ MyHTTP.route request
     response       <- either
-      (\e -> do
-        MyHTTP.serverErrorResponse e
-      )
+      MyHTTP.serverErrorResponse 
       pure
       eitherResponse
     respond response
