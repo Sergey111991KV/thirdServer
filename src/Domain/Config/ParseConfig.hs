@@ -16,22 +16,22 @@ toPairs = do
   Parsec.spaces
   value <-
     Parsec.many1 (Parsec.letter <|> Parsec.digit <|> Parsec.char ':')
-      <|> helpText
+      <|> optionPostgresParser
   return (key, value)
 
-myParser :: Parsec.Parsec Text () [ConfigPair]
-myParser = Parsec.many1 $ do
+configParser :: Parsec.Parsec Text () [ConfigPair]
+configParser = Parsec.many1 $ do
   pair <- toPairs
-  Parsec.eof <|> mySeparator
+  Parsec.eof <|> eolParser
   return pair
 
-mySeparator :: Parsec.Parsec Text () ()
-mySeparator = do
+eolParser :: Parsec.Parsec Text () ()
+eolParser = do
   _ <- Parsec.endOfLine
   return ()
 
-helpText :: Parsec.Parsec Text () String
-helpText = do
+optionPostgresParser :: Parsec.Parsec Text () String
+optionPostgresParser = do
   _     <- Parsec.char '"'
   value <- Parsec.many1
     (Parsec.letter <|> Parsec.digit <|> Parsec.space <|> Parsec.oneOf "'=")

@@ -21,9 +21,7 @@ import           ClassyPrelude                  ( ($)
                                                 )
 
 
-import           Domain.Config.ParseConfig      ( ConfigPair
-                                                , myParser
-                                                )
+import           Domain.Config.ParseConfig      
 import           Domain.Types.ExportTypes       ( ErrorServer(ErrorGetConfig) )
 import qualified Domain.Types.LogEntity.LogEntity
                                                as Log
@@ -44,7 +42,7 @@ charToWord8 :: Char -> Word8
 charToWord8 = toEnum . fromEnum
 
 getPairFromFile :: Text -> Either Pars.ParseError [ConfigPair]
-getPairFromFile = Pars.parse myParser ""
+getPairFromFile = Pars.parse configParser ""
 
 configWithPair
   :: Either Pars.ParseError [ConfigPair] -> Either ErrorServer Config
