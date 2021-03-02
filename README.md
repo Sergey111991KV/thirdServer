@@ -1,8 +1,8 @@
 # The News Server
 
-It is news web server. The project for MetaLamp company.
+It is news web server. The training project for MetaLamp company.
 I used ReaderT design pattern, postgres-simple for connection Database and WAI for HTTP connection.
-
+Server can all method writen in rizoma. For check it you can run bash in folder /curl
 
 ## Start server 
 
@@ -13,7 +13,7 @@ For start you need:
 2. Replaced:
 
             "port" with your port for HTTP;
-            "postgres" - with your postgres option (attempt: host, port database connecttion, login and password),
+            "postgres" - with your postgres option (host name, port, login and password for database connection),
                 it is documentation link postgres-simple  - http://hackage.haskell.org/package/postgresql-simple-0.6.4/docs/Database-PostgreSQL-Simple.html;
             "logConfig" - with your level config (Debug, Warning ,Error);
 
@@ -31,14 +31,11 @@ For start you need:
 *   Adapter (implementation): 
     *   Adapter/PostgresSQL - implementashion http postgres
     *   Adapter/HTTPWAI - implementashion http protocol
-###    All module have 2 imports:
+###    All module have 2 file:
                 ImportLibrary - import common method and librarys inside in file 
                 Export*MODULE - import external all method of MODULE
             
-           
-## How to use.
-All you need to start project - create file "server.config" , write your option and script to start project) 
-Server can all method writen in rizoma. For check it you can run bash in folder /curl
+
 
 ## Test.
 I used spec library for testing app and empty structure.

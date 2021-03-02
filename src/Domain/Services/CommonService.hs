@@ -61,10 +61,12 @@ class (SortedOfService m, FilterService m) =>
 
 
 
+
+
 publishAction :: CommonService m => SessionId -> Int -> m ()
-publishAction sess idD = do
+publishAction sess idDraft = do
   idU <- findUserIdBySession sess
-  publish idU idD
+  publish idU idDraft
 
 createCommon :: CommonService m => SessionId -> AnEntity -> m ()
 createCommon sess ent = do

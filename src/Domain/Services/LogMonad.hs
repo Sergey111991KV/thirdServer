@@ -35,13 +35,13 @@ writeInLogFile lF txtInLog = appendFile lF (ClassyPrelude.unpack txtInLog)
 type LogServer = LogLevel
 
 writeLogHandler :: UTCTime -> LogConfig -> LogServer -> Text -> IO ()
-writeLogHandler dat logConf logServ txt = when
+writeLogHandler date logConf logServ txt = when
   (logLevel logConf <= logServ)
   (do
     putStrLn txt
     writeInLogFile (logFile logConf) (txt <> " " <> d)
   )
-  where d = toStrict $ formatISODateTime dat
+  where d = toStrict $ formatISODateTime date
 
 
 
