@@ -1,22 +1,23 @@
 # The News Server
 
-This is my third attempt to write a server)
-I used ReaderT design pattern.
+It is news web server. The project for MetaLamp company.
+I used ReaderT design pattern, postgres-simple for connection Database and WAI for HTTP connection.
 
-## Configuration.
-All configuration are in the src/Config.hs and you need to write in your customization or if need I can rewrite project with change "server.config":
 
-            log configuration ( logFile - where to write?, logLevelForFile - recording level(Debug, Warning ,Error),
-            logConsole  - is write to console?
 ## Start server 
-All you need:
-            
-            create file "server.config" (like file from folder templates)
-Replaced:
 
-            "port" with your port
-            "postgres" - with your postgres option
-Take command:
+For start you need:
+            
+1. Create file "server.config" (like file from folder templates)
+
+2. Replaced:
+
+            "port" with your port for HTTP;
+            "postgres" - with your postgres option (attempt: host, port database connecttion, login and password),
+                it is documentation link postgres-simple  - http://hackage.haskell.org/package/postgresql-simple-0.6.4/docs/Database-PostgreSQL-Simple.html;
+            "logConfig" - with your level config (Debug, Warning ,Error);
+
+3. Take command:
 
             stack ghci 
           

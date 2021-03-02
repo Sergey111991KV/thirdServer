@@ -25,6 +25,7 @@ import ClassyPrelude
       SomeException,
       MonadReader(..),
       ReaderT(..) )
+  
 
 
 import Control.Monad.Except
@@ -123,6 +124,9 @@ instance FilterService App where
   filterName       = Pos.filterName
   filterContent    = Pos.filterContent
   filterAllContent = Pos.filterAllContent
+
+
+
 
 withState :: Config.Config -> (Int -> State -> IO ()) -> IO ()
 withState config action = do
