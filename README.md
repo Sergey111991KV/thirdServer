@@ -11,7 +11,7 @@ Server can all method writen in rizoma. For check it you can run bash in folder 
 |-------------------------|:---------:|--------------------------------------------|--------------------------------------------------|
 | port                    |    3000   | `Port`    | Port to listen to   |
 | postgres                |     —     | `ConnectInfo` | Object with info about database connection       |
-| logConfig               | `Debug` | `Debug` \| `Info` \| `Warning`  \| `Error` | Log level  |
+| logConfig               | `Debug` | `Debug` \| `Warning`  \| `Error` | Log level  |
 
 
 ### `ConnectInfo`
