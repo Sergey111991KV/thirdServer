@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2bdefbef00037d2629e910844bfaab7e04e18f8d5a28c60eccbe73132a148683
+-- hash: 1d106bd5dc9244abfe6cbd5e2f20881b8de792a1606e2bf27294d054d1bcdc6e
 
 name:           thirdServer
 version:        0.1.0.0
@@ -151,6 +151,7 @@ test-suite thirdServer-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Domain.Services.AuthSpec
       Domain.Types.BusinessEntity.CategorySpec
       Paths_thirdServer
   hs-source-dirs:
