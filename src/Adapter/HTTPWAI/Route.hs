@@ -66,7 +66,7 @@ route req = do
       GET ["auth", login, pass] -> do
         newSess <- sessionByAuth (Login login) (Password pass)
         setCookie newSess
-      _ -> pure $ HTTP.responseLBS HTTP.status404 [] ""
+      _ -> pure $ HTTP.responseLBS HTTP.status404 [] "Bad request"
 
   notAutorized err = serverErrorResponse err
 
