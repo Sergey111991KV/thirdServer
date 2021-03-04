@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.AccessService where
 
-import ClassyPrelude 
+import ClassyPrelude ( ($), Monad(return), Bool(..), Int, IO ) 
                 
 import           Adapter.PostgreSQL.Common      ( withConn
                                                 , PG
@@ -55,13 +55,13 @@ checkAuthorAccess sesId = do
       throwError DataErrorPostgreSQL
   where qry = [sql| select authoris from usernews where id_user = ? ;|]
 
--- getAuthorId :: PG r m => SessionId -> m Int
--- getAuthorId sesId = do
---   idA          <- findUserIdBySession sesId
---   resultAuthor <- withConn $ \conn -> query conn qry [idA] :: IO [Only Int]
---   case resultAuthor of
---     [Only idUserAuthor] -> do
---       writeLogD "getAuthorId "
---       return idUserAuthor
---     _  -> throwError DataErrorPostgreSQL
---   where qry = [sql| select id_author from author where id_link_user = ? ;|]
+getAuthorId :: PG r m => SessionId -> m Int
+getAuthorId sesId = do
+  idA          <- findUserIdBySession sesId
+  resultAuthor <- withConn $ \conn -> query conn qry [idA] :: IO [Only Int]
+  case resultAuthor of
+    [Only idUserAuthor] -> do
+      writeLogD "getAuthorId "
+      return idUserAuthor
+    _  -> throwError DataErrorPostgreSQL
+  where qry = [sql| select id_author from author where id_link_user = ? ;|]

@@ -8,7 +8,57 @@ import           ClassyPrelude                  ( ($)
                                                 , Monad(return)
                                                 , Maybe(Just, Nothing)
                                                 )
-import           Domain.Types.ExportTypes      
+import           Domain.Types.ExportTypes       ( errorText
+                                                , ErrorServer
+                                                  ( ErrorTakeEntityNotSupposed
+                                                  , DataErrorPostgreSQL
+                                                  )
+                                                , UserId(userIdRaw)
+                                                , Draft
+                                                  ( textDraft
+                                                  , dataCreateDraft
+                                                  , newsIdDraft
+                                                  , mainPhotoUrl
+                                                  , otherPhotoUrl
+                                                  , shortNameDraft
+                                                  , tagsId
+                                                  , idAuthorDraft
+                                                  )
+                                                , Category
+                                                  ( parentCategory
+                                                  , nameCategory
+                                                  , idCategory
+                                                  )
+                                                , Tag(nameTag)
+                                                , Comment
+                                                  ( textComments
+                                                  , dataCreateComments
+                                                  , newsIdComments
+                                                  , usersIdComments
+                                                  )
+                                                , Author
+                                                  ( idLinkUser
+                                                  , description
+                                                  )
+                                                , User
+                                                  ( nameUser
+                                                  , lastName
+                                                  , userLogin
+                                                  , userPassword
+                                                  , avatar
+                                                  , dataCreate
+                                                  , userIsAdmin
+                                                  , userIsAuthor
+                                                  )
+                                                , AnEntity
+                                                  ( AnUser
+                                                  , AnAuthor
+                                                  , AnCategory
+                                                  , AnComment
+                                                  , AnDraft
+                                                  , AnTag
+                                                  )
+                                                )
 
 
 import           Control.Monad.Except           ( MonadError(throwError) )
@@ -76,6 +126,30 @@ create (AnComment comment) = do
   case result of
     1 -> do
       writeLogD "create comment good!"
+      return ()
+    _ -> do
+      writeLogE (errorText DataErrorPostgreSQL)
+      throwError DataErrorPostgreSQL
+create (AnDraft draft) = do
+  result <- withConn $ \conn -> execute
+    conn
+    [sql| INSERT INTO draft (text_draft, data_create_draft, 
+                                    news_id_draft, main_photo_draft,other_photo_draft, 
+                                    short_name_draft,tags_id, id_author_draft) 
+                                    VALUES (?,?,?,?,?,?,?,?);
+                |]
+    ( textDraft draft
+    , dataCreateDraft draft
+    , newsIdDraft draft
+    , mainPhotoUrl draft
+    , otherPhotoUrl draft
+    , shortNameDraft draft
+    , tagsId draft
+    , idAuthorDraft draft
+    )
+  case result of
+    1 -> do
+      writeLogD "create draft good!"
       return ()
     _ -> do
       writeLogE (errorText DataErrorPostgreSQL)

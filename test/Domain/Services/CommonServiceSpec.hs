@@ -42,7 +42,7 @@ data Fixture m =
     , _getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text
     , _checkAuthorAccess :: SessionId -> m  ()
     , _checkAdminAccess :: SessionId -> m  ()
-    , _createAuthorAccess :: AnEntity  -> m  ()
+    , _getAuthorId :: SessionId -> m Int
     , _create :: AnEntity -> m  ()
     , _editing :: AnEntity -> m  ()
     , _editingAuthorAccess :: AnEntity -> UserId -> m  ()
@@ -76,7 +76,7 @@ emptyFixture =
     , _getTextFromQueryArray = const unimplemented
     , _checkAuthorAccess  = unimplemented
     , _checkAdminAccess  = unimplemented
-    , _createAuthorAccess = const unimplemented
+    ,  _getAuthorId = unimplemented
     , _create  = unimplemented
     , _editing  = unimplemented
     , _editingAuthorAccess = const unimplemented
@@ -106,6 +106,10 @@ instance Access App where
   checkAuthorAccess sess = do
       func <- asks _checkAuthorAccess  
       liftEither $ func sess
+  getAuthorId sess = do
+      func <- asks _getAuthorId  
+      liftEither $ func sess
+
  
     
 
@@ -121,9 +125,6 @@ instance CommonService App where
     editing ent = do
       func <- asks _create  
       liftEither $ func ent
-    createAuthorAccess ent = do
-      func <- asks _createAuthorAccess  
-      liftEither $ func  ent 
     editingAuthorAccess ent uId = do
       func <- asks _editingAuthorAccess  
       liftEither $ func  ent uId
@@ -173,8 +174,8 @@ mockAuthor = AnAuthor (Author 1 (UserId 1) "Some description")
 mockDraft :: AnEntity 
 mockDraft = AnDraft (Draft 1 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 1)
 
-mockDraftNotAuthor :: AnEntity 
-mockDraftNotAuthor = AnDraft (Draft 2 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 2)
+mockDraftAuthor :: AnEntity 
+mockDraftAuthor = AnDraft (Draft 2 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 2)
 
 
 mockUser :: AnEntity 
@@ -283,11 +284,23 @@ spec = do
             emptyFixture
               { _checkAuthorAccess = \(SessionId "Text")   -> return ()
               , _findUserIdBySession = \(SessionId "Text")   -> return (UserId 2)
-              , _createAuthorAccess = \ _ -> return ()
+              , _getAuthorId = \(SessionId "Text") -> return 2
+              , _create = \_ -> return ()
+             
+              } 
+      runApp fixture (createCommon (SessionId "Text") mockDraftAuthor) `shouldReturn` 
+          Right ()
+    it "should not create Draft with author access because wong author id" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _findUserIdBySession = \(SessionId "Text")   -> return (UserId 2)
+              , _getAuthorId = \(SessionId "Text") -> return 4
+              , _create = \_ -> return ()
              
               } 
       runApp fixture (createCommon (SessionId "Text") mockDraft) `shouldReturn`
-          Right ()
+          Left NotSupposedAuthor
    
   describe "editingCommon" $ do
     it "should not editingCommon with error in postgres" $ do
