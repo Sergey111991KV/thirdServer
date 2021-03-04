@@ -86,7 +86,7 @@ instance Auth App where
 instance Access App where
   checkAuthorAccess = Pos.checkAuthorAccess
   checkAdminAccess  = Pos.checkAdminAccess
-  getAuthorId = Pos.getAuthorId
+
 
 instance Entity App where
   fromAnEntity          = DomLog.fromAnEntity
@@ -98,6 +98,7 @@ instance Entity App where
 
 instance CommonService App where
   create              = Pos.create
+  createAuthorAccess  = Pos.createAuthorAccess
   editing             = Pos.editing
   getAll              = Pos.getAll
   getOne              = Pos.getOne

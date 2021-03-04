@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c94beaafd86e5e2ff3109fa63adba47a5c0f45a6a3b66e1ab8e789780385823f
+-- hash: 2196eb3ee742a3a62a8cb0a80fe518dea612e846517360e7c7d08b70f3921ee3
 
 name:           thirdServer
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       Adapter.PostgreSQL.Services.AccessService
       Adapter.PostgreSQL.Services.Auth
       Adapter.PostgreSQL.Services.CommonService.Create
+      Adapter.PostgreSQL.Services.CommonService.CreateAuthorAccess
       Adapter.PostgreSQL.Services.CommonService.Editing
       Adapter.PostgreSQL.Services.CommonService.EditingAuthorAccess
       Adapter.PostgreSQL.Services.CommonService.GetAll

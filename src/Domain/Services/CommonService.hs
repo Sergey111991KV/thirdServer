@@ -20,7 +20,8 @@ import           Domain.Services.SortedOfService
 class (SortedOfService m, FilterService m) =>
       CommonService m
   where
-  create :: AnEntity -> m  ()
+  create :: AnEntity -> m ()
+  createAuthorAccess :: AnEntity -> m  ()
   editing :: AnEntity -> m  ()
   editingAuthorAccess :: AnEntity -> UserId -> m  ()
   remove :: HelpForRequest -> Int -> m  ()
@@ -32,13 +33,7 @@ class (SortedOfService m, FilterService m) =>
   publish :: UserId -> Int -> m  ()
 
 
-createAuthorAccess :: CommonService m =>  AnEntity -> SessionId -> m  ()
-createAuthorAccess (AnDraft ent) sess = do
-  checkAuthorAccess sess
-  idUserAuthor <- getAuthorId sess 
-  let idDraftCreate = idAuthorDraft ent
-  if idUserAuthor == idDraftCreate then return () else throwError NotSupposedAuthor  
-createAuthorAccess _ _ =  throwError ErrorTakeEntityNotSupposed
+
 
 publishAction :: CommonService m => SessionId -> Int -> m ()
 publishAction sess idDraftEnt = do
@@ -54,7 +49,8 @@ createCommon sess ent = do
     TagEntReq      -> checkAdminAccess sess >> create ent
     CommentEntReq  -> create ent
     CategoryEntReq -> checkAdminAccess sess >> create ent
-    DraftEntReq    -> createAuthorAccess ent sess >> create ent
+    DraftEntReq    -> checkAuthorAccess sess
+                      >> createAuthorAccess ent 
     _              -> throwError NotTakeEntity
 
 editingCommon :: CommonService m => SessionId -> AnEntity -> m ()

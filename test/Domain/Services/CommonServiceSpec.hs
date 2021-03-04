@@ -42,7 +42,7 @@ data Fixture m =
     , _getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text
     , _checkAuthorAccess :: SessionId -> m  ()
     , _checkAdminAccess :: SessionId -> m  ()
-    , _getAuthorId :: SessionId -> m Int
+    , _createAuthorAccess :: AnEntity  -> m  ()
     , _create :: AnEntity -> m  ()
     , _editing :: AnEntity -> m  ()
     , _editingAuthorAccess :: AnEntity -> UserId -> m  ()
@@ -76,7 +76,7 @@ emptyFixture =
     , _getTextFromQueryArray = const unimplemented
     , _checkAuthorAccess  = unimplemented
     , _checkAdminAccess  = unimplemented
-    , _getAuthorId = unimplemented
+    , _createAuthorAccess = const unimplemented
     , _create  = unimplemented
     , _editing  = unimplemented
     , _editingAuthorAccess = const unimplemented
@@ -106,9 +106,7 @@ instance Access App where
   checkAuthorAccess sess = do
       func <- asks _checkAuthorAccess  
       liftEither $ func sess
-  getAuthorId sess = do
-      func <- asks _getAuthorId  
-      liftEither $ func sess
+ 
     
 
 
@@ -123,7 +121,12 @@ instance CommonService App where
     editing ent = do
       func <- asks _create  
       liftEither $ func ent
-
+    createAuthorAccess ent = do
+      func <- asks _createAuthorAccess  
+      liftEither $ func  ent 
+    editingAuthorAccess ent uId = do
+      func <- asks _editingAuthorAccess  
+      liftEither $ func  ent uId
     -- editingAuthorAccess :: AnEntity -> UserId -> m  ()
     -- remove :: HelpForRequest -> Int -> m  ()
     -- removeAuthorAccess :: Int -> UserId ->  m  ()
@@ -179,33 +182,6 @@ mockUser = AnUser (User (UserId 2) "Text" "Text" (Login "Login") (Password "Pass
 
 mockTag :: AnEntity 
 mockTag = AnTag (Tag 1 "Tag")
-
--- mockNews :: AnEntity 
--- mockNews = AnNews News
-
---  (News 1 
---                         someTime  
---                         (Author 1 (UserId 1) "Some description") 
---                         (Category 1 "Category Test" Nothing)
---                         "textNewsRaw"
---                         "mainPhotoUrlNewsRaw"
---                         ["otherPhotoUrlNewsRaw"]
---                         "shortNameNewsRaw"
---                         [Comment 1 "Text" someTime 1 (UserId 1)]
---                         [Tag 1 "Tag"]
---                         )
-  
-  --  AnNews (News   1 
-  --                         someTime 
-  --                         (Author 1 (UserId 1) "Some description") 
-  --                         (Category 1 "Category Test" Nothing)
-  --                         "textNewsRaw"
-  --                         "mainPhotoUrlNewsRaw"
-  --                         ["otherPhotoUrlNewsRaw"]
-  --                         "shortNameNewsRaw"
-  --                         []
-  --                         []
-  --                   )
 
 mockComment :: AnEntity 
 mockComment = AnComment (Comment 1 "Text" someTime 1 (UserId 1))
@@ -306,26 +282,13 @@ spec = do
       let fixture =
             emptyFixture
               { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-              , _getAuthorId = \(SessionId "Text")   -> return 1
-              , _create = do
-                  \ent   -> do
-                    case ent of
-                      mockDraft -> return ()
+              , _findUserIdBySession = \(SessionId "Text")   -> return (UserId 2)
+              , _createAuthorAccess = \ _ -> return ()
+             
               } 
       runApp fixture (createCommon (SessionId "Text") mockDraft) `shouldReturn`
           Right ()
-    it "should not create Draft, because it is not this author draft" $ do
-      let fixture =
-            emptyFixture
-              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-              , _getAuthorId = \(SessionId "Text")   -> return 5
-              , _create = do
-                  \ent   -> do
-                    case ent of
-                      mockDraftNotAuthor  -> return ()
-              } 
-      runApp fixture (createCommon (SessionId "Text") mockDraftNotAuthor) `shouldReturn`
-          Left NotSupposedAuthor
+   
   describe "editingCommon" $ do
     it "should not editingCommon with error in postgres" $ do
       let fixture =
@@ -362,134 +325,45 @@ spec = do
               } 
       runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
           Left NotAccessNotAuthor
-    it "should editing Author with admin access" $ do
-      let fixture =
-            emptyFixture
-              { _checkAdminAccess = \(SessionId "Text")   -> return ()
-              , _editing = \_ -> return ()
-              } 
-      runApp fixture (editingCommon (SessionId "Text") mockAuthor) `shouldReturn`
-          Right ()
-    it "should editing Category with admin access" $ do
-      let fixture =
-            emptyFixture
-              { _checkAdminAccess = \(SessionId "Text")   -> return ()
-              , _editing = \_ -> return ()
-              } 
-      runApp fixture (editingCommon (SessionId "Text") mockCategory) `shouldReturn`
-         Right ()
-    it "should editing Tag with admin access" $ do
-      let fixture =
-            emptyFixture
-              { _checkAdminAccess = \(SessionId "Text")   -> return ()
-              , _editing = \_ -> return ()
-              } 
-      runApp fixture (editingCommon (SessionId "Text") mockTag) `shouldReturn`
-          Right ()
-    it "should editing Draft with author access" $ do
-      let fixture =
-            emptyFixture
-              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-              , _getAuthorId = \(SessionId "Text")   -> return 1
-              , _editing = \_ -> return ()
-              } 
-      runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
-          Right ()
-    it "should not editing Draft, because it is not this author draft" $ do
-      let fixture =
-            emptyFixture
-              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-              , _getAuthorId = \(SessionId "Text")   -> return 5
-              , _editing = \_ -> return ()
-              } 
-      runApp fixture (editingCommon (SessionId "Text") mockDraftNotAuthor) `shouldReturn`
-          Left NotSupposedAuthor
+    -- it "should editing Author with admin access" $ do
+    --   let fixture =
+    --         emptyFixture
+    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
+    --           , _editing = \_ -> return ()
+    --           } 
+    --   runApp fixture (editingCommon (SessionId "Text") mockAuthor) `shouldReturn`
+    --       Right ()
+    -- it "should editing Category with admin access" $ do
+    --   let fixture =
+    --         emptyFixture
+    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
+    --           , _editing = \_ -> return ()
+    --           } 
+    --   runApp fixture (editingCommon (SessionId "Text") mockCategory) `shouldReturn`
+    --      Right ()
+    -- it "should editing Tag with admin access" $ do
+    --   let fixture =
+    --         emptyFixture
+    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
+    --           , _editing = \_ -> return ()
+    --           } 
+    --   runApp fixture (editingCommon (SessionId "Text") mockTag) `shouldReturn`
+    --       Right ()
+    -- it "should editing Draft with author access" $ do
+    --   let fixture =
+    --         emptyFixture
+    --           { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+    --           , _editing = \_ -> return ()
+    --           } 
+    --   runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
+    --       Right ()
+    -- it "should not editing Draft, because it is not this author draft" $ do
+    --   let fixture =
+    --         emptyFixture
+    --           { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+             
+    --           , _editing = \_ -> return ()
+    --           } 
+    --   runApp fixture (editingCommon (SessionId "Text") mockDraftNotAuthor) `shouldReturn`
+    --       Left NotSupposedAuthor
    
-
-
--- editingCommon :: CommonService m => SessionId -> AnEntity -> m ()
--- editingCommon sess ent = do
---   helpR <- fromAnEntity ent
---   case helpR of
---     AuthorEntReq   -> checkAdminAccess sess >> editing ent
---     UserEntReq     -> checkAdminAccess sess >> editing ent
---     TagEntReq      -> checkAdminAccess sess >> editing ent
---     CommentEntReq  -> editing ent
---     CategoryEntReq -> checkAdminAccess sess >> editing ent
---     DraftEntReq ->
---       checkAuthorAccess sess
---         >>  findUserIdBySession sess
---         >>= editingAuthorAccess ent
---     _ -> throwError NotTakeEntity
-
--- removeCommon :: CommonService m => SessionId -> HelpForRequest -> Int -> m ()
--- removeCommon sess helpReq idEnt = do
---   case helpReq of
---     AuthorEntReq   -> checkAdminAccess sess >> remove helpReq idEnt
---     UserEntReq     -> checkAdminAccess sess >> remove helpReq idEnt
---     TagEntReq      -> checkAdminAccess sess >> remove helpReq idEnt
---     CommentEntReq  -> remove helpReq idEnt
---     CategoryEntReq -> checkAdminAccess sess >> remove helpReq idEnt
---     DraftEntReq ->
---       checkAuthorAccess sess
---         >>  findUserIdBySession sess
---         >>= removeAuthorAccess idEnt
---     NewsEntReq -> remove helpReq idEnt
---     _          -> throwError NotTakeEntity
-
--- getOneCommon
---   :: CommonService m => SessionId -> HelpForRequest -> Int -> m LB.ByteString
--- getOneCommon sess helpReq idE = do
---   case helpReq of
---     AuthorEntReq   -> checkAdminAccess sess >> getOne helpReq idE
---     UserEntReq     -> getOne helpReq idE
---     TagEntReq      -> getOne helpReq idE
---     CommentEntReq  -> getOne helpReq idE
---     CategoryEntReq -> getOne helpReq idE
---     DraftEntReq ->
---       checkAuthorAccess sess
---         >>  findUserIdBySession sess
---         >>= getOneAuthorAccess idE
---     NewsEntReq -> getOne helpReq idE
---     _          -> throwError NotTakeEntity
-
--- getArrayCommon
---   :: CommonService m => SessionId -> HelpForRequest -> Int -> m LB.ByteString
--- getArrayCommon sess helpReq page = do
---   case helpReq of
---     AuthorEntReq   -> checkAdminAccess sess >> getAll helpReq page
---     UserEntReq     -> checkAdminAccess sess >> getAll helpReq page
---     TagEntReq      -> getAll helpReq page
---     CommentEntReq  -> getAll helpReq page
---     CategoryEntReq -> getAll helpReq page
---     DraftEntReq    -> do
---       checkAuthorAccess sess
---       uId <- findUserIdBySession sess
---       getAllAuthorAccess uId page
---     NewsEntReq -> getAll helpReq page
---     _          -> throwError NotTakeEntity
-
--- getCommon
---   :: CommonService m
---   => SessionId
---   -> Text
---   -> [(Text, Maybe Text)]
---   -> m LB.ByteString
--- getCommon _    _           []  = throwError EmptyQueryArray
--- getCommon sess helpReqText arr = do
---   quan <- toQuantity helpReqText
---   case quan of
---     One -> do
---       help <- toHelpForRequest helpReqText
---       page <- getIntFromQueryArray arr "id_Entity"
---       getOneCommon sess help page
---     Plural -> do
---       help <- toHelpForRequest helpReqText
---       case help of
---         SortedNewsReq -> sortedNews arr
---         FilterNewsReq -> do
---           filteredNews arr
---         _ -> do
---           page <- getIntFromQueryArray arr "page"
---           getArrayCommon sess help page
-
