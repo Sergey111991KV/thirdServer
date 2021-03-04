@@ -42,7 +42,7 @@ data Fixture m =
     , _getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text
     , _checkAuthorAccess :: SessionId -> m  ()
     , _checkAdminAccess :: SessionId -> m  ()
-    , _createAuthorAccess :: AnEntity  -> m  ()
+    , _getAuthorId :: SessionId -> m Int
     , _create :: AnEntity -> m  ()
     , _editing :: AnEntity -> m  ()
     , _editingAuthorAccess :: AnEntity -> UserId -> m  ()
@@ -76,7 +76,7 @@ emptyFixture =
     , _getTextFromQueryArray = const unimplemented
     , _checkAuthorAccess  = unimplemented
     , _checkAdminAccess  = unimplemented
-    , _createAuthorAccess = const unimplemented
+    ,  _getAuthorId = unimplemented
     , _create  = unimplemented
     , _editing  = unimplemented
     , _editingAuthorAccess = const unimplemented
@@ -106,6 +106,10 @@ instance Access App where
   checkAuthorAccess sess = do
       func <- asks _checkAuthorAccess  
       liftEither $ func sess
+  getAuthorId sess = do
+      func <- asks _getAuthorId  
+      liftEither $ func sess
+
  
     
 
@@ -119,36 +123,53 @@ instance CommonService App where
       func <- asks _create  
       liftEither $ func ent
     editing ent = do
-      func <- asks _create  
+      func <- asks _editing  
       liftEither $ func ent
-    createAuthorAccess ent = do
-      func <- asks _createAuthorAccess  
-      liftEither $ func  ent 
     editingAuthorAccess ent uId = do
       func <- asks _editingAuthorAccess  
       liftEither $ func  ent uId
-    -- editingAuthorAccess :: AnEntity -> UserId -> m  ()
-    -- remove :: HelpForRequest -> Int -> m  ()
-    -- removeAuthorAccess :: Int -> UserId ->  m  ()
-    -- getAll :: HelpForRequest -> Int -> m  LB.ByteString
-    -- getAllAuthorAccess :: UserId -> Int -> m LB.ByteString
-    -- getOne :: HelpForRequest -> Int -> m  LB.ByteString
-    -- getOneAuthorAccess :: Int -> UserId -> m  LB.ByteString
+    remove helpR idE = do
+      func <- asks _remove  
+      liftEither $ func  helpR idE
+    removeAuthorAccess idE idUser' = do
+      func <- asks _removeAuthorAccess  
+      liftEither $ func idE idUser'
+    getAll helpR page = do
+      func <- asks _getAll
+      liftEither $ func helpR page
+    getAllAuthorAccess idUser' page = do
+      func <- asks _getAllAuthorAccess
+      liftEither $ func idUser' page
+    getOne helpR idE = do
+      func <- asks _getOne
+      liftEither $ func helpR idE
+    getOneAuthorAccess idE idUser' = do
+      func <- asks _getOneAuthorAccess
+      liftEither $ func idE idUser' 
     publish userId draftId = do
         func <- asks _publish  
         liftEither $ func userId draftId 
 
 instance Entity App where
     fromAnEntity = DL.fromAnEntity
-    -- toAnEntity :: ByteString -> HelpForRequest -> m AnEntity
-    -- toHelpForRequest :: Text -> m HelpForRequest
-    -- toQuantity :: Text -> m Quantity
-    -- getIntFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Int
-    -- getTextFromQueryArray :: [(Text, Maybe Text)] -> Text -> m Text
+    toAnEntity = DL.toAnEntity
+    toHelpForRequest = DL.toHelpForRequest
+    toQuantity = DL.toQuantity
+    getIntFromQueryArray = DL.getIntFromQueryArray
+    getTextFromQueryArray = DL.getTextFromQueryArray
 
 
-    
+logConfTest :: LogConfig
+logConfTest = LogConfig "test-jornal" Debug
+
 instance Log App where
+  writeLog l txt = do
+    time <- liftIO getCurrentTime
+    liftIO $ writeLogHandler time logConfTest l txt
+  writeLogD = writeLog Debug
+  writeLogW = writeLog Warning
+  writeLogE = writeLog Error
+
   
 instance Auth App where
     findUserId login pass = do
@@ -173,8 +194,8 @@ mockAuthor = AnAuthor (Author 1 (UserId 1) "Some description")
 mockDraft :: AnEntity 
 mockDraft = AnDraft (Draft 1 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 1)
 
-mockDraftNotAuthor :: AnEntity 
-mockDraftNotAuthor = AnDraft (Draft 2 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 2)
+mockDraftAuthor :: AnEntity 
+mockDraftAuthor = AnDraft (Draft 2 "text draft" someTime Nothing  "text draft" "text draft" ["text draft"] [1] 2)
 
 
 mockUser :: AnEntity 
@@ -283,11 +304,23 @@ spec = do
             emptyFixture
               { _checkAuthorAccess = \(SessionId "Text")   -> return ()
               , _findUserIdBySession = \(SessionId "Text")   -> return (UserId 2)
-              , _createAuthorAccess = \ _ -> return ()
+              , _getAuthorId = \(SessionId "Text") -> return 2
+              , _create = \_ -> return ()
+             
+              } 
+      runApp fixture (createCommon (SessionId "Text") mockDraftAuthor) `shouldReturn` 
+          Right ()
+    it "should not create Draft with author access because wong author id" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _findUserIdBySession = \(SessionId "Text")   -> return (UserId 2)
+              , _getAuthorId = \(SessionId "Text") -> return 4
+              , _create = \_ -> return ()
              
               } 
       runApp fixture (createCommon (SessionId "Text") mockDraft) `shouldReturn`
-          Right ()
+          Left NotSupposedAuthor
    
   describe "editingCommon" $ do
     it "should not editingCommon with error in postgres" $ do
@@ -325,45 +358,266 @@ spec = do
               } 
       runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
           Left NotAccessNotAuthor
-    -- it "should editing Author with admin access" $ do
-    --   let fixture =
-    --         emptyFixture
-    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
-    --           , _editing = \_ -> return ()
-    --           } 
-    --   runApp fixture (editingCommon (SessionId "Text") mockAuthor) `shouldReturn`
-    --       Right ()
-    -- it "should editing Category with admin access" $ do
-    --   let fixture =
-    --         emptyFixture
-    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
-    --           , _editing = \_ -> return ()
-    --           } 
-    --   runApp fixture (editingCommon (SessionId "Text") mockCategory) `shouldReturn`
-    --      Right ()
-    -- it "should editing Tag with admin access" $ do
-    --   let fixture =
-    --         emptyFixture
-    --           { _checkAdminAccess = \(SessionId "Text")   -> return ()
-    --           , _editing = \_ -> return ()
-    --           } 
-    --   runApp fixture (editingCommon (SessionId "Text") mockTag) `shouldReturn`
-    --       Right ()
-    -- it "should editing Draft with author access" $ do
-    --   let fixture =
-    --         emptyFixture
-    --           { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-    --           , _editing = \_ -> return ()
-    --           } 
-    --   runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
-    --       Right ()
-    -- it "should not editing Draft, because it is not this author draft" $ do
-    --   let fixture =
-    --         emptyFixture
-    --           { _checkAuthorAccess = \(SessionId "Text")   -> return ()
-             
-    --           , _editing = \_ -> return ()
-    --           } 
-    --   runApp fixture (editingCommon (SessionId "Text") mockDraftNotAuthor) `shouldReturn`
-    --       Left NotSupposedAuthor
-   
+
+    it "should editing Author with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _editing = \_ -> return ()
+              } 
+      runApp fixture (editingCommon (SessionId "Text") mockAuthor) `shouldReturn`
+          Right ()
+    it "should editing Category with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _editing = \_ -> return ()
+              } 
+      runApp fixture (editingCommon (SessionId "Text") mockCategory) `shouldReturn`
+         Right ()
+    it "should editing Tag with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _editing = \_ -> return ()
+              } 
+      runApp fixture (editingCommon (SessionId "Text") mockTag) `shouldReturn`
+          Right ()
+    it "should editing Draft with author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _getAuthorId = \_ -> return 1
+              , _findUserIdBySession = \(SessionId "Text") -> return (UserId 2)
+              , _editingAuthorAccess = \_ _ -> return ()
+              } 
+      runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
+          Right ()
+    it "should  editing Draft, because it is not this author draft" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _getAuthorId = \_ -> return 5
+              , _findUserIdBySession = \(SessionId "Text") -> return (UserId 2)
+              , _editingAuthorAccess = \_ _ -> return ()
+              } 
+      runApp fixture (editingCommon (SessionId "Text") mockDraftAuthor) `shouldReturn`
+          Left NotSupposedAuthor
+
+  describe "remove" $ do
+    it "should not remove with error in postgres" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError DataErrorPostgreSQL
+              } 
+      runApp fixture (removeCommon  (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left DataErrorPostgreSQL
+    it "should not remove Author with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (removeCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not remove Category with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (removeCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not remove Tag with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (removeCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not remove Draft with not author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \_  -> throwError NotAccessNotAuthor
+              } 
+      runApp fixture (removeCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Left NotAccessNotAuthor
+
+    it "should remove Author with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _remove = \_ _-> return ()
+              } 
+      runApp fixture (removeCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Right ()
+    it "should remove Category with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _remove = \_ _ -> return ()
+              } 
+      runApp fixture (removeCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+         Right ()
+    it "should remove Tag with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _remove = \_ _ -> return ()
+              } 
+      runApp fixture (removeCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Right ()
+    it "should remove Draft with author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _getAuthorId = \_ -> return 1
+              , _findUserIdBySession = \(SessionId "Text") -> return (UserId 2)
+              , _removeAuthorAccess = \_ _ -> return ()
+              } 
+      runApp fixture (removeCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Right ()
+  
+
+  describe "getOne" $ do
+    it "should not getOne with error in postgres" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError DataErrorPostgreSQL
+              } 
+      runApp fixture (getOneCommon  (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left DataErrorPostgreSQL
+    it "should not getOne Author with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getOne Category with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _getOne = \_ _ -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getOne Tag with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _getOne = \_ _ -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getOne Draft with not author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \_  -> throwError NotAccessNotAuthor
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Left NotAccessNotAuthor
+
+    it "should getOne Author with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getOne = \_ _-> return "mockAuthor"
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Right "mockAuthor"
+    it "should getOne Category with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getOne = \_ _ -> return "mockCategory"
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+         Right "mockCategory"
+    it "should getOne Tag with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getOne = \_ _ -> return "mockTag"
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Right "mockTag"
+    it "should getOne Draft with author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _getAuthorId = \_ -> return 1
+              , _findUserIdBySession = \(SessionId "Text") -> return (UserId 2)
+              , _getOneAuthorAccess = \_ _ -> return "mockDraft"
+              } 
+      runApp fixture (getOneCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Right "mockDraft"
+
+
+  describe "getAll" $ do
+    it "should not getAll with error in postgres" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError DataErrorPostgreSQL
+              } 
+      runApp fixture (getArrayCommon  (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left DataErrorPostgreSQL
+    it "should not getAll Author with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \_  -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getAll Category with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _getAll = \_ _ -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getAll Tag with not admin access" $ do
+      let fixture =
+            emptyFixture
+              { _getAll = \_ _ -> throwError NotAccessNotAdmid
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Left NotAccessNotAdmid
+    it "should not getAll Draft with not author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \_  -> throwError NotAccessNotAuthor
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Left NotAccessNotAuthor
+
+    it "should getAll Author with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getAll = \_ _-> return "mockAuthor"
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") AuthorEntReq 1) `shouldReturn`
+          Right "mockAuthor"
+    it "should getAll Category with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getAll = \_ _ -> return "mockCategory"
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") CategoryEntReq 1) `shouldReturn`
+         Right "mockCategory"
+    it "should getAll Tag with admin access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAdminAccess = \(SessionId "Text")   -> return ()
+              , _getAll = \_ _ -> return "mockTag"
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") TagEntReq 1) `shouldReturn`
+          Right "mockTag"
+    it "should getAll Draft with author access" $ do
+      let fixture =
+            emptyFixture
+              { _checkAuthorAccess = \(SessionId "Text")   -> return ()
+              , _findUserIdBySession = \(SessionId "Text") -> return (UserId 2)
+              , _getAllAuthorAccess = \_ _ -> return "mockDraft"
+              } 
+      runApp fixture (getArrayCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
+          Right "mockDraft"
+  
