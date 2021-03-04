@@ -239,6 +239,7 @@ spec = do
               } 
       runApp fixture (publish (UserId 1) 1) `shouldReturn`
         Left DataErrorPostgreSQL
+        
   describe "CreateCommon" $ do
     it "should not createCommon with error in postgres" $ do
       let fixture =
@@ -358,7 +359,6 @@ spec = do
               } 
       runApp fixture (editingCommon (SessionId "Text") mockDraft) `shouldReturn`
           Left NotAccessNotAuthor
-
     it "should editing Author with admin access" $ do
       let fixture =
             emptyFixture
@@ -440,7 +440,6 @@ spec = do
               } 
       runApp fixture (removeCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
           Left NotAccessNotAuthor
-
     it "should remove Author with admin access" $ do
       let fixture =
             emptyFixture
@@ -475,7 +474,6 @@ spec = do
               } 
       runApp fixture (removeCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
           Right ()
-  
 
   describe "getOne" $ do
     it "should not getOne with error in postgres" $ do
@@ -513,7 +511,6 @@ spec = do
               } 
       runApp fixture (getOneCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
           Left NotAccessNotAuthor
-
     it "should getOne Author with admin access" $ do
       let fixture =
             emptyFixture
@@ -548,7 +545,6 @@ spec = do
               } 
       runApp fixture (getOneCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
           Right "mockDraft"
-
 
   describe "getAll" $ do
     it "should not getAll with error in postgres" $ do
@@ -586,7 +582,6 @@ spec = do
               } 
       runApp fixture (getArrayCommon (SessionId "Text") DraftEntReq 1) `shouldReturn`
           Left NotAccessNotAuthor
-
     it "should getAll Author with admin access" $ do
       let fixture =
             emptyFixture
