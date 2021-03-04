@@ -1,9 +1,4 @@
-module Domain.Types.BusinessEntity.News
-  ( News(comments)
-  , NewsRaw
-  , convertNewsRaw
-  )
-where
+module Domain.Types.BusinessEntity.News where
 
 import           ClassyPrelude                  ( ($)
                                                 , Eq

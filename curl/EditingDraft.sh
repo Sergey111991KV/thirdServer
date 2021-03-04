@@ -1,5 +1,5 @@
 #! /bin/bash
 
 
-curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -d '{"tagsId":{"fromPGArray":[1,2]},"mainPhotoUrl":"Test mainPhotoUrl","newsIdDraft":null,"textDraft":"Test textDraft","shortNameDraft":"jjj","otherPhotoUrl":{"fromPGArray":["Test Avatar"]},"idAuthorDraft":1,"dataCreateDraft":"2015-09-01T13:34:02Z","idDraft":2}'  -X PUT http://localhost:3000/draft  -H "Content-Type: application/json" 
+curl -b  'sId=OvSvZjTyT3E8F4cBhggjYjDEnOJnFU6v' -d '{"tagsId":[1,2],"mainPhotoUrl":"main photo 1 news draft","newsIdDraft":1,"textDraft":"some text draft for 1 news","shortNameDraft":"draft1","otherPhotoUrl":["draft 1 photo","draft 2 photo"],"dataCreateDraft":"2011-09-18T20:00:00Z","idAuthorDraft":1,"idDraft":1}'  -X PUT http://localhost:3000/draft  -H "Content-Type: application/json" 
 

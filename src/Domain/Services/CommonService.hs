@@ -1,42 +1,14 @@
 module Domain.Services.CommonService where
 
-import           ClassyPrelude                  ( Monad((>>), (>>=))
-                                                , Int
-                                                , Maybe
-                                                , Text
-                                                )
-import           Domain.Types.ExportTypes       ( ErrorServer
-                                                  ( EmptyQueryArray
-                                                  , NotTakeEntity
-                                                  )
-                                                , SessionId
-                                                , UserId
-                                                , Quantity(Plural, One)
-                                                , AnEntity
-                                                , HelpForRequest
-                                                  ( FilterNewsReq
-                                                  , AuthorEntReq
-                                                  , UserEntReq
-                                                  , TagEntReq
-                                                  , CommentEntReq
-                                                  , CategoryEntReq
-                                                  , DraftEntReq
-                                                  , NewsEntReq
-                                                  , SortedNewsReq
-                                                  )
-                                                )
+import           ClassyPrelude                 
+import           Domain.Types.ExportTypes       
 
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.Auth           ( Auth(findUserIdBySession) )
 import           Domain.Services.AccessService  ( Access(..) )
 import qualified Data.ByteString.Lazy.Internal as LB
-import           Domain.Services.EntityService  ( Entity
-                                                  ( getIntFromQueryArray
-                                                  , fromAnEntity
-                                                  , toQuantity
-                                                  , toHelpForRequest
-                                                  )
-                                                )
+import           Domain.Services.EntityService  
+                                                
 import           Domain.Services.FilterService  ( filteredNews
                                                 , FilterService
                                                 )
@@ -60,13 +32,18 @@ class (SortedOfService m, FilterService m) =>
   publish :: UserId -> Int -> m  ()
 
 
-
-
+createAuthorAccess :: CommonService m =>  AnEntity -> SessionId -> m  ()
+createAuthorAccess (AnDraft ent) sess = do
+  checkAuthorAccess sess
+  idUserAuthor <- getAuthorId sess 
+  let idDraftCreate = idAuthorDraft ent
+  if idUserAuthor == idDraftCreate then return () else throwError NotSupposedAuthor  
+createAuthorAccess _ _ =  throwError ErrorTakeEntityNotSupposed
 
 publishAction :: CommonService m => SessionId -> Int -> m ()
-publishAction sess idDraft = do
+publishAction sess idDraftEnt = do
   idU <- findUserIdBySession sess
-  publish idU idDraft
+  publish idU idDraftEnt
 
 createCommon :: CommonService m => SessionId -> AnEntity -> m ()
 createCommon sess ent = do
@@ -77,7 +54,7 @@ createCommon sess ent = do
     TagEntReq      -> checkAdminAccess sess >> create ent
     CommentEntReq  -> create ent
     CategoryEntReq -> checkAdminAccess sess >> create ent
-    DraftEntReq    -> checkAuthorAccess sess >> create ent
+    DraftEntReq    -> createAuthorAccess ent sess >> create ent
     _              -> throwError NotTakeEntity
 
 editingCommon :: CommonService m => SessionId -> AnEntity -> m ()

@@ -88,7 +88,7 @@ instance Auth App where
 spec :: Spec
 spec = do
   describe "Create session" $ do
-    it "should not create session " $ do
+    it "should not create session because not find user from login and password" $ do
       let fixture =
             emptyFixture
               { _findUserId = \_ _ -> throwError DataErrorPostgreSQL
@@ -104,7 +104,7 @@ spec = do
       runApp fixture (sessionByAuth (Login "Text") (Password "Text")) `shouldReturn`
           Right (SessionId "Some Text")
   describe "Delete session" $ do
-    it "should not delete old session" $ do
+    it "should not delete old session because not find user from sessionId" $ do
       let fixture =
             emptyFixture
               { _findUserIdBySession = \_  -> throwError DataErrorPostgreSQL
