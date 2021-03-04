@@ -36,13 +36,8 @@ checkDraftWithAuthor :: CommonService m =>  SessionId ->  AnEntity -> m ()
 checkDraftWithAuthor  sess (AnDraft draft) = do
   checkAuthorAccess sess
   idA <- getAuthorId sess 
-  checkId idA (idAuthorDraft draft)
+  if idA == (idAuthorDraft draft) then return () else throwError NotSupposedAuthor
 checkDraftWithAuthor _ _ = do throwError NotTakeEntity
-
-
-checkId :: CommonService m => Int ->  Int -> m ()
-checkId idA idD = do
-   if idA == idD then return () else throwError NotSupposedAuthor
 
 
 publishAction :: CommonService m => SessionId -> Int -> m ()

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS usernews (
 
 CREATE TABLE IF NOT EXISTS author (
     id_author SERIAL PRIMARY KEY,
-    id_link_user integer REFERENCES usernews(id_user) ON DELETE CASCADE,
+    id_link_user integer UNIQUE REFERENCES usernews(id_user) ON DELETE CASCADE,
     description text
 );
 
