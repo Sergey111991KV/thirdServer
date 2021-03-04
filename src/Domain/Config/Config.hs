@@ -21,7 +21,7 @@ import           ClassyPrelude                  ( ($)
                                                 )
 
 
-import           Domain.Config.ParseConfig      
+import           Domain.Config.ParseConfig
 import           Domain.Types.ExportTypes       ( ErrorServer(ErrorGetConfig) )
 import qualified Domain.Types.LogEntity.LogEntity
                                                as Log

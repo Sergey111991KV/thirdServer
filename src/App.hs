@@ -1,54 +1,59 @@
 module App
   ( mainServer
-  )
-where
+  ) where
 
 import qualified Adapter.PostgreSQL.ExportPostgres
                                                as Pos
-import ClassyPrelude
-    ( ($),
-      Monad(return, (>>=)),
-      Functor,
-      Applicative(pure),
-      Int,
-      IO,
-      Either(..),
-      Text,
-      either,
-      print,
-      getCurrentTime,
-      try,
-      newTVarIO,
-      readTVarIO,
-      MonadIO(..),
-      TVar,
-      SomeException,
-      MonadReader(..),
-      ReaderT(..) )
-  
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return, (>>=))
+                                                , Functor
+                                                , Applicative(pure)
+                                                , Int
+                                                , IO
+                                                , Either(..)
+                                                , Text
+                                                , either
+                                                , print
+                                                , getCurrentTime
+                                                , try
+                                                , newTVarIO
+                                                , readTVarIO
+                                                , MonadIO(..)
+                                                , TVar
+                                                , SomeException
+                                                , MonadReader(..)
+                                                , ReaderT(..)
+                                                )
 
 
-import Control.Monad.Except
-    ( 
-      MonadError(throwError),
-      ExceptT,
-      runExceptT )
-     
+
+import           Control.Monad.Except           ( MonadError(throwError)
+                                                , ExceptT
+                                                , runExceptT
+                                                )
+
 import           Control.Monad.Catch            ( MonadThrow )
 import qualified Data.Text.IO                  as TIO
 import qualified Domain.Config.Config          as Config
-import Domain.Services.ExportServices
-    ( Entity(..),
-      writeLogHandler,
-      Log(..),
-      Auth(..),
-      Access(..),
-      SortedOfService(..),
-      FilterService(..),
-      CommonService(..) )
-import Domain.Types.ExportTypes
-    ( ErrorServer(ErrorReadFile, ErrorGetConfig),
-      LogLevel(Debug, Error, Warning) )
+import           Domain.Services.ExportServices ( Entity(..)
+                                                , writeLogHandler
+                                                , Log(..)
+                                                , Auth(..)
+                                                , Access(..)
+                                                , SortedOfService(..)
+                                                , FilterService(..)
+                                                , CommonService(..)
+                                                )
+import           Domain.Types.ExportTypes       ( ErrorServer
+                                                  ( ErrorReadFile
+                                                  , ErrorGetConfig
+                                                  )
+                                                , LogLevel
+                                                  ( Debug
+                                                  , Error
+                                                  , Warning
+                                                  )
+                                                )
 import qualified Domain.Types.LogEntity.LogEntity
                                                as Log
 import qualified Network.Wai.Handler.Warp      as W
@@ -86,7 +91,7 @@ instance Auth App where
 instance Access App where
   checkAuthorAccess = Pos.checkAuthorAccess
   checkAdminAccess  = Pos.checkAdminAccess
-  getAuthorId = Pos.getAuthorId
+  getAuthorId       = Pos.getAuthorId
 
 
 instance Entity App where
@@ -142,31 +147,29 @@ mainWithConfig :: Config.Config -> IO ()
 mainWithConfig config = withState config $ \port state -> do
   W.run port $ \request respond -> do
     eitherResponse <- runApp state $ MyHTTP.route request
-    response       <- either
-      MyHTTP.serverErrorResponse 
-      pure
-      eitherResponse
+    response       <- either MyHTTP.serverErrorResponse pure eitherResponse
     respond response
 
 mainServer :: IO ()
 mainServer = do
   eitherConfig <- runExceptT $ getTextFromFile >>= getConfigFromText
   case eitherConfig of
-    Left e -> print e
+    Left  e    -> print e
     Right conf -> mainWithConfig conf
 
-getConfigFromText ::  (MonadIO m, MonadError ErrorServer m) => Text -> m  Config.Config
+getConfigFromText
+  :: (MonadIO m, MonadError ErrorServer m) => Text -> m Config.Config
 getConfigFromText txt = do
   caseOfConf <- liftIO $ Config.parseConf txt
   case caseOfConf of
-    Left _ -> throwError ErrorGetConfig
+    Left  _    -> throwError ErrorGetConfig
     Right conf -> return conf
 
-getTextFromFile :: (MonadIO m, MonadError ErrorServer m) =>   m Text
-getTextFromFile  = do
-  configFromFile :: Either SomeException Text <- liftIO $ ClassyPrelude.try 
-    $ TIO.readFile "server.config" 
+getTextFromFile :: (MonadIO m, MonadError ErrorServer m) => m Text
+getTextFromFile = do
+  configFromFile :: Either SomeException Text <-
+    liftIO $ ClassyPrelude.try $ TIO.readFile "server.config"
   case configFromFile of
-    Left _ -> throwError ErrorReadFile
+    Left  _   -> throwError ErrorReadFile
     Right txt -> return txt
 

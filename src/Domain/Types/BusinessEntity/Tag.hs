@@ -1,7 +1,6 @@
 module Domain.Types.BusinessEntity.Tag
   ( Tag(Tag, idTag, nameTag)
-  )
-where
+  ) where
 
 import           ClassyPrelude                  ( Applicative(pure)
                                                 , Eq

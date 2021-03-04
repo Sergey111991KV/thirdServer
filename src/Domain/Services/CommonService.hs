@@ -1,14 +1,14 @@
 module Domain.Services.CommonService where
 
-import           ClassyPrelude                 
-import           Domain.Types.ExportTypes       
+import           ClassyPrelude
+import           Domain.Types.ExportTypes
 
 import           Control.Monad.Except           ( MonadError(throwError) )
 import           Domain.Services.Auth           ( Auth(findUserIdBySession) )
 import           Domain.Services.AccessService  ( Access(..) )
 import qualified Data.ByteString.Lazy.Internal as LB
-import           Domain.Services.EntityService  
-                                                
+import           Domain.Services.EntityService
+
 import           Domain.Services.FilterService  ( filteredNews
                                                 , FilterService
                                                 )
@@ -32,12 +32,15 @@ class (SortedOfService m, FilterService m) =>
   publish :: UserId -> Int -> m  ()
 
 
-checkDraftWithAuthor :: CommonService m =>  SessionId ->  AnEntity -> m ()
-checkDraftWithAuthor  sess (AnDraft draft) = do
+checkDraftWithAuthor :: CommonService m => SessionId -> AnEntity -> m ()
+checkDraftWithAuthor sess (AnDraft draft) = do
   checkAuthorAccess sess
-  idA <- getAuthorId sess 
-  if idA == (idAuthorDraft draft) then return () else throwError NotSupposedAuthor
-checkDraftWithAuthor _ _ = do throwError NotTakeEntity
+  idA <- getAuthorId sess
+  if idA == (idAuthorDraft draft)
+    then return ()
+    else throwError NotSupposedAuthor
+checkDraftWithAuthor _ _ = do
+  throwError NotTakeEntity
 
 
 publishAction :: CommonService m => SessionId -> Int -> m ()
@@ -54,8 +57,7 @@ createCommon sess ent = do
     TagEntReq      -> checkAdminAccess sess >> create ent
     CommentEntReq  -> create ent
     CategoryEntReq -> checkAdminAccess sess >> create ent
-    DraftEntReq    -> checkDraftWithAuthor sess ent
-                      >> create ent 
+    DraftEntReq    -> checkDraftWithAuthor sess ent >> create ent
     _              -> throwError NotTakeEntity
 
 editingCommon :: CommonService m => SessionId -> AnEntity -> m ()
@@ -81,9 +83,9 @@ removeCommon sess helpReq idEnt = do
     TagEntReq      -> checkAdminAccess sess >> remove helpReq idEnt
     CommentEntReq  -> remove helpReq idEnt
     CategoryEntReq -> checkAdminAccess sess >> remove helpReq idEnt
-    DraftEntReq -> do 
+    DraftEntReq    -> do
       checkAuthorAccess sess
-      idU <-  findUserIdBySession sess
+      idU <- findUserIdBySession sess
       removeAuthorAccess idEnt idU
     NewsEntReq -> remove helpReq idEnt
     _          -> throwError NotTakeEntity

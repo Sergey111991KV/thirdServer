@@ -1,7 +1,6 @@
 module Domain.Types.ExportTypes
   ( module Y
-  )
-where
+  ) where
 
 import           Domain.Types.AuthEntity.Auth  as Y
 import           Domain.Types.BusinessEntity.Author

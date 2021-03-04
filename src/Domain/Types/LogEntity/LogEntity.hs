@@ -21,8 +21,8 @@ newtype StateLog =
 
 
 data LogConfig = LogConfig
-  { logFile         :: FilePath
-  , logLevel        :: LogLevel
+  { logFile  :: FilePath
+  , logLevel :: LogLevel
   }
   deriving (Show, Generic)
 

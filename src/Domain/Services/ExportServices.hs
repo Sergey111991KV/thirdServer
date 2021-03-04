@@ -1,7 +1,6 @@
 module Domain.Services.ExportServices
   ( module Y
-  )
-where
+  ) where
 
 import           Domain.Services.Auth          as Y
                                                 ( sessionByAuth

@@ -1,7 +1,6 @@
 module Domain.Types.ImportLibrary
   ( module X
-  )
-where
+  ) where
 
 import           Data.Aeson                    as X
 import           Data.ByteString.Builder       as X

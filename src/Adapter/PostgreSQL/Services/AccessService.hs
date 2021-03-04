@@ -1,8 +1,13 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Adapter.PostgreSQL.Services.AccessService where
 
-import ClassyPrelude ( ($), Monad(return), Bool(..), Int, IO ) 
-                
+import           ClassyPrelude                  ( ($)
+                                                , Monad(return)
+                                                , Bool(..)
+                                                , Int
+                                                , IO
+                                                )
+
 import           Adapter.PostgreSQL.Common      ( withConn
                                                 , PG
                                                 )
@@ -63,5 +68,5 @@ getAuthorId sesId = do
     [Only idUserAuthor] -> do
       writeLogD "getAuthorId "
       return idUserAuthor
-    _  -> throwError DataErrorPostgreSQL
+    _ -> throwError DataErrorPostgreSQL
   where qry = [sql| select id_author from author where id_link_user = ? ;|]

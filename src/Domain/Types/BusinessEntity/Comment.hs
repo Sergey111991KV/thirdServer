@@ -6,8 +6,7 @@ module Domain.Types.BusinessEntity.Comment
     , textComments
     , usersIdComments
     )
-  )
-where
+  ) where
 
 import           ClassyPrelude                  ( Applicative(pure)
                                                 , Eq
