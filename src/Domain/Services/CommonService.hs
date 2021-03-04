@@ -36,8 +36,14 @@ checkDraftWithAuthor :: CommonService m =>  SessionId ->  AnEntity -> m ()
 checkDraftWithAuthor  sess (AnDraft draft) = do
   checkAuthorAccess sess
   idA <- getAuthorId sess 
-  if idA == idAuthorDraft draft then return () else throwError NotSupposedAuthor
+  checkId idA (idAuthorDraft draft)
 checkDraftWithAuthor _ _ = do throwError NotTakeEntity
+
+
+checkId :: CommonService m => Int ->  Int -> m ()
+checkId idA idD = do
+   if idA == idD then return () else throwError NotSupposedAuthor
+
 
 publishAction :: CommonService m => SessionId -> Int -> m ()
 publishAction sess idDraftEnt = do
@@ -67,7 +73,7 @@ editingCommon sess ent = do
     CommentEntReq  -> editing ent
     CategoryEntReq -> checkAdminAccess sess >> editing ent
     DraftEntReq ->
-      checkAuthorAccess sess
+      checkDraftWithAuthor sess ent
         >>  findUserIdBySession sess
         >>= editingAuthorAccess ent
     _ -> throwError NotTakeEntity
@@ -80,10 +86,10 @@ removeCommon sess helpReq idEnt = do
     TagEntReq      -> checkAdminAccess sess >> remove helpReq idEnt
     CommentEntReq  -> remove helpReq idEnt
     CategoryEntReq -> checkAdminAccess sess >> remove helpReq idEnt
-    DraftEntReq ->
+    DraftEntReq -> do 
       checkAuthorAccess sess
-        >>  findUserIdBySession sess
-        >>= removeAuthorAccess idEnt
+      idU <-  findUserIdBySession sess
+      removeAuthorAccess idEnt idU
     NewsEntReq -> remove helpReq idEnt
     _          -> throwError NotTakeEntity
 
